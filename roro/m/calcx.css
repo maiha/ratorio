@@ -372,6 +372,82 @@ td.CSSCLS_EXTRA_INFO_DISP_TABLE_SKILL_CARD_NG {
 #OBJID_DIV_BATTLE_RESULT_TINY {
 	white-space: nowrap;
 }
+#OBJID_DIV_RESIST_ELEMENT_TINY {
+}
+table.RESIST_ELEMENT_TINY {
+	border-collapse: separate;
+	border-spacing: 0.5em 0;
+	border: none;
+}
+table.RESIST_ELEMENT_TINY .u {
+    border: 1px solid lightgray;
+    background-color: rgb(255,255,255);
+    color: rgb(0,0,0); /* 黒色 */
+}
+table.RESIST_ELEMENT_TINY .h {
+    border: 1px solid rgb(250,12,4);
+    background-color: rgb(250,12,4);
+    color: rgb(255,255,255); /* 白色 */
+}
+table.RESIST_ELEMENT_TINY .m {
+    border: 1px solid rgb(15,69,252);
+    background-color: rgb(15,69,252);
+    color: rgb(255,255,255); /* 白色 */
+}
+table.RESIST_ELEMENT_TINY .k {
+    border: 1px solid #96D642;
+    background-color: #96D642;
+    color: rgb(0,0,0); /* 黒色 */
+}
+table.RESIST_ELEMENT_TINY .t {
+    border: 1px solid #B77540;
+    background-color: #B77540;
+    color: rgb(255,255,255); /* 白色 */
+}
+table.RESIST_ELEMENT_TINY .d {
+    border: 1px solid rgb(158,9,246);
+    background-color: rgb(158,9,246);
+    color: rgb(255,255,255); /* 白色 */
+}
+table.RESIST_ELEMENT_TINY .s {
+    border: 1px solid #FFFF00;
+    background-color: #FFFF00;
+    color: rgb(0,0,0); /* 黒色 */
+}
+table.RESIST_ELEMENT_TINY .y {
+    border: 1px solid rgb(0,0,0);
+    background-color: rgb(0,0,0);
+    color: rgb(255,255,255); /* 白色 */
+}
+table.RESIST_ELEMENT_TINY .n {
+    border: 1px solid rgb(195,195,195);
+    background-color: rgb(195,195,195);
+    color: rgb(0,0,0); /* 黒色 */
+}
+table.RESIST_ELEMENT_TINY .f {
+    border: 1px solid rgb(120,9,73);
+    background-color: rgb(120,9,73);
+    color: rgb(255,255,255); /* 白色 */
+}
+table.RESIST_ELEMENT_TINY .label {
+    font-size: smaller;
+    font-weight: bold;
+    padding: 0 0.2em;
+}
+table.RESIST_ELEMENT_TINY .value {
+    padding: 0 0.2em;
+}
+table.RESIST_ELEMENT_TINY .over {
+    font-weight: bold;
+    color: #ff0000;
+}
+table.RESIST_ELEMENT_TINY .plus {
+    color: black;
+}
+table.RESIST_ELEMENT_TINY .minus {
+    font-weight: bold;
+    color: #0000ff;
+}
 
 /* タブ制御 */
 /*

@@ -20070,6 +20070,15 @@ function calc() {
 
 
 
+	//--------------------------------
+	// calc()をトリガーにするその他の処理
+	//--------------------------------
+	BuildResistElementTinyHtml();
+
+
+
+
+
 	//----------------------------------------------------------------
 	//
 	// 計算ボタン付近の注意事項表示
@@ -26886,6 +26895,56 @@ g_wCastFixedTemp ??= wCastFixed / 1000;
 
 
 g_attackIntervalTemp ??= n_Delay[w];
+}
+
+
+
+
+
+/**
+ * 属性倍率の簡易表示HTMLを描画する.
+ */
+function BuildResistElementTinyHtml(){
+	const objRoot = document.getElementById("OBJID_DIV_RESIST_ELEMENT_TINY");
+	objRoot.innerHTML = "";
+
+	const table = HtmlCreateElement("table", objRoot);
+	table.classList.add("RESIST_ELEMENT_TINY");
+
+	const thead = HtmlCreateElement("thead", table);
+	const tbody = HtmlCreateElement("tbody", table);
+
+	const resist_elm_vanity = [];
+	const elm_ratio = [];
+	const resist_ratio = [];
+	for (idx = 0; idx < ELM_ID_COUNT; idx++) {
+		resist_elm_vanity[idx] = n_tok[ITEM_SP_RESIST_ELM_VANITY + idx];
+		elm_ratio[idx] = zokusei[n_A_BodyZokusei * 10 + 1][idx] + 100;
+		resist_ratio[idx] = Math.floor(elm_ratio[idx] - Math.floor(resist_elm_vanity[idx] * elm_ratio[idx]) / 100);
+	}
+
+	// GetElementTextで定義されている属性の配列
+	const originalOrder = ['u', 'm', 't', 'h', 'k', 'd', 's', 'y', 'n', 'f'];
+	// 一般的な「火水風地」の順序にするための表示用の配列
+	const displayOrder = ['u', 'h', 'm', 'k', 't', 'd', 's', 'y', 'n', 'f'];
+
+	// thead: "無 火 水 地 風 毒 ..."
+	// tbody: "60% 118% 95% 45% -23% ..."
+	const thead_tr = HtmlCreateElement("tr", thead);
+	displayOrder.forEach((initial) => {
+		const index = originalOrder.indexOf(initial);
+		const label = GetElementText(index);
+		const ratio = resist_ratio[index];
+		const th = HtmlCreateElement("td", thead_tr)
+		const label_span = HtmlCreateElement("span", th);
+		const value_span = HtmlCreateElement("span", th);
+
+		label_span.classList.add(initial, 'label');
+		label_span.textContent = label;
+		value_span.classList.add('value');
+		value_span.classList.add((ratio > 100) ? 'over' : ((ratio < 0) ? 'minus' : 'plus'));
+		value_span.textContent = `${ratio}%`;
+	});
 }
 
 
