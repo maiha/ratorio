@@ -113,6 +113,8 @@ let n_A_ActiveSkillLV = null;
 let n_tok = Array(451).fill(0);
 /** アイテムSPの効果量を収める配列. n_tok と違って耐性上限の 95 を超えて効果量を格納出来る. */
 let n_tok_no_limit = Array(451).fill(0);
+/** n_tok補足情報を管理するハッシュ */
+let n_tok_hints = {};
 /** equip.js の古い関数内部で使われていた変数. 削除候補 */
 let first_check = 0;
 /** 必中ダメージ */
@@ -10823,7 +10825,7 @@ export function BuildBattleResultHtmlMIG(charaData, specData, mobData, attackMet
 	};
 
 	// 簡易戦闘結果
-	var funcRenderResultTinyHtml = function (objRoot, labelText, valueText) {
+	var funcRenderResultTinyHtml = function (objRoot, labelText, valueText, hintId) {
 		var objCell = null;
 
 		objCell = HtmlCreateElement("span", objRoot);
@@ -10833,6 +10835,13 @@ export function BuildBattleResultHtmlMIG(charaData, specData, mobData, attackMet
 		objCell = HtmlCreateElement("span", objRoot);
 		objCell.classList.add("CSSCLS_BATTLE_TINY_VALUE");
 		HtmlCreateTextNode(valueText, objCell);
+
+		if (hintId) {
+			$(objCell).attr({
+				'class': "tooltip-target",
+				'data-tooltip': NTokHint.text(hintId),
+			})
+		}
 	};
 
 
@@ -10929,7 +10938,7 @@ export function BuildBattleResultHtmlMIG(charaData, specData, mobData, attackMet
 		objCell.classList.add("CSSCLS_BTLRSLT_VALUE");
 		HtmlCreateTextNode(funcDIG3PXPercent(battleCalcResult.perfectRate, 2), objCell);
 
-		funcRenderResultTinyHtml(objGridTiny, "必中", funcDIG3PX(battleCalcResult.perfectRate, 0, "%"));
+		funcRenderResultTinyHtml(objGridTiny, "必中", funcDIG3PX(battleCalcResult.perfectRate, 0, "%"), ITEM_SP_PERFECT_ATTACK_UP);
 	}
 
 	//----------------
@@ -10965,7 +10974,7 @@ export function BuildBattleResultHtmlMIG(charaData, specData, mobData, attackMet
 	objCell.classList.add("CSSCLS_BTLRSLT_VALUE");
 	HtmlCreateTextNode(funcDIG3PXPercent(criRate, 2), objCell);
 
-	funcRenderResultTinyHtml(objGridTiny, "クリ", funcDIG3PX(criRate, 0, "%"));
+	funcRenderResultTinyHtml(objGridTiny, "クリ", funcDIG3PX(criRate, 0, "%"), ITEM_SP_CRI_PLUS);
 
 	//----------------------------------------------------------------
 	//
@@ -11105,7 +11114,7 @@ export function BuildBattleResultHtmlMIG(charaData, specData, mobData, attackMet
 		var delayText = funcDIG3PXSecondCompact(battleCalcResult.delaySkill, 2);
 		const overValue = Math.round((100 - delayDownForDisp) * 100) / 100;
 		delayText += `(${overValue}%)`
-		funcRenderResultTinyHtml(objGridTiny, "ディレイ", delayText);
+		funcRenderResultTinyHtml(objGridTiny, "ディレイ", delayText, ITEM_SP_SKILL_DELAY_DOWN);
 
 		//----------------
 		// クールタイム
@@ -15182,9 +15191,11 @@ export function calc() {
 
 	// スキルクリティカルの確率補正を適用したクリティカル率を取得
 	w_Cri = g_skillManager.GetCriActRate(n_A_ActiveSkill, n_A_ActiveSkillLV, charaData, specData, mobData, attackMethodConfArray[0]);
+	NTokHint.add(ITEM_SP_CRI_PLUS, `(スキル補正) -> ${w_Cri}`);
 
 	// 敵のCRI耐性減算
 	w_Cri -= ((mobData[MONSTER_DATA_INDEX_LEVEL] / 150) + (mobData[MONSTER_DATA_INDEX_LUK] / 5));
+	NTokHint.add(ITEM_SP_CRI_PLUS, `(mob減算) ${mobData[MONSTER_DATA_INDEX_NAME]} (BaseLv:${mobData[MONSTER_DATA_INDEX_LEVEL]} / 150) + (LUK:${mobData[MONSTER_DATA_INDEX_LUK]} / 5) -> ${Math.trunc(w_Cri*10)/10}`);
 
 	// 睡眠状態ならば、クリティカル率２倍
 	if (n_B_IJYOU[MOB_CONF_DEBUF_ID_SUIMIN]) {
@@ -22011,6 +22022,9 @@ export function BuildResistElementTinyHtml(mobData){
 			valueOver.textContent = `(-${Math.ceil(over)}%)`;
 			valueOver.classList.add('value-over');
 		}
+
+		// 補足情報
+		value.setAttribute('title', NTokHint.text(ITEM_SP_RESIST_ELM_VANITY + index));
 	});
 
 	// 種族耐性の描画
@@ -22331,6 +22345,7 @@ if (typeof window !== 'undefined') {
         n_A_ActiveSkillLV: { get: () => n_A_ActiveSkillLV, set: v => { n_A_ActiveSkillLV = v; }, configurable: true },
         n_tok: { get: () => n_tok, set: v => { n_tok = v; }, configurable: true },
         n_tok_no_limit: { get: () => n_tok_no_limit, set: v => { n_tok_no_limit = v; }, configurable: true },
+        n_tok_hints: { get: () => n_tok_hints, set: v => { n_tok_hints = v; }, configurable: true },
         first_check: { get: () => first_check, set: v => { first_check = v; }, configurable: true },
         str_PerfectHIT_DMG: { get: () => str_PerfectHIT_DMG, set: v => { str_PerfectHIT_DMG = v; }, configurable: true },
         w_DMG: { get: () => w_DMG, set: v => { w_DMG = v; }, configurable: true },
@@ -22504,5 +22519,85 @@ if (typeof window !== 'undefined') {
         BuildResistElementTinyHtml,
         ApplyAttackDamageAmplify,
         DamageModifierOfArea,
+        NTokHint,
     });
+}
+
+function NTokHint() {
+}
+
+NTokHint.log_counter = 0;
+
+NTokHint.log = function(clue, idx) {
+	NTokHint.log_counter += 1;
+	clue ??= NTokHint.log_counter;
+	idx ??= ITEM_SP_SKILL_DELAY_DOWN;
+
+	const value = n_tok[idx];
+	const hints = n_tok_hints[idx];
+	console.log(`NTokHint#${clue}`, value, hints);
+}
+
+/**
+ * 補足情報を記録する.
+ * @param spid 対象ID
+ * @param hints ヒント : String | Set(String) | undefined
+ * @return null
+ */
+NTokHint.add = function(spid, hint) {
+	// グローバル変数の `n_tok_hints` を更新する
+	const hints = n_tok_hints[spid] ??= new Set();
+	if (hint instanceof Set) {
+		hint.forEach(item => hints.add(item));
+	} else if (typeof hint === 'string') {
+		hints.add(hint);
+	} else if (hint) {
+		throw new Error(`Ntokhint.add: Invalid argument type. Expected Set or String, but got [${typeof hint}]`);
+	}
+}
+
+NTokHint.addItem = function(spid, data, delta) {
+	let itemid = data[ITEM_DATA_INDEX_ID];
+	// セット装備(100)であれば、親を辿る
+	while (data[ITEM_DATA_INDEX_KIND] == 100 && itemid > 0) {
+		itemid -= 1;
+		data = ItemObjNew[itemid];
+	}
+	const hint = `${delta} ${data[ITEM_DATA_INDEX_NAME]}`;
+	NTokHint.add(spid, hint);
+}
+
+NTokHint.addCard = function(spid, data, delta) {
+	let id = data[CARD_DATA_INDEX_ID];
+	// セット装備(100)であれば、親を辿る
+	while (data[CARD_DATA_INDEX_KIND] == 100 && id > 0) {
+		id -= 1;
+		data = CardObjNew[id];
+	}
+	const hint = `${delta} ${data[CARD_DATA_INDEX_NAME]}`;
+	NTokHint.add(spid, hint);
+}
+
+/**
+ * 補足情報を取得する.
+ * @param spid 対象ID
+ * @return Set(hint) or null
+ */
+NTokHint.get = function(spid) {
+	return n_tok_hints[spid];
+}
+
+
+/**
+ * 補足情報をテキスト形式で取得する.
+ * @param spid 対象ID
+ * @return String or null
+ */
+NTokHint.text = function(spid) {
+	const hints = NTokHint.get(spid);
+	if (hints) {
+		return Array.from(hints).join("\n");
+	} else {
+		return null;
+	}
 }

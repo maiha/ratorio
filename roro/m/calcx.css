@@ -533,6 +533,24 @@ td.CSSCLS_EXTRA_INFO_DISP_TABLE_SKILL_CARD_NG {
 	background-color: #e07eb7;
 }
 
+/* ツールチップ:改行を許可（\n を反映） */
+#OBJID_DIV_BATTLE_RESULT_TINY .tooltip-target[data-tooltip]::before{
+  white-space: pre;
+}
+
+/* ツールチップ:左寄せ */
+#OBJID_DIV_BATTLE_RESULT_TINY .tooltip-target::before{
+  left: 0;
+  transform: translateY(5px);
+  text-align: left;
+}
+
+/* ツールチップ:左寄せ */
+#OBJID_DIV_BATTLE_RESULT_TINY .tooltip-target:hover::before{
+  transform: translateY(0);
+}
+
+
 
 /* タブ制御 */
 /*

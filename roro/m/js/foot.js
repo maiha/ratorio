@@ -1006,6 +1006,7 @@ export function StAllCalc(){
 		n_tok[idx] = 0;
 		n_tok_no_limit[idx] = 0;
 	}
+	n_tok_hints = {};
 
 	for (idx = 1; idx <= 400; idx++){
 		n_tok[idx] += GetEquippedTotalSPEquip(idx);
@@ -14239,6 +14240,17 @@ export function StAllCalc(){
 			if (funcIsLimitSpIDUpTo95(idx)) {
 				n_tok[idx] = Math.min(95, n_tok[idx]);
 			}
+
+			// 計算過程の情報を保存 (ここが属性計算の最後なので補正情報も入れておく)
+			for (let i = ITEM_SP_RESIST_ELM_VANITY; i <= ITEM_SP_RESIST_ELM_UNDEAD; i++) {
+				if (n_tok[i] != n_tok_no_limit[i]) {
+					NTokHint.add(i, `(上限補正) ${n_tok_no_limit[i]} -> ${n_tok[i]}`);
+				}
+				const resist_rate = 100 - n_tok[i];
+				const body_rate = zokusei[n_A_BodyZokusei * 10 + 1][i - ITEM_SP_RESIST_ELM_VANITY] + 100;
+				const final_rate = Math.ceil(Math.floor(resist_rate * body_rate) / 100);
+				NTokHint.add(i, `(属性補正) ${resist_rate} -> ${final_rate} ${GetElementText(n_A_BodyZokusei)}(${body_rate}%)`);
+			}
 		}
 
 		// TODO: 攻撃手段更新、ここにいれられないか
@@ -22072,19 +22084,23 @@ export function GetAdditionalCriticalRate(mobData) {
     cri = 0;
     // ステータスによるクリティカル率
     cri += 0.3 * n_A_LUK;
+    NTokHint.add(ITEM_SP_CRI_PLUS, `${0.3 * n_A_LUK} [ステータス] 0.3 * LUK:${n_A_LUK}`);
     // 装備特性
     cri += tmp_cri;
     // カタール装備時は２倍
     if (n_A_WeaponType == ITEM_KIND_KATAR) {
         cri *= 2;
+        NTokHint.add(ITEM_SP_CRI_PLUS, `[カタール補正] x2 -> ${cri}`);
     }
     // ベースレベルによるクリティカル率
     cri += 0.1 + (n_A_BaseLV / 100);
+    NTokHint.add(ITEM_SP_CRI_PLUS, `${0.1 + (n_A_BaseLV / 100)} [BaseLVボーナス] 0.1 + (BaseLv:${n_A_BaseLV} / 100)`);
     // おそらく https://siarodiary.blog.fc2.com/blog-entry-511.html などの検証に基づくもの
     // 実際のクリティカル率を表示しようとする試みだと思われるので
     // ゲーム内のCri表示と計算機の間で誤差がありますが静観しています
     // 条件不問の基礎加算値
     cri += 1;
+    NTokHint.add(ITEM_SP_CRI_PLUS, "1 [基礎加算]");
     // 小数点以下第二位で切り捨て
     cri = Math.floor(cri * 10) / 10;
     // 負数は０に補正
@@ -28849,6 +28865,11 @@ export function GetEquippedSPSubSPCardAndElse(spid, invalidCardIdArray, bListUp)
 			else {
 				spVal += spValToCorrect;
 			}
+
+			// 計算過程の情報を保存
+			if (!bListUp && spValToCorrect != 0) {
+				NTokHint.add(spid, `${spValToCorrect} なにか`);
+			}
 		}
 	}
 
@@ -29018,6 +29039,11 @@ export function GetEquippedSPSubSPPet(spid, invalidPetIdArray, bListUp) {
 		// 合計値の場合
 		else {
 			spVal += spValToCorrect;
+		}
+
+		// 計算過程の情報を保存
+		if (!bListUp && spValToCorrect != 0) {
+			NTokHint.add(spid, `${spValToCorrect} なにか`);
 		}
 	}
 
