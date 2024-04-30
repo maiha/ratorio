@@ -571,6 +571,11 @@ function GetRndOptTotalValue(spid, invalidItemIdArray, bListUp) {
 		}
 	}
 
+	// 計算過程の情報を保存
+	if (spVal != 0) {
+		NTokHint.add(spid, `${spVal} ランダムオプション`);
+	}
+
 	// 結果を戻す
 	if (bListUp) {
 		return listUpArray
