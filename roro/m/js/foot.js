@@ -1147,13 +1147,14 @@ function StAllCalc(){
 		n_tok[idx] = 0;
 		n_tok_no_limit[idx] = 0;
 	}
+	n_tok_hints = {};
 
 	for (idx = 1; idx <= 400; idx++){
 		n_tok[idx] += GetEquippedTotalSPEquip(idx);
 		n_tok[idx] += GetEquippedTotalSPCardAndElse(idx);
 		n_tok[idx] += GetEquippedTotalSPCostume(idx);
-
-
+	
+		
 		// TODO: データ移行過渡処理
 		// 計算したSP効果を、移行前のデータ形式に変換して、加算する
 		if (IsEnableMigrationBlockTransit()) {
@@ -3655,6 +3656,7 @@ if (_APPLY_UPDATE_LV200) {
 
 			// ステータスによるクリティカル率
 			cri += 0.3 * n_A_LUK;
+			NTokHint.add(ITEM_SP_CRI_PLUS, `${0.3 * n_A_LUK} [ステータス] 0.3 * LUK:${n_A_LUK}`);
 
 			// 装備特性
 			cri += w;
@@ -3662,6 +3664,7 @@ if (_APPLY_UPDATE_LV200) {
 			// カタール装備時は２倍
 			if (n_A_WeaponType == ITEM_KIND_KATAR) {
 				cri *= 2;
+				NTokHint.add(ITEM_SP_CRI_PLUS, `[カタール補正] x2 -> ${cri}`);
 			}
 
 			// ベースレベルによるクリティカル率
@@ -3669,9 +3672,11 @@ if (_APPLY_UPDATE_LV200) {
 				// おそらく https://siarodiary.blog.fc2.com/blog-entry-511.html などの検証に基づくもの
 				// 実際のクリティカル率を表示しようとする試みだと思われるので
 				// ゲーム内のCri表示と計算機の間で誤差がありますが静観しています
+			NTokHint.add(ITEM_SP_CRI_PLUS, `${0.1 + (n_A_BaseLV / 100)} [BaseLVボーナス] 0.1 + (BaseLv:${n_A_BaseLV} / 100)`);
 
 			// 条件不問の基礎加算値
 			cri += 1;
+			NTokHint.add(ITEM_SP_CRI_PLUS, "1 [基礎加算]");
 
 			// 小数点以下第二位で切り捨て
 			cri = Math.floor(cri * 10) / 10;
@@ -17039,6 +17044,7 @@ g_ITEM_SP_SKILL_CAST_TIME_value_forCalcData = w;
 		}
 		if(n_tok[264] != 0){
 			for(var i=60;i<=69;i++) n_tok[i] += n_tok[264];
+			for(var i=60;i<=69;i++) NTokHint.add(i, NTokHint.get(264));
 		}
 		if(EquipNumSearch(1324)) for(var i=60;i<=69;i++) n_tok[i] += 5;
 
@@ -22372,6 +22378,17 @@ g_ITEM_SP_SKILL_CAST_TIME_value_forCalcData = w;
 				if (funcIsLimitSpIDUpTo95(idx)) {
 					n_tok[idx] = Math.min(95, n_tok[idx]);
 				}
+			}
+
+			// 計算過程の情報を保存 (ここが属性計算の最後なので補正情報も入れておく)
+			for(idx = ITEM_SP_RESIST_ELM_VANITY; idx <= ITEM_SP_RESIST_ELM_UNDEAD; idx++) {
+				if (n_tok[idx] != n_tok_no_limit[idx]) {
+					NTokHint.add(idx, `(上限補正) ${n_tok_no_limit[idx]} -> ${n_tok[idx]}`);
+				}
+				const resist_rate = 100 - n_tok[idx];
+				const body_rate = zokusei[n_A_BodyZokusei * 10 + 1][idx - ITEM_SP_RESIST_ELM_VANITY] + 100;
+				const final_rate = Math.ceil(Math.floor(resist_rate * body_rate) / 100);
+				NTokHint.add(idx, `(属性補正) ${resist_rate} -> ${final_rate} ${GetElementText(n_A_BodyZokusei)}(${body_rate}%)`);
 			}
 		}
 
@@ -29121,6 +29138,12 @@ function GetEquippedSPSubEquip(spid, invalidItemIdArray, bListUp, bExact) {
 			else {
 				spVal += spValToCorrect;
 			}
+
+			// 計算過程の情報を保存
+			if (!bListUp && bExact == false && spValToCorrect != 0) {
+				NTokHint.addItem(spid, itemData, spValToCorrect);
+			}
+
 		}
 	}
 
@@ -29336,6 +29359,11 @@ function GetEquippedSPSubShadow(spid, invalidItemIdArray, bListUp, bExact) {
 			// 合計値の場合
 			else {
 				spVal += spValToCorrect;
+			}
+
+			// 計算過程の情報を保存
+			if (!bListUp && bExact == false && spValToCorrect != 0) {
+				NTokHint.addItem(spid, itemData, spValToCorrect);
 			}
 		}
 	}
@@ -29625,6 +29653,11 @@ function GetEquippedSPSubSPCardAndElse(spid, invalidCardIdArray, bListUp) {
 			else {
 				spVal += spValToCorrect;
 			}
+
+			// 計算過程の情報を保存
+			if (!bListUp && spValToCorrect != 0) {
+				NTokHint.addCard(spid, cardData, spValToCorrect);
+			}
 		}
 	}
 
@@ -29765,6 +29798,12 @@ function GetEquippedSPSubSPCardAndElse(spid, invalidCardIdArray, bListUp) {
 			else {
 				spVal += spValToCorrect;
 			}
+
+			// 計算過程の情報を保存
+			if (!bListUp && spValToCorrect != 0) {
+				NTokHint.add(spid, `${spValToCorrect} なにか`);
+			}
+
 		}
 	}
 

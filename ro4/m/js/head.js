@@ -104,6 +104,7 @@ wDelay = 0;
 n_KoteiCast = 0;
 n_tok = new Array();
 n_tok_no_limit = new Array();
+n_tok_hints = {};
 for(var i=0;i<=450;i++) {
 	n_tok[i] = 0;
 	n_tok_no_limit[i] = 0;
@@ -13037,7 +13038,7 @@ function BuildBattleResultHtmlMIG(charaData, specData, mobData, attackMethodConf
 	};
 
 	// 簡易戦闘結果
-	var funcRenderResultTinyHtml = function (objRoot, labelText, valueText) {
+	var funcRenderResultTinyHtml = function (objRoot, labelText, valueText, hintId) {
 		var objCell = null;
 
 		objCell = HtmlCreateElement("span", objRoot);
@@ -13047,6 +13048,10 @@ function BuildBattleResultHtmlMIG(charaData, specData, mobData, attackMethodConf
 		objCell = HtmlCreateElement("span", objRoot);
 		objCell.classList.add("CSSCLS_BATTLE_TINY_VALUE");
 		HtmlCreateTextNode(valueText, objCell);
+
+		if (hintId) {
+			objCell.setAttribute('title', NTokHint.text(hintId));
+		}
 	};
 
 
@@ -13143,7 +13148,7 @@ function BuildBattleResultHtmlMIG(charaData, specData, mobData, attackMethodConf
 		objCell.classList.add("CSSCLS_BTLRSLT_VALUE");
 		HtmlCreateTextNode(funcDIG3PXPercent(battleCalcResult.perfectRate, 2), objCell);
 
-		funcRenderResultTinyHtml(objGridTiny, "必中", funcDIG3PX(battleCalcResult.perfectRate, 0, "%"));
+		funcRenderResultTinyHtml(objGridTiny, "必中", funcDIG3PX(battleCalcResult.perfectRate, 0, "%"), ITEM_SP_PERFECT_ATTACK_UP);
 	}
 
 	//----------------
@@ -13178,7 +13183,7 @@ function BuildBattleResultHtmlMIG(charaData, specData, mobData, attackMethodConf
 	objCell.classList.add("CSSCLS_BTLRSLT_VALUE");
 	HtmlCreateTextNode(funcDIG3PXPercent(criRate, 2), objCell);
 
-	funcRenderResultTinyHtml(objGridTiny, "クリ", funcDIG3PX(criRate, 0, "%"));
+	funcRenderResultTinyHtml(objGridTiny, "クリ", funcDIG3PX(criRate, 0, "%"), ITEM_SP_CRI_PLUS);
 
 	//----------------------------------------------------------------
 	//
@@ -13318,7 +13323,7 @@ function BuildBattleResultHtmlMIG(charaData, specData, mobData, attackMethodConf
 		var delayText = funcDIG3PXSecondCompact(battleCalcResult.delaySkill, 2);
 		const overValue = Math.round((100 - delayDownForDisp) * 100) / 100;
 		delayText += `(${overValue}%)`
-		funcRenderResultTinyHtml(objGridTiny, "ディレイ", delayText);
+		funcRenderResultTinyHtml(objGridTiny, "ディレイ", delayText, ITEM_SP_SKILL_DELAY_DOWN);
 
 		//----------------
 		// クールタイム
@@ -19331,9 +19336,11 @@ function calc() {
 
 	// スキルクリティカルの確率補正を適用したクリティカル率を取得
 	w_Cri = g_skillManager.GetCriActRate(n_A_ActiveSkill, n_A_ActiveSkillLV, charaData, specData, mobData);
+	NTokHint.add(ITEM_SP_CRI_PLUS, `(スキル補正) -> ${w_Cri}`);
 
 	// 敵のCRI耐性減算
 	w_Cri -= ((mobData[MONSTER_DATA_INDEX_LEVEL] / 150) + (mobData[MONSTER_DATA_INDEX_LUK] / 5));
+	NTokHint.add(ITEM_SP_CRI_PLUS, `(mob減算) ${mobData[MONSTER_DATA_INDEX_NAME]} (BaseLv:${mobData[MONSTER_DATA_INDEX_LEVEL]} / 150) + (LUK:${mobData[MONSTER_DATA_INDEX_LUK]} / 5) -> ${Math.trunc(w_Cri*10)/10}`);
 
 	// 睡眠状態ならば、クリティカル率２倍
 	if (n_B_IJYOU[8]) {
@@ -26802,6 +26809,9 @@ function BuildResistElementTinyHtml(mobData){
 			valueOver.textContent = `(-${Math.ceil(over)}%)`;
 			valueOver.classList.add('value-over');
 		}
+
+		// 補足情報
+		value.setAttribute('title', NTokHint.text(ITEM_SP_RESIST_ELM_VANITY + index));
 	});
 
 	// 描画: "(耐性) 人間30% ボス40% 一般40%"
@@ -27105,4 +27115,83 @@ function ApplyReceiveDamageAmplify(mobData, dmg) {
 	}
 
 	return dmg;
+}
+
+function NTokHint() {
+}
+
+NTokHint.log_counter = 0;
+
+NTokHint.log = function(clue, idx) {
+	NTokHint.log_counter += 1;
+	clue ??= NTokHint.log_counter;
+	idx ??= ITEM_SP_SKILL_DELAY_DOWN;
+
+	const value = n_tok[idx];
+	const hints = n_tok_hints[idx];
+	console.log(`NTokHint#${clue}`, value, hints);
+}
+
+/**
+ * 補足情報を記録する.
+ * @param spid 対象ID
+ * @param hints ヒント : String | Set(String) | undefined
+ * @return null
+ */
+NTokHint.add = function(spid, hint) {
+	// グローバル変数の `n_tok_hints` を更新する
+	const hints = n_tok_hints[spid] ??= new Set();
+	if (hint instanceof Set) {
+		hint.forEach(item => hints.add(item));
+	} else if (typeof hint === 'string') {
+		hints.add(hint);
+	} else if (hint) {
+		throw new Error(`Ntokhint.add: Invalid argument type. Expected Set or String, but got [${typeof hint}]`);
+	}
+}
+
+NTokHint.addItem = function(spid, data, delta) {
+	let itemid = data[ITEM_DATA_INDEX_ID];
+	// セット装備(100)であれば、親を辿る
+	while (data[ITEM_DATA_INDEX_KIND] == 100 && itemid > 0) {
+		itemid -= 1;
+		data = ItemObjNew[itemid];
+	}
+	const hint = `${delta} ${data[ITEM_DATA_INDEX_NAME]}`;
+	NTokHint.add(spid, hint);
+}
+
+NTokHint.addCard = function(spid, data, delta) {
+	let id = data[CARD_DATA_INDEX_ID];
+	// セット装備(100)であれば、親を辿る
+	while (data[CARD_DATA_INDEX_KIND] == 100 && id > 0) {
+		id -= 1;
+		data = CardObjNew[id];
+	}
+	const hint = `${delta} ${data[CARD_DATA_INDEX_NAME]}`;
+	NTokHint.add(spid, hint);
+}
+
+/**
+ * 補足情報を取得する.
+ * @param spid 対象ID
+ * @return Set(hint) or null
+ */
+NTokHint.get = function(spid) {
+	return n_tok_hints[spid];
+}
+
+
+/**
+ * 補足情報をテキスト形式で取得する.
+ * @param spid 対象ID
+ * @return String or null
+ */
+NTokHint.text = function(spid) {
+	const hints = NTokHint.get(spid);
+	if (hints) {
+		return Array.from(hints).join("\n");
+	} else {
+		return null;
+	}
 }
