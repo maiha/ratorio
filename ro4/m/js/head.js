@@ -15649,7 +15649,7 @@ export function calc() {
 	//--------------------------------
 	// calc()をトリガーにするその他の処理
 	//--------------------------------
-	BuildResistElementTinyHtml();
+	BuildResistElementTinyHtml(mobData);
 	RebuildActiveSkillRatioInfo(null, charaData, n_tok, mobData);
 	RebuildSizeModifyRatioInfo(null, charaData, n_tok, mobData, wCSize);
 
@@ -21959,7 +21959,7 @@ g_attackIntervalTemp ??= n_Delay[w];
 /**
  * 属性倍率の簡易表示HTMLを描画する
  */
-export function BuildResistElementTinyHtml(){
+export function BuildResistElementTinyHtml(mobData){
 	var idx = 0;
 	// 聖  95%[過 3%]  100%  5%
 	resistValueArray = [];      // 属性耐性  95
@@ -22012,6 +22012,47 @@ export function BuildResistElementTinyHtml(){
 			valueOver.classList.add('value-over');
 		}
 	});
+
+	// 種族耐性の描画
+	BuildResistRaceTinyHtml(objRoot, mobData);
+}
+
+/**
+ * 種族耐性の簡易表示HTMLを描画する
+ * "(耐性) 人間30% ボス40% 一般40%"
+ */
+function BuildResistRaceTinyHtml(objRoot, mobData){
+	const resistLabel = HtmlCreateElement("span", objRoot);
+	resistLabel.textContent = '(耐性)';
+	resistLabel.classList.add('label');
+
+	// 描画: "人間30%"
+	const raceId    = mobData[MONSTER_DATA_INDEX_RACE];   // 4
+	const raceValue = CExtraInfoAreaComponentManager.specData[ITEM_SP_RESIST_RACE_SOLID + raceId]; // 30
+	const raceLabelSpan = HtmlCreateElement("span", objRoot);
+	raceLabelSpan.textContent = GetRaceText(raceId); // "人間"
+	raceLabelSpan.classList.add('u', 'label');
+	const raceValueSpan = HtmlCreateElement("span", objRoot);
+	raceValueSpan.textContent = `${raceValue}%`; // "30%"
+	raceValueSpan.classList.add('value', 'value-resist');
+
+	// 描画: "ボス40%"
+	const bossValue = CExtraInfoAreaComponentManager.specData[ITEM_SP_RESIST_BOSS]; // 40
+	const bossLabelSpan = HtmlCreateElement("span", objRoot);
+	bossLabelSpan.textContent = "ボス";
+	bossLabelSpan.classList.add('s', 'label');
+	const bossValueSpan = HtmlCreateElement("span", objRoot);
+	bossValueSpan.textContent = `${bossValue}%`; // "40%"
+	bossValueSpan.classList.add('value', 'value-resist');
+
+	// 描画: "一般40%"
+	const notbossValue = CExtraInfoAreaComponentManager.specData[ITEM_SP_RESIST_NOTBOSS]; // 40
+	const notbossLabelSpan = HtmlCreateElement("span", objRoot);
+	notbossLabelSpan.textContent = "一般";
+	notbossLabelSpan.classList.add('n', 'label');
+	const notbossValueSpan = HtmlCreateElement("span", objRoot);
+	notbossValueSpan.textContent = `${notbossValue}%`; // "40%"
+	notbossValueSpan.classList.add('value', 'value-resist');
 }
 
 /**
