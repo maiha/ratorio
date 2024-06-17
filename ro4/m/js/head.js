@@ -13994,6 +13994,8 @@ function BuildBattleResultHtmlMIG(charaData, specData, mobData, attackMethodConf
 	objCell.classList.add("CSSCLS_BTLRSLT_VALUE");
 	BattleHiDam(charaData, specData, mobData, attackMethodConfArray, objCell);
 
+	// 簡易戦闘結果: "被ダメ 135,640"
+	funcRenderResultTinyHtml(objGridTiny, "被ダメ", __DIG3(g_receiveDamageAverage));
 
 
 
