@@ -11911,6 +11911,8 @@ function BuildBattleResultHtmlMIG(charaData, specData, mobData, attackMethodConf
 	HtmlCreateElementOption(1, "アースクエイク Lv10", enemy_attack_method_magical);
 	HtmlCreateElementOption(2, "ﾃﾄﾗﾎﾞﾙﾃｯｸｽ(強)", enemy_attack_method_magical);
 	HtmlCreateElementOption(3, "Mﾚｲｵﾌﾞｼﾞｪﾈｼｽ(強)", enemy_attack_method_magical);
+	// 簡易戦闘結果: "被ダメ 135,640"
+	funcRenderResultTinyHtml(objGridTiny, "被ダメ", __DIG3(g_receiveDamageAverage));
 
 	const objMagicalDamageView = HtmlCreateElement("div", objGridDmg);
 	objMagicalDamageView.setAttribute("id", "OBJID_RECEIVED_DAMAGE_MAGICAL");
