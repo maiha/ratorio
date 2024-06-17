@@ -11866,6 +11866,8 @@ export function BuildBattleResultHtmlMIG(charaData, specData, mobData, attackMet
 	HtmlCreateElementOption(ELM_ID_DARK,   "闇属性", enemy_magic_skill_element);
 	HtmlCreateElementOption(ELM_ID_PSYCO,  "念属性", enemy_magic_skill_element);
 	HtmlCreateElementOption(ELM_ID_UNDEAD, "不死属性", enemy_magic_skill_element);
+	// 簡易戦闘結果: "被ダメ 135,640"
+	funcRenderResultTinyHtml(objGridTiny, "被ダメ", __DIG3(g_receiveDamageAverage));
 
 	const objMagicalDamageView = HtmlCreateElement("div", objGridDmg);
 	objMagicalDamageView.setAttribute("id", "OBJID_RECEIVED_DAMAGE_MAGICAL");
