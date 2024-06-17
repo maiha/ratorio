@@ -14302,6 +14302,8 @@ function BuildBattleResultHtmlMIG(charaData, specData, mobData, attackMethodConf
 		BattleHiDamMaxPain(charaData, specData, mobData, attackMethodConfArray, battleCalcResultAll.GetDamageSummaryAvePerAtk(), objCell);
 	}
 
+	// 簡易戦闘結果: "被ダメ 135,640"
+	funcRenderResultTinyHtml(objGridTiny, "被ダメ", __DIG3(g_receiveDamageAverage));
 
 
 
