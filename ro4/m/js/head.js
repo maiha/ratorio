@@ -15187,6 +15187,10 @@ function calc() {
 		return;
 	}
 
+	// ヒント情報をリセット
+	NTokHint.reset();
+
+
 	str_bSUBname = "";
 	str_bSUB = "";
 	wbairitu = 100;
@@ -15789,6 +15793,7 @@ function calc() {
 	// calc()をトリガーにするその他の処理
 	//--------------------------------
 	BuildResistElementTinyHtml(mobData);
+	BuildResistStateTinyHtml(mobData, n_tok);
 	RebuildActiveSkillRatioInfo(null, charaData, n_tok, mobData);
 	RebuildSizeModifyRatioInfo(null, charaData, n_tok, mobData, wCSize);
 
@@ -22247,6 +22252,87 @@ function BuildResistRaceTinyHtml(objRoot, mobData){
 	notbossValueSpan.classList.add('value', 'value-resist');
 }
 
+
+
+
+
+/**
+ * 状態異常耐性の簡易表示HTMLを描画する.
+ */
+function BuildResistStateTinyHtml(mobData, n_tok){
+	const equipValueArray = []; // 装備耐性
+	const paramValueArray = []; // ステ耐性
+	const hintArray = Array(STATE_ID_STONE+1).fill(""); // ステ耐性の補足情報
+	const addHint = (idx, hint) => hintArray[idx] += `${hint}\n`;
+
+	// 耐性値を計算 (アルゴリズム: CExtraInfoAreaComponentManager.RefreshDispAreaResistState)
+	for (idx = 0; idx <= STATE_ID_STONE; idx++) {
+		equipValueArray[idx] = n_tok[ITEM_SP_RESIST_STATE_POISON + idx];
+		switch (idx) {
+			case STATE_ID_SLEEP:
+			case STATE_ID_BLEEDING:  paramValueArray[idx] = n_A_AGI; break;
+			case STATE_ID_POISON:
+			case STATE_ID_STUN:      paramValueArray[idx] = n_A_VIT; break;
+			case STATE_ID_BLIND:
+			case STATE_ID_SILENCE:   paramValueArray[idx] = n_A_INT; break;
+			case STATE_ID_CURSED:
+			case STATE_ID_CONFUSE:   paramValueArray[idx] = n_A_LUK; break;
+			case STATE_ID_FROZEN:
+			case STATE_ID_STONE:     paramValueArray[idx] = CExtraInfoAreaComponentManager.charaData[CHARA_DATA_INDEX_MDEF_DIV_IGNORE_BUFF]; break;
+			default:                 paramValueArray[idx] = 0; break;
+		}
+		addHint(idx, `[ステ耐性] ${paramValueArray[idx]}`);
+	}
+
+	// レベル差によるステ耐性の補正
+	const levelDiff = n_A_BaseLV - mobData[MONSTER_DATA_INDEX_LEVEL]; // 99 - 120 = -21
+	if (levelDiff < 0) {
+		const levelAdjustment = (levelDiff * levelDiff) / 5; // 88.2
+		for (idx = 0; idx <= STATE_ID_STONE; idx++) {
+			const adjustedParamValue = paramValueArray[idx] - levelAdjustment;
+			addHint(idx, `(レベル差) ${n_A_BaseLV} - ${mobData[MONSTER_DATA_INDEX_LEVEL]} = ${levelDiff}`);
+			addHint(idx, `(レベル差の2乗/5) ${levelDiff}**2 / 5 = ${levelAdjustment}`);
+			addHint(idx, `(レベル差による補正) ${paramValueArray[idx]} - ${levelAdjustment} -> ${adjustedParamValue.toFixed(1)}`);
+			paramValueArray[idx] = adjustedParamValue;
+		}
+	}
+
+	// 不死属性付与による凍結、石化耐性
+	if (n_A_BodyZokusei == ELM_ID_UNDEAD) {
+		equipValueArray[STATE_ID_FROZEN] = 100;
+		equipValueArray[STATE_ID_STONE] = 100;
+		addHint(STATE_ID_FROZEN, `[不死属性] 100`);
+		addHint(STATE_ID_STONE, `[不死属性] 100`);
+	}
+	// LUK0による呪い完全耐性
+	if (n_A_LUK == 0) {
+		paramValueArray[STATE_ID_CURSED] = 100;
+		addHint(STATE_ID_CURSED, `[LUK0] 100`);
+	}
+
+	// 描画: "(状態異常耐性)毒スタン凍結 ..."
+	const objRoot = document.getElementById("OBJID_DIV_RESIST_STATE_TINY");
+	objRoot.innerHTML = "";
+
+	const lead = HtmlCreateElement("span", objRoot);
+	lead.textContent = '(状態異常耐性)';
+	lead.classList.add('label');
+
+	for (idx = 0; idx <= STATE_ID_STONE; idx++) {
+		const equipValue = equipValueArray[idx];
+		const paramValue = paramValueArray[idx];
+		const finalValue = Math.round(Math.max(paramValue, equipValue) * 10) / 10;
+		if (equipValue > paramValue) addHint(idx, `[装備耐性] ${equipValue}`);
+
+		const label = HtmlCreateElement("span", objRoot);  // "凍結"
+		const css = (equipValue >= 100) ? 'state-fixed' : ((finalValue >= 100) ? 'state-ok' : 'state-ng');
+
+		label.classList.add('label', css);
+		label.textContent = GetStateText(idx) + finalValue;
+		label.setAttribute('title', hintArray[idx]);
+	}
+}
+
 /**
  * 与ダメージ増幅／軽減効果を適用する
  * @param {*} mobData 
@@ -22502,6 +22588,10 @@ function DamageModifierOfArea(mobData, dmg) {
 }
 
 function NTokHint() {
+}
+
+NTokHint.reset = function() {
+	n_tok_hints = {};
 }
 
 NTokHint.log_counter = 0;
