@@ -28182,6 +28182,10 @@ export function GetEquippedSPSubEquip(spid, invalidItemIdArray, bListUp, bExact)
 			// 合計値の場合
 			else {
 				spVal += spValToCorrect;
+				// ヒント情報を記録
+				if (spValToCorrect != 0 && typeof NTokHint !== 'undefined') {
+					NTokHint.addItem(spid, itemData, spValToCorrect);
+				}
 			}
 		}
 	}
@@ -28393,6 +28397,10 @@ export function GetEquippedSPSubShadow(spid, invalidItemIdArray, bListUp, bExact
 			// 合計値の場合
 			else {
 				spVal += spValToCorrect;
+				// ヒント情報を記録
+				if (spValToCorrect != 0 && typeof NTokHint !== 'undefined') {
+					NTokHint.addItem(spid, itemData, spValToCorrect);
+				}
 			}
 		}
 	}
@@ -28723,6 +28731,10 @@ export function GetEquippedSPSubSPCardAndElse(spid, invalidCardIdArray, bListUp)
 			// 合計値の場合
 			else {
 				spVal += spValToCorrect;
+				// ヒント情報を記録
+				if (spValToCorrect != 0 && typeof NTokHint !== 'undefined') {
+					NTokHint.addCard(spid, cardData, spValToCorrect);
+				}
 			}
 		}
 	}

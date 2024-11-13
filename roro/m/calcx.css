@@ -532,6 +532,30 @@ td.CSSCLS_EXTRA_INFO_DISP_TABLE_SKILL_CARD_NG {
 	border: 1px solid #6d1447;
 	background-color: #e07eb7;
 }
+#OBJID_DIV_RESIST_STATE_TINY {
+	white-space: nowrap;
+}
+#OBJID_DIV_RESIST_STATE_TINY .label {
+	font-size: small;
+	font-weight: bold;
+	padding: 0 0.2em;
+	margin-left: 0.5em;
+}
+#OBJID_DIV_RESIST_STATE_TINY .state-fixed {
+	border: 0.5px solid #888;
+	background-color: #b0d2b0;
+	color: #111;
+}
+#OBJID_DIV_RESIST_STATE_TINY .state-ok {
+	border: 0.5px solid #888;
+	background-color: #98d2ea;
+	color: #111;
+}
+#OBJID_DIV_RESIST_STATE_TINY .state-ng {
+	border: 0.5px solid #888;
+	background-color: #ccc;
+	color: #888;
+}
 
 /* ツールチップ:改行を許可（\n を反映） */
 #OBJID_DIV_BATTLE_RESULT_TINY .tooltip-target[data-tooltip]::before{
