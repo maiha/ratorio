@@ -596,6 +596,130 @@
 									</span>
 								</td>
 							</tr>
+							<!-- イーノック -->
+							<tr>
+								<td>
+									<table border="1">
+										<tr Bgcolor="#DDDDFF">
+											<td>
+												<input type="checkbox" id="toggle" class="toggle-checkbox">
+												<label for="toggle">イーノック</label>
+												<div class="toggle-content">
+													<table>
+														<tr>
+															<td><label title="評価する値のタグ(CSSセレクタ)">一番いい</label></td>
+															<td>
+																<select onchange="$('#ENOCH_input1').val(this.value);">
+																	<option value="">(直接入力)</option>
+																	<option value="#OBJID_ENOCH_DPS">DPS</option>
+																	<option value="#OBJID_ENOCH_AVG_DMG">平均ダメージ</option>
+																	<option value="#OBJID_ENOCH_ASPD">ASPD</option>
+																	<option value="#OBJID_ENOCH_CAST_TIME">詠唱時間</option>
+																	<option value="#OBJID_ENOCH_SKILL_DELAY">スキルディレイ</option>
+																	<option value="#OBJID_ENOCH_TAKEN_DMG">被ダメージ</option>
+																	<option value="#OBJID_SPAN_CHARA_MAXHP">MAXHP</option>
+																	<option value="#OBJID_SPAN_CHARA_MAXSP">MAXSP</option>
+																	<option value="#OBJID_SPAN_CHARA_ATK">ATK</option>
+																	<option value="#OBJID_SPAN_CHARA_DEF">DEF</option>
+																	<option value="#OBJID_SPAN_CHARA_MATK">MATK</option>
+																	<option value="#OBJID_SPAN_CHARA_MDEF">MDEF</option>
+																	<option value="#OBJID_SPAN_CHARA_HIT">HIT</option>
+																	<option value="#OBJID_SPAN_CHARA_FLEE">FLEE</option>
+																	<option value="#OBJID_SPAN_CHARA_CRI">CRI</option>
+																</select>
+																<input type="text" id="ENOCH_input1" size="30" value="" onblur="Enoch.colorizeElement(this.value)">
+															</td>
+														</tr>
+														<tr>
+															<td><label title="動かすSELECTタグ(CSSセレクタ)">装備を頼む</label></td>
+															<td>
+																<select onchange="$('#ENOCH_input2').val(this.value);">
+																	<option value="">(直接入力)</option>
+																	<option value="#OBJID_ARMS_RIGHT">右手</option>
+																	<option value="#OBJID_ARMS_RIGHT_CARD_1">　[カード1]]</option>
+																	<option value="#OBJID_ARMS_RIGHT_CARD_2">　[カード2]</option>
+																	<option value="#OBJID_ARMS_RIGHT_CARD_3">　[カード3]</option>
+																	<option value="#OBJID_ARMS_RIGHT_CARD_4">　[カード4]</option>
+																	<option value="#OBJID_ARMS_LEFT">左手</option>
+																	<option value="#OBJID_ARMS_LEFT_CARD_1">　[カード1]]</option>
+																	<option value="#OBJID_ARMS_LEFT_CARD_2">　[カード2]</option>
+																	<option value="#OBJID_ARMS_LEFT_CARD_3">　[カード3]</option>
+																	<option value="#OBJID_ARMS_LEFT_CARD_4">　[カード4]</option>
+																	<option value="#OBJID_HEAD_TOP">頭(上段)</option>
+																	<option value="#OBJID_HEAD_TOP_CARD_1">　[カード1]]</option>
+																	<option value="#OBJID_HEAD_MID">頭(中段)</option>
+																	<option value="#OBJID_HEAD_MID_CARD_1">　[カード1]]</option>
+																	<option value="#OBJID_HEAD_UNDER">頭(下段)</option>
+																	<option value="#OBJID_SHIELD">盾</option>
+																	<option value="#OBJID_SHIELD_CARD_1">　[カード1]</option>
+																	<option value="#OBJID_BODY">鎧</option>
+																	<option value="#OBJID_BODY_CARD_1">　[カード1]</option>
+																	<option value="#OBJID_SHOULDER">肩</option>
+																	<option value="#OBJID_SHOULDER_CARD_1">　[カード1]</option>
+																	<option value="#OBJID_SHOES">靴</option>
+																	<option value="#OBJID_SHOES_CARD_1">　[カード1]</option>
+																	<option value="#OBJID_ACCESSARY_1">アクセ1</option>
+																	<option value="#OBJID_ACCESSARY_1_CARD_1">　[カード1]</option>
+																	<option value="#OBJID_ACCESSARY_1_CARD_4">　[カード4]</option>
+																	<option value="#OBJID_ACCESSARY_2">アクセ2</option>
+																	<option value="#OBJID_ACCESSARY_2_CARD_1">　[カード1]</option>
+																	<option value="#OBJID_ACCESSARY_2_CARD_4">　[カード4]</option>
+																</select>
+																<input type="text" id="ENOCH_input2" size="30" value="">
+
+																<!-- IDの入ったDOMを動的に入れ替えるとEnochで正しく読めないため、ここで固定描画する -->
+																<span id="OBJID_ENOCH_ACC" class="ENOCH_VALUE"></span>
+																<span id="OBJID_ENOCH_CRITICAL" class="ENOCH_VALUE"></span>
+																<span id="OBJID_ENOCH_CAST_TIME" class="ENOCH_VALUE"></span>
+																<span id="OBJID_ENOCH_CAST_FIXED" class="ENOCH_VALUE"></span>
+																<span id="OBJID_ENOCH_SKILL_DELAY" class="ENOCH_VALUE"></span>
+																<span id="OBJID_ENOCH_COOL_TIME" class="ENOCH_VALUE"></span>
+																<span id="OBJID_ENOCH_ASPD" class="ENOCH_VALUE"></span>
+																<span id="OBJID_ENOCH_ATK_INTERVAL" class="ENOCH_VALUE"></span>
+																<span id="OBJID_ENOCH_AVG_DMG" class="ENOCH_VALUE"></span>
+																<span id="OBJID_ENOCH_DPS" class="ENOCH_VALUE"></span>
+																<span id="OBJID_ENOCH_TAKEN_DMG" class="ENOCH_VALUE"></span>
+															</td>
+														</tr>
+														<tr>
+															<td colspan="2" align="center">
+																<button id="ENOCH_startButton" type="button" onclick="Enoch.start()">実行</button>
+																<button id="ENOCH_stopButton" type="button" onclick="Enoch.stop()">停止</button>
+															</td>
+														</tr>
+													</table>
+													<hr>
+													<table>
+														<tr>
+															<td colspan="4">(※細かい設定)</td>
+														</tr>
+														<tr>
+															<td style="padding-left: 20px"><label>スロット数(以上)</label></td>
+															<td><input type="text" id="ENOCH_input_slot" size="5" value="0"></td>
+															<td style="padding-left: 20px"></td>
+															<td></td>
+														</tr>
+														<tr>
+															<td style="padding-left: 20px"><label>結果の表示件数</label></td>
+															<td><input type="text" id="ENOCH_input4" size="5" value="5"></td>
+															<td style="padding-left: 20px"><label>N件だけ試す</label></td>
+															<td><input type="text" id="ENOCH_input3" size="5" value="999"></td>
+														</tr>
+														<tr>
+															<td style="padding-left: 20px"><label>次に進むまで(ミリ秒)</label></td>
+															<td><input type="text" id="ENOCH_input5" size="5" value="200"></td>
+															<td style="padding-left: 20px"><label>計算を待つ(ミリ秒)</label></td>
+															<td><input type="text" id="ENOCH_input6" size="5" value="50"></td>
+														</tr>
+													</table>
+
+													<p id="ENOCH_result"></p>
+												</div>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
 							<!-- オプション -->
 							<tr>
 								<td>

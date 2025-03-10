@@ -10825,7 +10825,7 @@ export function BuildBattleResultHtmlMIG(charaData, specData, mobData, attackMet
 	};
 
 	// 簡易戦闘結果
-	var funcRenderResultTinyHtml = function (objRoot, labelText, valueText, hintId) {
+	var funcRenderResultTinyHtml = function (objRoot, labelText, valueText, hintId, enochId, enochValue) {
 		var objCell = null;
 
 		objCell = HtmlCreateElement("span", objRoot);
@@ -10835,6 +10835,13 @@ export function BuildBattleResultHtmlMIG(charaData, specData, mobData, attackMet
 		objCell = HtmlCreateElement("span", objRoot);
 		objCell.classList.add("CSSCLS_BATTLE_TINY_VALUE");
 		HtmlCreateTextNode(valueText, objCell);
+
+		if (enochId && enochValue) {
+			objCell = HtmlCreateElement("span", objRoot);
+			objCell.id = enochId;
+			objCell.classList.add("ENOCH_VALUE");
+			HtmlCreateTextNode(enochValue, objCell);
+		}
 
 		if (hintId) {
 			$(objCell).attr({
@@ -10938,7 +10945,9 @@ export function BuildBattleResultHtmlMIG(charaData, specData, mobData, attackMet
 		objCell.classList.add("CSSCLS_BTLRSLT_VALUE");
 		HtmlCreateTextNode(funcDIG3PXPercent(battleCalcResult.perfectRate, 2), objCell);
 
-		funcRenderResultTinyHtml(objGridTiny, "必中", funcDIG3PX(battleCalcResult.perfectRate, 0, "%"), ITEM_SP_PERFECT_ATTACK_UP);
+		const value = battleCalcResult.perfectRate;
+		funcRenderResultTinyHtml(objGridTiny, "必中", funcDIG3PX(value, 0, "%"), ITEM_SP_PERFECT_ATTACK_UP);
+		Enoch.update_value("ACC", value);
 	}
 
 	//----------------
@@ -10975,6 +10984,7 @@ export function BuildBattleResultHtmlMIG(charaData, specData, mobData, attackMet
 	HtmlCreateTextNode(funcDIG3PXPercent(criRate, 2), objCell);
 
 	funcRenderResultTinyHtml(objGridTiny, "クリ", funcDIG3PX(criRate, 0, "%"), ITEM_SP_CRI_PLUS);
+	Enoch.update_value("CRITICAL", criRate);
 
 	//----------------------------------------------------------------
 	//
@@ -11074,8 +11084,9 @@ export function BuildBattleResultHtmlMIG(charaData, specData, mobData, attackMet
 
 		// 簡易戦闘結果: "0秒(276)" or "0.03秒(256.5)"
 		var castText = funcDIG3PXSecondCompact(battleCalcResult.castVary, 2);
-		castText += `(${CExtraInfoAreaComponentManager.charaData[CHARA_DATA_INDEX_CAST_PARAM]})`;
-		funcRenderResultTinyHtml(objGridTiny, "詠唱", castText);
+		var castValue = CExtraInfoAreaComponentManager.charaData[CHARA_DATA_INDEX_CAST_PARAM];
+		funcRenderResultTinyHtml(objGridTiny, "詠唱", `${castText}(${castValue})`);
+		Enoch.update_value("CAST_TIME", castValue);
 
 		// 固定詠唱時間のみ
 		objCell = HtmlCreateElement("div", objGridBasic);
@@ -11115,6 +11126,7 @@ export function BuildBattleResultHtmlMIG(charaData, specData, mobData, attackMet
 		const overValue = Math.round((100 - delayDownForDisp) * 100) / 100;
 		delayText += `(${overValue}%)`
 		funcRenderResultTinyHtml(objGridTiny, "ディレイ", delayText, ITEM_SP_SKILL_DELAY_DOWN);
+		Enoch.update_value("SKILL_DELAY", delayDownForDisp);
 
 		//----------------
 		// クールタイム
@@ -11150,6 +11162,7 @@ export function BuildBattleResultHtmlMIG(charaData, specData, mobData, attackMet
 		aspdText += `(${aspdRawValue})`
 	}
 	funcRenderResultTinyHtml(objGridTiny, "ASPD", aspdText);
+	Enoch.update_value("ASPD", aspdRawValue);
 
 	//----------------
 	// 設置系
@@ -11454,7 +11467,9 @@ export function BuildBattleResultHtmlMIG(charaData, specData, mobData, attackMet
 	objCell.classList.add("CSSCLS_BTLRSLT_VALUE");
 	HtmlCreateTextNode(funcDIG3PX(battleCalcResultAll.GetDamageSummaryAvePerAtk(), 0), objCell);
 
-	funcRenderResultTinyHtml(objGridTiny, "平均", funcDIG3PX(battleCalcResultAll.GetDamageSummaryAvePerAtk(), 0));
+	var atkValue = battleCalcResultAll.GetDamageSummaryAvePerAtk();
+	funcRenderResultTinyHtml(objGridTiny, "平均", funcDIG3PX(atkValue, 0));
+	Enoch.update_value("AVG_DMG", atkValue);
 
 	// TODO: 詠唱時間等未実測スキル対応
 	if (g_bUnknownCasts) {
@@ -11474,10 +11489,11 @@ export function BuildBattleResultHtmlMIG(charaData, specData, mobData, attackMet
 		objCell.classList.add("CSSCLS_BTLRSLT_VALUE");
 
 		const aveDmg = bDPSActual
-					? battleCalcResultAll.GetDamageSummaryAvePerSecActual()
-					: battleCalcResultAll.GetDamageSummaryAvePerSec();
+        		? battleCalcResultAll.GetDamageSummaryAvePerSecActual()
+        		: battleCalcResultAll.GetDamageSummaryAvePerSec();
 		HtmlCreateTextNode(funcDIG3PX(aveDmg, 0), objCell);
 		funcRenderResultTinyHtml(objGridTiny, "DPS", funcDIG3PX(aveDmg, 0));
+		Enoch.update_value("DPS", aveDmg);
 	}
 
 	//----------------
@@ -11868,6 +11884,7 @@ export function BuildBattleResultHtmlMIG(charaData, specData, mobData, attackMet
 	HtmlCreateElementOption(ELM_ID_UNDEAD, "不死属性", enemy_magic_skill_element);
 	// 簡易戦闘結果: "被ダメ 135,640"
 	funcRenderResultTinyHtml(objGridTiny, "被ダメ", __DIG3(g_receiveDamageAverage));
+	Enoch.update_value("TAKEN_DMG", -1 * g_receiveDamageAverage);
 
 	const objMagicalDamageView = HtmlCreateElement("div", objGridDmg);
 	objMagicalDamageView.setAttribute("id", "OBJID_RECEIVED_DAMAGE_MAGICAL");
@@ -22692,4 +22709,138 @@ NTokHint.text = function(spid) {
 	} else {
 		return null;
 	}
+}
+
+
+/**
+ * Enoch: 一番いい装備を自動で探す機能
+ */
+function Enoch() {
+}
+
+Enoch.input1Id = "#ENOCH_input1";
+Enoch.input2Id = "#ENOCH_input2";
+Enoch.input3Id = "#ENOCH_input3";
+Enoch.input4Id = "#ENOCH_input4";
+Enoch.input5Id = "#ENOCH_input5";
+Enoch.input6Id = "#ENOCH_input6";
+Enoch.inputSlot = "#ENOCH_input_slot";
+Enoch.resultId = "#ENOCH_result";
+
+Enoch.interval = null;
+Enoch.colorizedElements = $();
+Enoch.colorizedBackgroundColor = 'yellow';
+
+Enoch.IDS = {
+	ACC: 'OBJID_ENOCH_ACC',
+    CRITICAL: 'OBJID_ENOCH_CRITICAL',
+    CAST_TIME: 'OBJID_ENOCH_CAST_TIME',
+    CAST_FIXED: 'OBJID_ENOCH_CAST_FIXED',
+    SKILL_DELAY: 'OBJID_ENOCH_SKILL_DELAY',
+    COOL_TIME: 'OBJID_ENOCH_COOL_TIME',
+    ASPD: 'OBJID_ENOCH_ASPD',
+    ATK_INTERVAL: 'OBJID_ENOCH_ATK_INTERVAL',
+    AVG_DMG: 'OBJID_ENOCH_AVG_DMG',
+    DPS: 'OBJID_ENOCH_DPS',
+    TAKEN_DMG: 'OBJID_ENOCH_TAKEN_DMG'
+};
+
+/**
+ * @param {'ACC' | 'CRITICAL' | 'CAST_TIME' | 'CAST_FIXED' | 'SKILL_DELAY' | 'COOL_TIME' | 
+ *         'ASPD' | 'ATK_INTERVAL' | 'AVG_DMG' | 'DPS' | 'TAKEN_DMG'} key
+ * @param {number} value
+ */
+Enoch.update_value = function(key, value) {
+    const id = Enoch.IDS[key];
+    if (id) {
+        $(`#${id}`).text(String(value));
+    }
+};
+
+Enoch.select_option_value = function(value) {
+	let selectField = $($(Enoch.input2Id).val());
+	selectField.val(value).trigger("change");
+};
+
+Enoch.reset = function() {
+	Enoch.stop();
+	Enoch.interval = null;
+}
+
+Enoch.start = function() {
+	Enoch.reset();
+
+	let valueElementId = $(Enoch.input1Id).val();
+	let selectField = $($(Enoch.input2Id).val());
+	let options = selectField.find("option");
+	let stopIndex = Math.min($(Enoch.input3Id).val() || options.length, options.length);
+	let topN = $(Enoch.input4Id).val() || 3;
+	let selectDelay = $(Enoch.input5Id).val() || 300;
+	let renderDelay = $(Enoch.input6Id).val() || 100;
+	let minSlot = $(Enoch.inputSlot).val() || 0;
+	let results = [];
+	let index = 0;
+	let valueElement = $(valueElementId);
+
+	function checkValue() {
+		if (index >= stopIndex) {
+			Enoch.stop();
+			return;
+		}
+
+		const itemId = options.eq(index).val();
+		selectField.val(itemId).trigger("change");
+		const slot = ItemObjNew[itemId]?.[ITEM_DATA_INDEX_SLOT] ?? 0;
+		
+		setTimeout(() => {
+			let currentText = valueElement.text();
+			let currentValue = parseFloat(currentText.replace(/,/g, '')) || 0;
+			let currentName = options.eq(index).text();
+
+			if (slot >= minSlot) {
+				results.push({ name: currentName, value: currentValue, text: currentText, itemId: itemId });
+				results.sort((a, b) => b.value - a.value);
+			}
+			let top3 = results.slice(0, topN);
+
+	        let progressHtml = `<p>進捗: ${index + 1}/${stopIndex} ${currentName}</p>`;
+			let tableHtml = "<table border='1'><tr Bgcolor='#DDDDFF'><th>順位</th><th>項目名</th><th>値</th></tr>";
+			top3.forEach((item, idx) => {
+				tableHtml += `<tr>
+								<td>${idx + 1}</td>
+								<td><a href="#" onclick="Enoch.select_option_value(${item.itemId}); return false;">${item.name}</a></td>
+								<td>${item.value}</td>
+							  </tr>`;
+			});
+			tableHtml += "</table>";
+			$(Enoch.resultId).html(progressHtml + tableHtml);
+
+			index++;
+		}, renderDelay);
+	}
+
+	Enoch.colorizeElement(valueElementId);
+	Enoch.interval = setInterval(checkValue, selectDelay);
+}
+
+Enoch.stop = function() {
+	clearInterval(Enoch.interval);
+	Enoch.resetColorizedElements();
+}
+
+// 以前の要素の背景色をリセット
+Enoch.resetColorizedElements = function() {
+	Enoch.colorizedElements.css("background-color", "");
+	Enoch.colorizedElements = $();
+}
+
+Enoch.colorizeElement = function(elementId) {
+	Enoch.resetColorizedElements();
+
+	// 新しい要素を追加
+	let newElements = $(elementId);
+	Enoch.colorizedElements = Enoch.colorizedElements.add(newElements);
+
+	// 新しい要素の背景色を変更
+	Enoch.colorizedElements.css("background-color", Enoch.colorizedBackgroundColor);
 }
