@@ -208,6 +208,7 @@ CTimeItemAreaComponentManager.OnChangeConf = function (idxConf, dataId) {
 	// キーボード操作対応：要素が一旦破棄されてフォーカスが外れるのでフォーカスし直す
 	// $('#OBJID_SELECT_TIME_ITEM_' + idxConf).focus();
 
+	SimpleTimedEffect.render();
 };
 
 
