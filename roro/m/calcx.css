@@ -482,6 +482,16 @@ td.CSSCLS_EXTRA_INFO_DISP_TABLE_SKILL_CARD_NG {
 }
 
 
+/* 簡易 */
+#OBJID_DIV_SIMPLE_TIMED_EFFECT button.on {
+	background-color: #FF7777;
+}
+#OBJID_DIV_SIMPLE_TIMED_EFFECT button.off {
+	background-color: white;
+}
+
+
+
 /* タブ制御 */
 /*
 #BATTLE_RESULT_DAMAGE:not(.CSSFLG_BTLRSLT_TAB_ALL):not(.CSSFLG_BTLRSLT_TAB_BASIC) .BTLRSLT_TAB_BASIC {
