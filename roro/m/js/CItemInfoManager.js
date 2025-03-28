@@ -46,14 +46,14 @@ CItemInfoManager.tradeWorld = 13;
 /**
  * 自動表示フラグ.
  */
-CItemInfoManager.AutoFlag = false;
+CItemInfoManager.AutoFlag = true;
 
 
 
 /**
  * 時限効果設定時画面フォーカスフラグ.
  */
-CItemInfoManager.ApplyAutoFocusFlag = true;
+CItemInfoManager.ApplyAutoFocusFlag = false;
 
 
 

@@ -16172,6 +16172,11 @@ function calc() {
 	CCalcDataTextCreator.refBattleData[BATTLE_DATA_INDEX_REFLECT_DAMAGE_AVE_SHIELD_SPELL] = wRef3[0];
 	CCalcDataTextCreator.refBattleData[BATTLE_DATA_INDEX_REFLECT_DAMAGE_MAX_SHIELD_SPELL] = wRef3[2];
 	CCalcDataTextCreator.refBattleData[BATTLE_DATA_INDEX_RECEIVE_DAMAGE_AVOIDS] = g_receiveDamageAvoids;
+
+
+
+	// 計算後に常に再描画する
+	SimpleTimedEffect.render();
 }
 
 /**
@@ -23097,3 +23102,75 @@ Enoch.colorizeElement = function(elementId) {
 	// 新しい要素の背景色を変更
 	Enoch.colorizedElements.css("background-color", Enoch.colorizedBackgroundColor);
 }
+
+
+
+
+
+/**
+ * 簡易時限効果クラス.
+ * 一定時間効果のON/OFFを切り替え、表示を更新する
+ */
+function SimpleTimedEffect() {}
+
+SimpleTimedEffect.root = $('#OBJID_DIV_SIMPLE_TIMED_EFFECT');
+SimpleTimedEffect.effectMap = new Map(); // {183: '暴走した魔力'} // 一度でも有効化された効果は保存する
+SimpleTimedEffect.explainMap = new Map(); // {183: 'Int + 200、1秒毎にSP - 200'}
+
+/**
+ * 指定IDの効果を有効化/無効化する
+ * @param {number} id - アイテムID
+ * @param {boolean} enabled - 有効化フラグ
+ */
+SimpleTimedEffect.change = function(id, enabled) {
+	if (enabled) {
+		CItemInfoManager.ApplyTimeItem(id);
+	} else {
+		for (let i = 0; i < g_timeItemConf.length; i++) {
+			if (g_timeItemConf[i] === id) {
+				g_timeItemConf[i] = 0;
+			}
+		}
+	}
+
+	AutoCalc("CTimeItemAreaComponentManager.OnChangeConf");
+};
+
+/**
+ * 現在の時限効果をUIに再描画する
+ */
+SimpleTimedEffect.render = function() {
+	const root = SimpleTimedEffect.root;
+	const effectMap = SimpleTimedEffect.effectMap;
+	const explainMap = SimpleTimedEffect.explainMap;
+	const enabledEffects = new Map();
+
+	root.empty();
+
+	for (const id of g_timeItemConf) {
+		if (id === 0) continue;
+		const timeData = ITEM_SP_TIME_OBJ[id];
+		if (!timeData) continue;
+
+		const effectId = timeData[TIME_ITEM_DATA_INDEX_ID];
+		const name = timeData[TIME_ITEM_DATA_INDEX_NAME];
+		const explain = timeData[TIME_ITEM_DATA_INDEX_EXPLAIN]
+
+		effectMap.set(effectId, name);
+		explainMap.set(effectId, explain);
+		enabledEffects.set(effectId, name);
+	}
+
+	const sortedEffects = Array.from(effectMap.entries()).sort((a, b) => a[0] - b[0]);
+	for (const [id, name] of sortedEffects) {
+		const enabled = enabledEffects.has(id);
+		const explain = explainMap.get(id) || "";
+		const button = $('<button>', {
+			type: "button",
+			class: enabled ? "on" : "off",
+			onclick: `SimpleTimedEffect.change(${id}, ${!enabled})`,
+			title: explain
+		}).text(name);
+		root.append(button);
+	}
+};
