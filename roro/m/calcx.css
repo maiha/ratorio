@@ -613,3 +613,440 @@ td.CSSCLS_EXTRA_INFO_DISP_TABLE_SKILL_CARD_NG {
 .ENOCH_VALUE {
 	display: none;
 }
+
+
+/* Stash */
+#OBJID_DIV_STASH {
+	all: unset;
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 50%;
+	transform: translate(-50%, 0);
+	margin-top: 16px;
+	background: #fff;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+	z-index: 1000;
+	width: 80vw;
+	min-width: 300px;
+	max-height: 80vh;
+	overflow: hidden;
+	font-size: 14px;
+	display: flex;
+	flex-direction: column;
+}
+
+#OBJID_DIV_STASH .stash-content {
+	display: flex;
+	flex-direction: column;
+	flex: 1 1 auto;
+	min-height: 300px;
+	overflow: hidden;
+	max-width: 100%;
+	width: 100%;
+}
+
+#OBJID_DIV_STASH .stash-content-header {
+	position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#OBJID_DIV_STASH .stash-content-content {
+	flex: 1 1 auto;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+	padding: 20px 8px;
+	overflow-y: auto;
+}
+
+#OBJID_DIV_STASH .stash-footer {
+	display: flex;
+	justify-content: flex-start;
+	gap: 12px;
+	width: 100%;
+	padding: 8px 12px;
+	border-top: 1px solid #ccc;
+}
+
+#OBJID_DIV_STASH .stash-footer button {
+	padding: 8px 16px;
+	font-size: 16px;
+	font-weight: bold;
+	border-radius: 8px;
+	cursor: pointer;
+}
+
+#OBJID_DIV_STASH .stash-footer .stash-all-btn {
+	background-color: #e0ffe0;
+	border: 2px solid #66cc66;
+	color: #006600;
+}
+
+#OBJID_DIV_STASH .stash-footer .restore-all-btn {
+	background-color: #fff4e5;
+	border: 2px solid #ffaa33;
+	color: #994400;
+}
+
+/* タイトルエリア */
+#OBJID_DIV_STASH .stash-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	background-color: #e0f0ff;
+	padding: 4px 8px 0;
+}
+
+/* タブ周辺 */
+#OBJID_DIV_STASH .stash-tabs {
+	display: flex;
+	gap: 6px;
+	margin: 0;
+	padding: 0;
+}
+
+#OBJID_DIV_STASH .stash-tab {
+	padding: 6px 12px;
+	border-radius: 6px 6px 0 0;
+	background: #ddd;
+	cursor: pointer;
+	font-weight: bold;
+	white-space: nowrap;
+	user-select: none;
+	line-height: 1.4;
+	vertical-align: middle;
+	position: relative;
+	margin-bottom: 0;
+	border: 1px solid transparent;
+}
+
+#OBJID_DIV_STASH .stash-tab.active {
+	background: #fff;
+	border-color: #ccc;
+	border-bottom: none;
+}
+
+#OBJID_DIV_STASH .stash-tab.add-tab {
+	background: #b0e0b0;
+}
+
+/* タイトル右側ボタン */
+#OBJID_DIV_STASH .stash-controls {
+	display: flex;
+	gap: 6px;
+	align-items: center;
+}
+
+#OBJID_DIV_STASH .stash-controls button {
+	padding: 4px 6px;
+	border-radius: 4px;
+	border: 1px solid #ccc;
+	background: #f0f0f0;
+	cursor: pointer;
+}
+
+#OBJID_DIV_STASH .edit-data-button.edit-data-toggle-on {
+	background-color: #fdd;
+	border-color: #f66;
+	color: #900;
+}
+
+#OBJID_DIV_STASH .edit-data-button.edit-data-toggle-off {
+	background-color: #f0f0f0;
+	border-color: #ccc;
+	color: #000;
+}
+
+ /* 装着中の進捗 */
+#OBJID_DIV_STASH .item-button.restoring {
+	background-color: #ffffcc;
+	border-color: #ffcc00;
+}
+
+/* アイテムグループ */
+#OBJID_DIV_STASH .item-group {
+	padding: 6px;
+	min-width: 200px;
+	flex: 0 1 auto;
+}
+
+#OBJID_DIV_STASH .item-group-title {
+	font-weight: bold;
+	margin-bottom: 6px;
+}
+
+#OBJID_DIV_STASH .item-group-body {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+}
+
+/* アイテム単体 */
+#OBJID_DIV_STASH .item-wrapper {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+}
+
+#OBJID_DIV_STASH .item-button {
+	padding: 4px 6px;
+	background: #f0f0f0;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+#OBJID_DIV_STASH .item-delete-button {
+	cursor: pointer;
+	color: #c00;
+	background-color: #ffe8e8;
+	padding: 1px 4px;
+	border-radius: 4px;
+	font-size: 12px;
+	user-select: none;
+}
+
+/* 編集ダイアログ */
+#OBJID_DIV_STASH .edit-data-dialog {
+	width: 100%;
+}
+
+#OBJID_DIV_STASH .edit-data-textarea {
+	width: 100%;
+	height: 200px;
+	resize: none;
+	box-sizing: border-box;
+	display: block;
+	font-family: monospace;
+}
+
+#OBJID_DIV_STASH .edit-data-dialog div {
+	text-align: right;
+	padding-top: 6px;
+}
+
+#OBJID_DIV_STASH .stash-footer button::first-letter {
+	font-size: 20px; /* 矢印だけ大きく見せる */
+}
+
+#OBJID_DIV_STASH .stash-footer button:hover {
+	background-color: #c0ecff;
+}
+
+#OBJID_DIV_STASH.type-preset {
+	background-color: #f9f9ff;
+}
+
+#OBJID_DIV_STASH.type-stash {
+	background-color: #fffaf0;
+}
+
+#OBJID_DIV_STASH .stash-content.type-preset {
+	background-color: #f9f9ff;
+}
+
+#OBJID_DIV_STASH .stash-content.type-stash {
+	background-color: #fffaf0;
+}
+
+#OBJID_DIV_STASH .preset-table {
+    border-collapse: collapse;
+    width: 100%;
+    table-layout: fixed;
+}
+
+#OBJID_DIV_STASH .preset-table td {
+    border: 1px solid #ccc;
+    padding: 0.5em 4px;
+    text-align: center;
+    min-height: 4em;
+    vertical-align: middle;
+    position: relative;
+}
+
+#OBJID_DIV_STASH .preset-table .preset-item-wrapper {
+    min-height: 4em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5em;
+}
+
+#OBJID_DIV_STASH .preset-table .item-button {
+    display: inline-block;
+    width: 100%;
+    padding: 0.25em 4px;
+    box-sizing: border-box;
+    cursor: pointer;
+    text-align: center;
+    word-break: break-word;
+    font-weight: bold;
+    color: #333;
+    line-height: 1.4em;
+}
+
+#OBJID_DIV_STASH .preset-table .item-button br + * {
+    font-weight: normal;
+    font-size: 90%;
+    color: #777;
+}
+
+#OBJID_DIV_STASH .preset-table .item-delete-button {
+    display: inline-block;
+    padding: 0 0.25em;
+    cursor: pointer;
+}
+
+#OBJID_DIV_STASH .preset-table .card-meta {
+    opacity: 1;
+    font-size: 1em;
+    margin-left: 3px;
+    color: #f57c00;
+    font-weight: bold;
+}
+
+
+/* スタッシュ情報 */
+#OBJID_STASH_CURRENT_SLOT {
+	font-size: 16px;
+	color: #0a0;
+	background-color: #e8ffe8;
+	padding: 1px 4px;
+	border-radius: 4px;
+	user-select: none;
+	cursor: pointer;
+}
+
+#OBJID_STASH_CURRENT_SLOT::first-letter {
+	font-size: 18px; /* フォルダアイコンを大きく見せる */
+}
+
+#OBJID_STASH_EDIT_MODAL {
+	display: none;
+	z-index: 1100;
+	position: fixed;
+	top: 5%;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 90vw;
+	max-width: 1000px;
+	height: 80vh;
+	min-height: 400px;
+	background: white;
+	border: 1px solid #888;
+	padding: 16px;
+	box-shadow: 0 0 12px rgba(0, 0, 0, 0.6);
+	font-size: 14px;
+	display: flex;
+	flex-direction: column;
+}
+
+#OBJID_STASH_EDIT_MODAL textarea {
+	flex: 1 1 auto;
+	width: 100%;
+	min-height: 200px;
+	resize: vertical;
+	font-family: monospace;
+	box-sizing: border-box;
+}
+
+#OBJID_STASH_EDIT_MODAL .edit-buttons {
+	margin-top: 12px;
+	text-align: right;
+}
+
+#OBJID_STASH_CURRENT_SLOT.stash-type-stash {
+	background-color: #e8ffe8;
+	color: #0a0;
+}
+
+#OBJID_STASH_CURRENT_SLOT.stash-type-preset {
+	background-color: #fff4e5;
+	color: #994400;
+}
+
+/* ➕ ボタン */
+.CSSCLS_STASH_COPY_BUTTON {
+	position: absolute;
+	right: 0;
+	top: 50%;
+	transform: translateY(-50%);
+	cursor: pointer;
+	font-size: 12px;
+	color: #0a0;
+	background-color: #e8ffe8;
+	padding: 1px;
+	border-radius: 4px;
+	user-select: none;
+	z-index: 10;
+}
+
+/* 履歴ボタン */
+.CSSCLS_STASH_HISTORY_BUTTON {
+	position: absolute;
+	right: 24px;
+	top: 50%;
+	transform: translateY(-50%);
+	cursor: pointer;
+	font-size: 11px;
+	color: #0a0;
+	background-color: #e8ffe8;
+	padding: 2px 4px;
+	border-radius: 4px;
+	user-select: none;
+	z-index: 10;
+}
+
+/* 非表示selectの隣のボタンは非表示 */
+select:disabled ~ .CSSCLS_STASH_COPY_BUTTON,
+select:disabled ~ .CSSCLS_STASH_HISTORY_BUTTON {
+	display: none;
+}
+
+/* Stashモーダル背景オーバーレイ */
+.stash-modal-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.3);
+	z-index: 999;
+}
+
+/* 履歴選択モーダル */
+.stash-history-modal {
+	display: none;
+	position: absolute;
+	z-index: 1000;
+	background: #fff;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+	max-height: 200px;
+	overflow-y: auto;
+	min-width: 200px;
+}
+
+.stash-history-item {
+	padding: 6px 10px;
+	cursor: pointer;
+	border-bottom: 1px solid #eee;
+	white-space: nowrap;
+}
+
+.stash-history-item:last-child {
+	border-bottom: none;
+}
+
+.stash-history-item:hover {
+	background-color: #e8ffe8;
+}
+
+.stash-history-empty {
+	padding: 10px;
+	color: #999;
+	text-align: center;
+}
