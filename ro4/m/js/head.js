@@ -22699,19 +22699,6 @@ NTokHint.text = function(spid) {
 function Enoch() {
 }
 
-Enoch.input1Id = "#ENOCH_input1";
-Enoch.input2Id = "#ENOCH_input2";
-Enoch.input3Id = "#ENOCH_input3";
-Enoch.input4Id = "#ENOCH_input4";
-Enoch.input5Id = "#ENOCH_input5";
-Enoch.input6Id = "#ENOCH_input6";
-Enoch.inputSlot = "#ENOCH_input_slot";
-Enoch.resultId = "#ENOCH_result";
-
-Enoch.interval = null;
-Enoch.colorizedElements = $();
-Enoch.colorizedBackgroundColor = 'yellow';
-
 Enoch.IDS = {
 	ACC: 'OBJID_ENOCH_ACC',
     CRITICAL: 'OBJID_ENOCH_CRITICAL',
@@ -22737,96 +22724,6 @@ Enoch.update_value = function(key, value) {
         $(`#${id}`).text(String(value));
     }
 };
-
-Enoch.select_option_value = function(value) {
-	let selectField = $($(Enoch.input2Id).val());
-	selectField.val(value).trigger("change");
-};
-
-Enoch.reset = function() {
-	Enoch.stop();
-	Enoch.interval = null;
-}
-
-Enoch.start = function() {
-	Enoch.reset();
-
-	let valueElementId = $(Enoch.input1Id).val();
-	let selectField = $($(Enoch.input2Id).val());
-	let options = selectField.find("option");
-	let stopIndex = Math.min($(Enoch.input3Id).val() || options.length, options.length);
-	let topN = $(Enoch.input4Id).val() || 3;
-	let selectDelay = $(Enoch.input5Id).val() || 300;
-	let renderDelay = $(Enoch.input6Id).val() || 100;
-	let minSlot = $(Enoch.inputSlot).val() || 0;
-	let results = [];
-	let index = 0;
-	let valueElement = $(valueElementId);
-
-	function checkValue() {
-		if (index >= stopIndex) {
-			Enoch.stop();
-			return;
-		}
-
-		const itemId = options.eq(index).val();
-		selectField.val(itemId).trigger("change");
-		const slot = ItemObjNew[itemId]?.[ITEM_DATA_INDEX_SLOT] ?? 0;
-		
-		setTimeout(() => {
-			let currentText = valueElement.text();
-			let currentValue = parseFloat(currentText.replace(/,/g, '')) || 0;
-			let currentName = options.eq(index).text();
-
-			if (slot >= minSlot) {
-				results.push({ name: currentName, value: currentValue, text: currentText, itemId: itemId });
-				results.sort((a, b) => b.value - a.value);
-			}
-			let top3 = results.slice(0, topN);
-
-	        let progressHtml = `<p>進捗: ${index + 1}/${stopIndex} ${currentName}</p>`;
-			let tableHtml = "<table border='1'><tr Bgcolor='#DDDDFF'><th>順位</th><th>項目名</th><th>値</th></tr>";
-			top3.forEach((item, idx) => {
-				tableHtml += `<tr>
-								<td>${idx + 1}</td>
-								<td><a href="#" onclick="Enoch.select_option_value(${item.itemId}); return false;">${item.name}</a></td>
-								<td>${item.value}</td>
-							  </tr>`;
-			});
-			tableHtml += "</table>";
-			$(Enoch.resultId).html(progressHtml + tableHtml);
-
-			index++;
-		}, renderDelay);
-	}
-
-	Enoch.colorizeElement(valueElementId);
-	Enoch.interval = setInterval(checkValue, selectDelay);
-}
-
-Enoch.stop = function() {
-	clearInterval(Enoch.interval);
-	Enoch.resetColorizedElements();
-}
-
-// 以前の要素の背景色をリセット
-Enoch.resetColorizedElements = function() {
-	Enoch.colorizedElements.css("background-color", "");
-	Enoch.colorizedElements = $();
-}
-
-Enoch.colorizeElement = function(elementId) {
-	Enoch.resetColorizedElements();
-
-	// 新しい要素を追加
-	let newElements = $(elementId);
-	Enoch.colorizedElements = Enoch.colorizedElements.add(newElements);
-
-	// 新しい要素の背景色を変更
-	Enoch.colorizedElements.css("background-color", Enoch.colorizedBackgroundColor);
-}
-
-
 
 
 
