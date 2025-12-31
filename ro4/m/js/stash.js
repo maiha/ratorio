@@ -589,8 +589,8 @@ $(document).ready(function () {
                 <div>保存データ (JSON)</div>
                 <textarea id="STASH_EDIT_TEXTAREA"></textarea>
                 <div class="edit-buttons">
-                    <button id="STASH_EDIT_SAVE">保存</button>
-                    <button id="STASH_EDIT_CANCEL">キャンセル</button>
+                    <button type="button" id="STASH_EDIT_SAVE">保存</button>
+                    <button type="button" id="STASH_EDIT_CANCEL">キャンセル</button>
                 </div>
             </div>
         `;
@@ -606,14 +606,14 @@ $(document).ready(function () {
                 <div class="stash-header">
                     <div class="stash-tabs"></div>
                     <div class="stash-controls">
-                        <button class="edit-data-button edit-data-toggle-off">直接編集</button>
-                        <button class="close-button">閉じる</button>
+                        <button type="button" class="edit-data-button edit-data-toggle-off">直接編集</button>
+                        <button type="button" class="close-button">閉じる</button>
                     </div>
                 </div>
                 <div class="stash-content"></div>
                 <div class="stash-footer">
-                    <button class="stash-all-btn">↑ 一括保存</button>
-                    <button class="restore-all-btn">↓ 一括装備</button>
+                    <button type="button" class="stash-all-btn">↑ 一括保存</button>
+                    <button type="button" class="restore-all-btn">↓ 一括装備</button>
                 </div>
             </div>
         `;
@@ -858,9 +858,14 @@ $(document).ready(function () {
             }
         
             $container.append(table);
-        }                
-                
-        show() { this.render(); this.$overlay.show(); this.$modal.show(); this.updateCurrentSlotLabel(); }
+        }
+
+        show() {
+            this.render();
+            this.$overlay.show();
+            this.$modal.show();
+            this.updateCurrentSlotLabel();
+        }
 		hide() { this.$modal.hide(); this.$overlay.hide(); this.updateCurrentSlotLabel();}
 		toggle() { this.$modal.is(':visible') ? this.hide() : this.show(); }
 	}
@@ -987,5 +992,6 @@ $(document).ready(function () {
 	];
 	for (const [a, b, c, d] of defs) StashEquipBinder.define(a, b, c, d);
 
+	window.StashEquipBinder = StashEquipBinder;
 	window.StashUI = new StashUI();
 });
