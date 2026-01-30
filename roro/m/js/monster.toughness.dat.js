@@ -33,7 +33,7 @@ class MonsterToughness {
         ["オシリス（星座の塔）", MonsterToughness.DAMPING_5],
         ["ランドグリス（星座の塔）", MonsterToughness.DAMPING_5],
         ["瀕死のナハトズィーガー", MonsterToughness.DAMPING_5],
-        ["ベテルギウス", MonsterToughness.DAMPING_5 | MonsterToughness.DAMPING_10],
+        ["ベテルギウス", MonsterToughness.DAMPING_10],
         // 幻影
         ["混沌のバフォメット（MD）", MonsterToughness.DAMPING_5],
         ["混沌のゴーストリング（MD）", MonsterToughness.DAMPING_5],
