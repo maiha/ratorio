@@ -15684,6 +15684,7 @@ export function calc() {
 	// calc()をトリガーにするその他の処理
 	//--------------------------------
 	BuildResistElementTinyHtml(mobData);
+	TinyMapMonster.render(mobData);
 	BuildResistStateTinyHtml(mobData, n_tok);
 	RebuildActiveSkillRatioInfo(null, charaData, n_tok, mobData);
 	RebuildSizeModifyRatioInfo(null, charaData, n_tok, mobData, wCSize);
