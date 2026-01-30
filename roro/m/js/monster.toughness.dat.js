@@ -21,24 +21,12 @@ export class MonsterToughness {
 
     /** 特性リスト */
     static ToughnessList = new Map([
-        // 星座
-        ["アモンラー（星座の塔）", MonsterToughness.DAMPING_5],
-        ["アトロス（星座の塔）", MonsterToughness.DAMPING_5],
-        ["イグニゼム=セニア（一次職）（MVP）（星座の塔）", MonsterToughness.DAMPING_5],
-        ["バフォメット（星座の塔）", MonsterToughness.DAMPING_5],
-        ["ダークロード（星座の塔）", MonsterToughness.DAMPING_5],
-        ["黒蛇王（星座の塔）", MonsterToughness.DAMPING_5],
-        ["ドッペルゲンガー（星座の塔）", MonsterToughness.DAMPING_5],
-        ["ドレイク（星座の塔）", MonsterToughness.DAMPING_5],
-        ["イフリート（星座の塔）", MonsterToughness.DAMPING_5],
-        ["マヤー（星座の塔）", MonsterToughness.DAMPING_5],
-        ["ミストレス（星座の塔）", MonsterToughness.DAMPING_5],
-        ["オークロード（星座の塔）", MonsterToughness.DAMPING_5],
-        ["オークヒーロー（星座の塔）", MonsterToughness.DAMPING_5],
-        ["オシリス（星座の塔）", MonsterToughness.DAMPING_5],
-        ["ランドグリス（星座の塔）", MonsterToughness.DAMPING_5],
-        ["瀕死のナハトズィーガー", MonsterToughness.DAMPING_5],
-        ["ベテルギウス", MonsterToughness.DAMPING_5 | MonsterToughness.DAMPING_10],
+        // 星座（星座の塔=map452 の 1/5 減衰は MAP 側で計上する → ro4/m/js/TinyMapMonster.js）
+        // 減衰は MAP × MOB の乗算モデル。星座の塔の通常モンスターの 1/5 は MAP 由来なので、
+        // MOB 側にも 1/5 を定義すると MAP×MOB=1/25 の二重計上になる。よって通常モンスターは
+        // ここに定義しない（MAP の 1/5 のみが効く）。
+        // ベテルギウスのみ真値 1/50 = MAP(1/5) × MOB(1/10) のため MOB 1/10 を残す。
+        ["ベテルギウス", MonsterToughness.DAMPING_10],
         // 幻影
         ["混沌のバフォメット（MD）", MonsterToughness.DAMPING_5],
         ["混沌のゴーストリング（MD）", MonsterToughness.DAMPING_5],
