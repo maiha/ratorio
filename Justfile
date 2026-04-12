@@ -1,6 +1,12 @@
 default:
     @just --list
 
-# dist/bundle.js をビルド (pull rebase 後に実行)
+# dist/ を再生成 (pull rebase 後に実行)
 build:
-    cd workspace && npx pnpm install && npx pnpm run build
+    #!/usr/bin/env bash
+    source "$NVM_DIR/nvm.sh"
+    nvm use 22
+    cd workspace
+    npx pnpm install
+    npx pnpm run build
+    npx pnpm dlx ts-node --project tsconfig.node.json utils/yamlMergeAndCompress.ts
