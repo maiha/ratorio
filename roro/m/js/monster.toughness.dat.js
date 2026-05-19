@@ -1,4 +1,4 @@
-class MonsterToughness {
+export class MonsterToughness {
     /** ダメージ等倍 */
     static DAMPING_NONE = 0;
     /** ダメージ 1/5 バリカタ */
@@ -33,7 +33,7 @@ class MonsterToughness {
         ["オシリス（星座の塔）", MonsterToughness.DAMPING_5],
         ["ランドグリス（星座の塔）", MonsterToughness.DAMPING_5],
         ["瀕死のナハトズィーガー", MonsterToughness.DAMPING_5],
-        ["ベテルギウス", MonsterToughness.DAMPING_5 | MonsterToughness.DAMPING_10],
+        ["ベテルギウス", MonsterToughness.DAMPING_10],
         // 幻影
         ["混沌のバフォメット（MD）", MonsterToughness.DAMPING_5],
         ["混沌のゴーストリング（MD）", MonsterToughness.DAMPING_5],
@@ -238,6 +238,47 @@ class MonsterToughness {
         ["無限のトード（ハード）",MonsterToughness.DAMPING_100],
         ["無限のフリオニ（ハード）",MonsterToughness.DAMPING_100],
         ["無限のボーカル（ハード）",MonsterToughness.DAMPING_100],
+        // 亜空の迷宮
+		["迷宮のダークロード（亜空の迷宮）",MonsterToughness.DAMPING_100],
+		["ボミ（亜空の迷宮）",MonsterToughness.DAMPING_100],
+		["不吉なソリッドタートル（亜空の迷宮）",MonsterToughness.DAMPING_100],
+		["怒りのドラキュラ（亜空の迷宮）",MonsterToughness.DAMPING_100],
+		["硬化ムスペルスコール（亜空の迷宮）",MonsterToughness.DAMPING_100],
+		["R48-85-ベスティア（亜空の迷宮）",MonsterToughness.DAMPING_100],
+		["変異のシーラカンス（亜空の迷宮）",MonsterToughness.DAMPING_100],
+		["セシル=ディモン（亜空の迷宮）",MonsterToughness.DAMPING_100],
+		["ランドグリス（亜空の迷宮）",MonsterToughness.DAMPING_100],
+		["ゴピニク（亜空の迷宮）",MonsterToughness.DAMPING_100],
+		["怒りの月夜花（亜空の迷宮）",MonsterToughness.DAMPING_100],
+		["ゴブリンキング（亜空の迷宮）",MonsterToughness.DAMPING_100],
+		["古のタオグンカ（亜空の迷宮）",MonsterToughness.DAMPING_100],
+		["ボーンデータルザウルス（亜空の迷宮）",MonsterToughness.DAMPING_100],
+		["R001-ベスティア（亜空の迷宮）",MonsterToughness.DAMPING_100],
+		["死者の案内人（亜空の迷宮）",MonsterToughness.DAMPING_100],
+		["亜空の月夜花（亜空の迷宮）",MonsterToughness.DAMPING_100],
+		["亜空のハティー（亜空の迷宮）",MonsterToughness.DAMPING_100],
+		["亜空のストームナイト（亜空の迷宮）",MonsterToughness.DAMPING_100],
+        ["奇怪なプルス",MonsterToughness.DAMPING_10],
+        ["不吉な軍団分隊長",MonsterToughness.DAMPING_10],
+        ["不吉な軍団司令官",MonsterToughness.DAMPING_10],
+        ["リスナー",MonsterToughness.DAMPING_10],
+        ["奇怪なスコグル",MonsterToughness.DAMPING_10],
+        ["ブラッディスラッシャー",MonsterToughness.DAMPING_10],
+        ["ルナリナ",MonsterToughness.DAMPING_10],
+        ["シャイディエスト",MonsterToughness.DAMPING_10],
+        ["トキシン",MonsterToughness.DAMPING_10],
+        ["深淵の騎士団長",MonsterToughness.DAMPING_10],
+        ["ハイインキュバス",MonsterToughness.DAMPING_10],
+        ["ハイサキュバス",MonsterToughness.DAMPING_10],
+        ["ブルガサリ",MonsterToughness.DAMPING_10],
+        ["グラトニー",MonsterToughness.DAMPING_10],
+        ["強靭なBスラッシャー",MonsterToughness.DAMPING_100],
+        ["強靭なルナリナ",MonsterToughness.DAMPING_100],
+        ["強靭なシャイディエスト",MonsterToughness.DAMPING_100],
+        ["強靭なトキシン",MonsterToughness.DAMPING_100],
+        ["強靭な深淵の騎士団長",MonsterToughness.DAMPING_100],
+        ["強靭なハイインキュバス",MonsterToughness.DAMPING_100],
+        ["強靭なハイサキュバス",MonsterToughness.DAMPING_100],
     ]);
 
     /** 通知メッセージのリスト */
@@ -280,4 +321,8 @@ class MonsterToughness {
     static getNotification(code) {
         return MonsterToughness.notificationMessages.get(code) ?? "";
     }
+}
+
+if (typeof window !== 'undefined') {
+    window.MonsterToughness = MonsterToughness;
 }

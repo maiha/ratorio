@@ -1,4 +1,4 @@
-class enchSearch {
+export class enchSearch {
     //エンチャント検索
     constructor(){
             this.enchidItemidList = [];
@@ -12,8 +12,8 @@ class enchSearch {
                     '#OBJID_BODY',
                     '#OBJID_SHOULDER',
                     '#OBJID_SHOES',
-                    '#OBJID_ACCESSARY_1',
-                    '#OBJID_ACCESSARY_2',
+                    '#OBJID_ACCESSORY_1',
+                    '#OBJID_ACCESSORY_2',
             ];
             this.itemIds = g_constDataManager.enchListDataManager.reverseResolveArrayItemId;//ratorioから取得
             this.CardObjNew = CardObjNew;//ratorioから取得
@@ -236,6 +236,15 @@ class enchSearch {
             }
 
             div.appendChild(select);
+
+            // 解除ボタン
+            const clearBtn = document.createElement('button');
+            clearBtn.type = 'button';
+            clearBtn.textContent = '解除';
+            clearBtn.style.marginLeft = '5px';
+            clearBtn.addEventListener('click', () => this.resetEnchSearch('ench_id_reset'));
+            div.appendChild(clearBtn);
+
             return div;
     }
     
@@ -315,3 +324,7 @@ class enchSearch {
     new enchSearch();
 })();
 */
+
+if (typeof window !== 'undefined') {
+    window.enchSearch = enchSearch;
+}

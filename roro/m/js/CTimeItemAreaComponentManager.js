@@ -1,7 +1,7 @@
 /**
  * 時限アイテムエリアコンポーネントマネージャクラス.
  */
-function CTimeItemAreaComponentManager () {
+export function CTimeItemAreaComponentManager () {
 
 }
 
@@ -349,5 +349,7 @@ CTimeItemAreaComponentManager.FocusArea = function (idxConf, bForceOpen) {
 // 初期構築処理
 CTimeItemAreaComponentManager.RebuildControls();
 
-
+if (typeof window !== 'undefined') {
+	window.CTimeItemAreaComponentManager = CTimeItemAreaComponentManager;
+}
 

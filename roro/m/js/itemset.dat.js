@@ -1,13 +1,14 @@
-(function () {
 
-	ItemIdToSetIdMap = new Array();
+import { ITEM_SET_PET_ID_OFFSET } from './itemset.h.js';
+
+export const ItemIdToSetIdMap = new Array();
 
 	/*
 	ToDo : usachoco
 	s_SE の初期化でリレーション定義するとインデックスがわかりにくいので
 	new Array(); しておいて後からインデックス指定して挿入したほうが良い
 	*/
-	w_SE = [
+export const w_SE = [
 		[],
 		[737,436,475],
 		[737,436,477],
@@ -1443,15 +1444,15 @@
 		[4111,4110,3829],
 		[4111,4110,3828],
 		[4111,4110,3830],
-		[4113,1421,1273,-10049],
-		[4114,1976,-10021],
-		[4115,1325,-10013],
-		[4116,1450,-10010],
-		[4117,2296,-10001],
-		[4118,2826,-10014],
-		[4119,1464,-10021],
-		[4120,2824,-10042],
-		[4121,1218,-10042],
+		[4113,1421,1273,-(ITEM_SET_PET_ID_OFFSET + 49)],
+		[4114,1976,-(ITEM_SET_PET_ID_OFFSET + 21)],
+		[4115,1325,-(ITEM_SET_PET_ID_OFFSET + 13)],
+		[4116,1450,-(ITEM_SET_PET_ID_OFFSET + 10)],
+		[4117,2296,-(ITEM_SET_PET_ID_OFFSET + 1)],
+		[4118,2826,-(ITEM_SET_PET_ID_OFFSET + 14)],
+		[4119,1464,-(ITEM_SET_PET_ID_OFFSET + 21)],
+		[4120,2824,-(ITEM_SET_PET_ID_OFFSET + 42)],
+		[4121,1218,-(ITEM_SET_PET_ID_OFFSET + 42)],
 		[4125,4124,3713],
 		[4126,4124,3730],
 		[4127,4124,3712],
@@ -1564,33 +1565,33 @@
 		[4232,4231,3120],
 		[4233,4231,-1245],
 		[4234,4231,-1361],
-		[4236,4235,-10066],	// ワンダーエッグバスケット(4235) + 月夜花(66)
-		[4236,4235,-10077],
-		[4236,4235,-10060],
-		[4236,4235,-10074],
-		[4236,4235,-10058],
-		[4236,4235,-10064],
-		[4236,4235,-10078],
-		[4236,4235,-10081],
-		[4236,4235,-10089],
-		[4237,4235,-10063],
-		[4237,4235,-10067],
-		[4237,4235,-10068],
-		[4237,4235,-10085],
-		[4237,4235,-10086],
-		[4237,4235,-10090],
-		[4238,4235,-10073],	// Atk+200, Matk+200, Def+150, Mdef+15 (4238) = ワンダーエッグ(4235) + エリオット(73)
-		[4238,4235,-10076],
-		[4238,4235,-10075],
-		[4238,4235,-10072],
-		[4238,4235,-10065],
-		[4238,4235,-10070],
-		[4238,4235,-10059],
-		[4238,4235,-10061],
-		[4238,4235,-10062],
-		[4238,4235,-10080],
-		[4238,4235,-10082],
-		[4238,4235,-10088],
+		[4236,4235,-(ITEM_SET_PET_ID_OFFSET + 66)],	// ワンダーエッグバスケット(4235) + 月夜花(66)
+		[4236,4235,-(ITEM_SET_PET_ID_OFFSET + 77)],
+		[4236,4235,-(ITEM_SET_PET_ID_OFFSET + 60)],
+		[4236,4235,-(ITEM_SET_PET_ID_OFFSET + 74)],
+		[4236,4235,-(ITEM_SET_PET_ID_OFFSET + 58)],
+		[4236,4235,-(ITEM_SET_PET_ID_OFFSET + 64)],
+		[4236,4235,-(ITEM_SET_PET_ID_OFFSET + 78)],
+		[4236,4235,-(ITEM_SET_PET_ID_OFFSET + 81)],
+		[4236,4235,-(ITEM_SET_PET_ID_OFFSET + 89)],
+		[4237,4235,-(ITEM_SET_PET_ID_OFFSET + 63)],
+		[4237,4235,-(ITEM_SET_PET_ID_OFFSET + 67)],
+		[4237,4235,-(ITEM_SET_PET_ID_OFFSET + 68)],
+		[4237,4235,-(ITEM_SET_PET_ID_OFFSET + 85)],
+		[4237,4235,-(ITEM_SET_PET_ID_OFFSET + 86)],
+		[4237,4235,-(ITEM_SET_PET_ID_OFFSET + 90)],
+		[4238,4235,-(ITEM_SET_PET_ID_OFFSET + 73)],	// Atk+200, Matk+200, Def+150, Mdef+15 (4238) = ワンダーエッグ(4235) + エリオット(73)
+		[4238,4235,-(ITEM_SET_PET_ID_OFFSET + 76)],
+		[4238,4235,-(ITEM_SET_PET_ID_OFFSET + 75)],
+		[4238,4235,-(ITEM_SET_PET_ID_OFFSET + 72)],
+		[4238,4235,-(ITEM_SET_PET_ID_OFFSET + 65)],
+		[4238,4235,-(ITEM_SET_PET_ID_OFFSET + 70)],
+		[4238,4235,-(ITEM_SET_PET_ID_OFFSET + 59)],
+		[4238,4235,-(ITEM_SET_PET_ID_OFFSET + 61)],
+		[4238,4235,-(ITEM_SET_PET_ID_OFFSET + 62)],
+		[4238,4235,-(ITEM_SET_PET_ID_OFFSET + 80)],
+		[4238,4235,-(ITEM_SET_PET_ID_OFFSET + 82)],
+		[4238,4235,-(ITEM_SET_PET_ID_OFFSET + 88)],
 		[4241,4240,-1249],
 		[4241,4240,-1250],
 		[4241,4240,-1251],
@@ -3778,7 +3779,7 @@
 
 
 
-	CardIdToSetIdMap = new Array();
+export const CardIdToSetIdMap = new Array();
 
 	CardIdToSetIdMap[7] = [1157];
 	CardIdToSetIdMap[9] = [1151];
@@ -4638,7 +4639,7 @@
 	CardIdToSetIdMap[2739] = [2389];
 	CardIdToSetIdMap[2741] = [2390];
 
-	PetIdToSetIdMap = new Array();
+export const PetIdToSetIdMap = new Array();
 	PetIdToSetIdMap[1] = [1439];
 	PetIdToSetIdMap[10] = [1438];
 	PetIdToSetIdMap[13] = [1437];
@@ -4867,11 +4868,11 @@
 	CardIdToSetIdMap[2906] = [2494,];
 	w_SE[2495] = [5088,5087,-2043,];	// 剣禅一如
 	ItemIdToSetIdMap[5087] = [2495,];
-	w_SE[2496] = [4237,4235,-10091];	// Atk+200, Matk+200, 全サイズ物理+10, 全サイズ魔法+10 (4237) = ワンダーエッグ(4235) + レッドピタヤ(91)
+	w_SE[2496] = [4237,4235,-(ITEM_SET_PET_ID_OFFSET + 91)];	// Atk+200, Matk+200, 全サイズ物理+10, 全サイズ魔法+10 (4237) = ワンダーエッグ(4235) + レッドピタヤ(91)
 	PetIdToSetIdMap[91] = [2496];
-	w_SE[2497] = [4236,4235,-10092];	// ワンダーエッグ(4235) + ミストレス(92)
+	w_SE[2497] = [4236,4235,-(ITEM_SET_PET_ID_OFFSET + 92)];	// ワンダーエッグ(4235) + ミストレス(92)
 	PetIdToSetIdMap[92] = [2497];
-	w_SE[2498] = [4238,4235,-10093];	// Atk+200, Matk+200, Def+150, Mdef+15 (4238) = ワンダーエッグ(4235) + ジャイアントホーネット(93)
+	w_SE[2498] = [4238,4235,-(ITEM_SET_PET_ID_OFFSET + 93)];	// Atk+200, Matk+200, Def+150, Mdef+15 (4238) = ワンダーエッグ(4235) + ジャイアントホーネット(93)
 	PetIdToSetIdMap[93] = [2498];
 	// --
 	w_SE[2499] = [-2909,-2908,-1348,];	// 潜在解放(マイスターII)
@@ -5291,7 +5292,7 @@
 	CardIdToSetIdMap[1245] = CardIdToSetIdMap[1245].concat([2739]);
 	CardIdToSetIdMap[1348] = CardIdToSetIdMap[1348].concat([2740]);
 	// ---
-	w_SE[2741] = [4236,4235,-10094];	// Atk+200, Matk+200, AllStatus+10 (4236) = ワンダーエッグ(4235) + バフォメット(94)
+	w_SE[2741] = [4236,4235,-(ITEM_SET_PET_ID_OFFSET + 94)];	// Atk+200, Matk+200, AllStatus+10 (4236) = ワンダーエッグ(4235) + バフォメット(94)
 	PetIdToSetIdMap[94] = [2741];
 	ItemIdToSetIdMap[4235] = ItemIdToSetIdMap[4235].concat([2741]);
 	CardIdToSetIdMap[10094] = [2741];		// ペットバフォ
@@ -5302,10 +5303,10 @@
 	CardIdToSetIdMap[3114] = [2743,];
 	CardIdToSetIdMap[1348] = CardIdToSetIdMap[1348].concat([2742, 2743]);	// 豪傑の逆参照
 	// --- 2024/08/13 ---
-	w_SE[2744] = [4236,4235,-10095];	// Atk+200, Matk+200, AllStatus+10 (4236) = ワンダーエッグ(4235) + ランドグリス(95)
+	w_SE[2744] = [4236,4235,-(ITEM_SET_PET_ID_OFFSET + 95)];	// Atk+200, Matk+200, AllStatus+10 (4236) = ワンダーエッグ(4235) + ランドグリス(95)
 	PetIdToSetIdMap[95] = [2744];
 	ItemIdToSetIdMap[4235] = ItemIdToSetIdMap[4235].concat([2744]);
-	w_SE[2745] = [4238,4235,-10096];	// Atk+200, Matk+200, Def+150, Mdef+15 (4238) = ワンダーエッグ(4235) + エンジェゴルトブルー(96)
+	w_SE[2745] = [4238,4235,-(ITEM_SET_PET_ID_OFFSET + 96)];	// Atk+200, Matk+200, Def+150, Mdef+15 (4238) = ワンダーエッグ(4235) + エンジェゴルトブルー(96)
 	PetIdToSetIdMap[96] = [2745];
 	ItemIdToSetIdMap[4235] = ItemIdToSetIdMap[4235].concat([2745]);
 	// --- 2024/08/13 ---
@@ -5432,8 +5433,8 @@
 	w_SE[2797] = [-3229,-3228,-2311,];	// 3228 ルガンチーフクリーナー + 2311 異境の統轄者
 	CardIdToSetIdMap[3228] = [2797,];
 	CardIdToSetIdMap[2311] = CardIdToSetIdMap[2311].concat([2794,2795,2796,2797]);
-	w_SE[2798] = [4238,4235,-10097];	// Atk+200, Matk+200, Def+150, Mdef+15 (4238) = ワンダーエッグ(4235) + グレーアイスウィンド(97)
-	w_SE[2799] = [4238,4235,-10098];	// Atk+200, Matk+200, Def+150, Mdef+15 (4238) = ワンダーエッグ(4235) + ホワイトアイスウィンド(98)
+	w_SE[2798] = [4238,4235,-(ITEM_SET_PET_ID_OFFSET + 97)];	// Atk+200, Matk+200, Def+150, Mdef+15 (4238) = ワンダーエッグ(4235) + グレーアイスウィンド(97)
+	w_SE[2799] = [4238,4235,-(ITEM_SET_PET_ID_OFFSET + 98)];	// Atk+200, Matk+200, Def+150, Mdef+15 (4238) = ワンダーエッグ(4235) + ホワイトアイスウィンド(98)
 	ItemIdToSetIdMap[4235] = ItemIdToSetIdMap[4235].concat([2798,2799]);
 	PetIdToSetIdMap[97] = [2798];
 	PetIdToSetIdMap[98] = [2799];
@@ -5448,9 +5449,9 @@
 	CardIdToSetIdMap[3236] = [2803,];
 	CardIdToSetIdMap[1245] = CardIdToSetIdMap[1245].concat([2801,2802]);
 	CardIdToSetIdMap[1348] = CardIdToSetIdMap[1348].concat([2800,2803]);
-	w_SE[2804] = [4238,4235,-10100];	// Atk+200, Matk+200, Def+150, Mdef+15 (4238) = ワンダーエッグ(4235) + 時計塔管理者(100)
+	w_SE[2804] = [4238,4235,-(ITEM_SET_PET_ID_OFFSET + 100)];	// Atk+200, Matk+200, Def+150, Mdef+15 (4238) = ワンダーエッグ(4235) + 時計塔管理者(100)
 	PetIdToSetIdMap[100] = [2804];
-	w_SE[2805] = [4236,4235,-10099];	// Atk+200, Matk+200, AllStatus+10 (4236) = ワンダーエッグ(4235) + タイムホルダー(99)
+	w_SE[2805] = [4236,4235,-(ITEM_SET_PET_ID_OFFSET + 99)];	// Atk+200, Matk+200, AllStatus+10 (4236) = ワンダーエッグ(4235) + タイムホルダー(99)
 	PetIdToSetIdMap[99] = [2805];
 	ItemIdToSetIdMap[4235] = ItemIdToSetIdMap[4235].concat([2804,2805]);
 	// --- 2024/10/29 ---
@@ -5738,9 +5739,9 @@
 	ItemIdToSetIdMap[4485] = ItemIdToSetIdMap[4485].concat([2928]);
 	ItemIdToSetIdMap[4947] = ItemIdToSetIdMap[4947].concat([2929]);
 	//
-	w_SE[2930] = [4238,4235,-10101];	// pet
+	w_SE[2930] = [4238,4235,-(ITEM_SET_PET_ID_OFFSET + 101)];	// pet
 	PetIdToSetIdMap[101] = [2930];
-	w_SE[2931] = [4236,4235,-10102];	// pet
+	w_SE[2931] = [4236,4235,-(ITEM_SET_PET_ID_OFFSET + 102)];	// pet
 	PetIdToSetIdMap[102] = [2931];
 	ItemIdToSetIdMap[4235] = ItemIdToSetIdMap[4235].concat([2930,2931]);
 	// --- 2025/01/21 ---
@@ -5815,7 +5816,7 @@
 	CardIdToSetIdMap[1245] = CardIdToSetIdMap[1245].concat([2950, 2955, 2956, 2957, 2961]);
 	CardIdToSetIdMap[1348] = CardIdToSetIdMap[1348].concat([2949, 2951, 2952, 2953, 2954, 2958, 2959, 2960, 2962, 2963, 2964]);
 	// --- 2025/01/28 ---
-	// 3423 時限リフレ = 3417～ 星雲の精髄 + 5004～ 星座の印章
+	// 3423 時限リフレ = 3417～ 星雲の精髄+ 5004～ 星座の印章
 	w_SE[2965] = [-3423,-3417,5004,];
 	w_SE[2966] = [-3423,-3417,5005,];
 	w_SE[2967] = [-3423,-3417,5008,];
@@ -6024,7 +6025,7 @@
 	w_SE[3097] = [-3501,-3500,-1245,];
 	CardIdToSetIdMap[3500] = [3097,];
 	w_SE[3098] = [-3503,-3502,-1348,];
-	CardIdToSetIdMap[3502] = [3098,];	
+	CardIdToSetIdMap[3502] = [3098,];
 	CardIdToSetIdMap[1245] = CardIdToSetIdMap[1245].concat([3086, 3087, 3088, 3089, 3091, 3094, 3097]);
 	CardIdToSetIdMap[1348] = CardIdToSetIdMap[1348].concat([3090, 3092, 3093, 3095, 3096, 3098]);
 	// --- 2025-04-17 ---
@@ -6041,7 +6042,7 @@
 	CardIdToSetIdMap[3516] = [3102,];
 	CardIdToSetIdMap[2311] = CardIdToSetIdMap[2311].concat([3100, 3101]);
 	// --- 2025-04-20 ---
-	w_SE[3103] = [4238,4235,-10103];	// Atk+200, Matk+200, Def+150, Mdef+15 (4238) = ワンダーエッグ(4235) + 混沌のバフォメット.Jr(103)
+	w_SE[3103] = [4238,4235,-(ITEM_SET_PET_ID_OFFSET + 103)];	// Atk+200, Matk+200, Def+150, Mdef+15 (4238) = ワンダーエッグ(4235) + 混沌のバフォメット.Jr(103)
 	PetIdToSetIdMap[103] = [3103];
 	ItemIdToSetIdMap[4235] = ItemIdToSetIdMap[4235].concat([3103]);
 	// --- 2025-05-13 ---
@@ -6220,11 +6221,11 @@
 	CardIdToSetIdMap[3696] = [3189,];
 	w_SE[3190] = [-3699,-3698,-1245,];
 	CardIdToSetIdMap[3698] = [3190,];
-	w_SE[3191] = [4236,4235,-10104],	// ワンダーエッグバスケット(4235) + 魔王モロク
+	w_SE[3191] = [4236,4235,-(ITEM_SET_PET_ID_OFFSET + 104)],	// ワンダーエッグバスケット(4235) + 魔王モロク
 	PetIdToSetIdMap[104] = [3191];
-	w_SE[3192] = [4236,4235,-10106],	// ワンダーエッグバスケット(4235) + 絶望の神モロク
+	w_SE[3192] = [4236,4235,-(ITEM_SET_PET_ID_OFFSET + 106)],	// ワンダーエッグバスケット(4235) + 絶望の神モロク
 	PetIdToSetIdMap[106] = [3192];
-	w_SE[3193] = [4238,4235,-10105],	// Atk+200, Matk+200, Def+150, Mdef+15 (4238) = ワンダーエッグ(4235) + 再生の半魔神
+	w_SE[3193] = [4238,4235,-(ITEM_SET_PET_ID_OFFSET + 105)],	// Atk+200, Matk+200, Def+150, Mdef+15 (4238) = ワンダーエッグ(4235) + 再生の半魔神
 	PetIdToSetIdMap[105] = [3193];
 	CardIdToSetIdMap[1245] = CardIdToSetIdMap[1245].concat([3188, 3189, 3190]);
 	CardIdToSetIdMap[1348] = CardIdToSetIdMap[1348].concat([3186, 3187]);
@@ -6309,8 +6310,8 @@
 	ItemIdToSetIdMap[5552] = [3229,];
 	w_SE[3230] = [5556,5555,-1975,];
 	ItemIdToSetIdMap[5555] = [3230,];
-	w_SE[3231] = [4238,4235,-10107],	// Atk+200, Matk+200, Def+150, Mdef+15 (4238) = ワンダーエッグ(4235) + 包装されなかった人形
-	w_SE[3232] = [4236,4235,-10108],	// ワンダーエッグバスケット(4235) + セリーヌ・キミ
+	w_SE[3231] = [4238,4235,-(ITEM_SET_PET_ID_OFFSET + 107)],	// Atk+ 200, Matk+200, Def+150, Mdef+15 (4238) = ワンダーエッグ(4235) + 包装されなかった人形
+	w_SE[3232] = [4236,4235,-(ITEM_SET_PET_ID_OFFSET + 108)],	// ワンダーエッグバスケット(4235) + セリーヌ・キミ
 	PetIdToSetIdMap[107] = [3231];
 	PetIdToSetIdMap[108] = [3232];
 	ItemIdToSetIdMap[4235] = ItemIdToSetIdMap[4235].concat([3231, 3232]);
@@ -6320,7 +6321,7 @@
 	CardIdToSetIdMap[2123] = CardIdToSetIdMap[2123].concat([3204, 3205, 3206, 3207, 3208, 3209, 3210, 3211, 3212, 3213, 3214, 3215, 3216, 3217, 3218, 3219, 3220, 3221]);
 	CardIdToSetIdMap[2311] = CardIdToSetIdMap[2311].concat([3199, 3200, 3201, 3202, 3203]);
 	CardIdToSetIdMap[3631] = CardIdToSetIdMap[3631].concat([3228, 3229]);
-	w_SE[3233] = [4237,4235,-10109];	// Atk+200, Matk+200, 全サイズ物理+10, 全サイズ魔法+10 (4237) = ワンダーエッグ(4235) + ブルームーンロリルリ(109)
+	w_SE[3233] = [4237,4235,-(ITEM_SET_PET_ID_OFFSET + 109)];	// Atk+200, Matk+200, 全サイズ物理+10, 全サイズ魔法+10 (4237) = ワンダーエッグ(4235) + ブルームーンロリルリ(109)
 	PetIdToSetIdMap[109] = [3233];
 	ItemIdToSetIdMap[4235] = ItemIdToSetIdMap[4235].concat([3233]);
 	// --- 2025-11-26 ---
@@ -6567,8 +6568,276 @@
 	CardIdToSetIdMap[4040] = [3367,];
 	CardIdToSetIdMap[1245] = CardIdToSetIdMap[1245].concat([3366, 3367]);
 	CardIdToSetIdMap[1348] = CardIdToSetIdMap[1348].concat([3365]);
-	
+	// --- 2026-01-13 ---
+	w_SE[3368] = [-4043,-4042,-1245,];
+	CardIdToSetIdMap[4042] = [3368,];
+	w_SE[3369] = [-4045,-4044,-1245,];
+	CardIdToSetIdMap[4044] = [3369,];
+	w_SE[3370] = [-4047,-4046,-1245,];
+	CardIdToSetIdMap[4046] = [3370,];
+	w_SE[3371] = [-4049,-4048,-1348,];
+	CardIdToSetIdMap[4048] = [3371,];
+	w_SE[3372] = [-4051,-4050,-1348,];
+	CardIdToSetIdMap[4050] = [3372,];
+	w_SE[3373] = [-4053,-4052,-1348,];
+	CardIdToSetIdMap[4052] = [3373,];
+	w_SE[3374] = [-4055,-4054,-1245,];
+	CardIdToSetIdMap[4054] = [3374,];
+	w_SE[3375] = [-4057,-4056,-1245,];
+	CardIdToSetIdMap[4056] = [3375,];
+	w_SE[3376] = [-4059,-4058,-1348,];
+	CardIdToSetIdMap[4058] = [3376,];
+	w_SE[3377] = [-4061,-4060,-1348,];
+	CardIdToSetIdMap[4060] = [3377,];
+	w_SE[3378] = [-4063,-4062,-1348,];
+	CardIdToSetIdMap[4062] = [3378,];
+	w_SE[3379] = [-4065,-4064,-1245,];
+	CardIdToSetIdMap[4064] = [3379,];
+	w_SE[3380] = [-4067,-4066,-1348,];
+	CardIdToSetIdMap[4066] = [3380,];
+	w_SE[3381] = [-4069,-4068,-1245,];
+	CardIdToSetIdMap[4068] = [3381,];
+	w_SE[3382] = [-4071,-4070,-1245,];
+	CardIdToSetIdMap[4070] = [3382,];
+	w_SE[3383] = [-4073,-4072,-1245,];
+	CardIdToSetIdMap[4072] = [3383,];
+	w_SE[3384] = [-4075,-4074,-1245,];
+	CardIdToSetIdMap[4074] = [3384,];
+	w_SE[3385] = [-4077,-4076,-1245,];
+	CardIdToSetIdMap[4076] = [3385,];
+	w_SE[3386] = [-4079,-4078,-1348,];
+	CardIdToSetIdMap[4078] = [3386,];
+	w_SE[3387] = [-4081,-4080,-1348,];
+	CardIdToSetIdMap[4080] = [3387,];
+	w_SE[3388] = [-4083,-4082,-1245,];
+	CardIdToSetIdMap[4082] = [3388,];
+	w_SE[3389] = [-4085,-4084,-1348,];
+	CardIdToSetIdMap[4084] = [3389,];
+	w_SE[3390] = [-4087,-4086,-1348,];
+	CardIdToSetIdMap[4086] = [3390,];
+	w_SE[3391] = [-4089,-4088,-1245,];
+	CardIdToSetIdMap[4088] = [3391,];
+	w_SE[3392] = [-4091,-4090,-1348,];
+	CardIdToSetIdMap[4090] = [3392,];
+	w_SE[3393] = [-4093,-4092,-1348,];
+	CardIdToSetIdMap[4092] = [3393,];
+	w_SE[3394] = [4236,4235,-(ITEM_SET_PET_ID_OFFSET + 110)]; // ワンダーエッグバスケット(4235) + ストームナイト(110)
+	w_SE[3395] = [4236,4235,-(ITEM_SET_PET_ID_OFFSET + 111)]; // ワンダーエッグバスケット(4235) + ボスピタヤ(111)
+	PetIdToSetIdMap[110] = [3394];
+	PetIdToSetIdMap[111] = [3395];
+	CardIdToSetIdMap[1245] = CardIdToSetIdMap[1245].concat([3368, 3369, 3370, 3374, 3375, 3379, 3381, 3382, 3383, 3384, 3385, 3388, 3391]);
+	CardIdToSetIdMap[1348] = CardIdToSetIdMap[1348].concat([3371, 3372, 3373, 3376, 3377, 3378, 3380, 3386, 3387, 3389, 3390, 3392, 3393]);
+	ItemIdToSetIdMap[4235] = ItemIdToSetIdMap[4235].concat([3394,3395]);
+	// --- 2026-01-20 ---
+	w_SE[3396] = [-4096,-4095,-2311,];
+	CardIdToSetIdMap[4095] = [3396,];
+	w_SE[3397] = [-4098,-4097,-2311,];
+	CardIdToSetIdMap[4097] = [3397,];
+	w_SE[3398] = [-4100,-4099,-2311,];
+	CardIdToSetIdMap[4099] = [3398,];
+	w_SE[3399] = [-4102,-4101,-1348,];
+	CardIdToSetIdMap[4101] = [3399,];
+	w_SE[3400] = [-4104,-4103,-1348,];
+	CardIdToSetIdMap[4103] = [3400,];
+	w_SE[3401] = [-4106,-4105,-1348,];
+	CardIdToSetIdMap[4105] = [3401,];
+	w_SE[3402] = [-4108,-4107,-1348,];
+	CardIdToSetIdMap[4107] = [3402,];
+	w_SE[3403] = [-4110,-4109,-1245,];
+	CardIdToSetIdMap[4109] = [3403,];
+	w_SE[3404] = [-4112,-4111,-1348,];
+	CardIdToSetIdMap[4111] = [3404,];
+	w_SE[3405] = [-4114,-4113,-1245,];
+	CardIdToSetIdMap[4113] = [3405,];
+	w_SE[3406] = [-4116,-4115,-1348,];
+	CardIdToSetIdMap[4115] = [3406,];
+	w_SE[3407] = [-4118,-4117,-1348,];
+	CardIdToSetIdMap[4117] = [3407,];
+	w_SE[3408] = [-4120,-4119,-1245,];
+	CardIdToSetIdMap[4119] = [3408,];
+	w_SE[3409] = [-4122,-4121,-1245,];
+	CardIdToSetIdMap[4121] = [3409,];
+	w_SE[3410] = [5648,5647,-4094,];
+	ItemIdToSetIdMap[5647] = [3410,];
+	w_SE[3411] = [5655,5397,-2886,]; // 生命の循環：春 + 魔獣の爪牙
+	w_SE[3412] = [5655,5398,-2890,]; // 生命の循環：夏 + 蒼穹の覇者
+	w_SE[3413] = [5655,5399,-2889,]; // 生命の循環：秋 + 根源への到達
+	w_SE[3414] = [5655,5400,-2891,]; // 生命の循環：冬 + 天与の才
+	ItemIdToSetIdMap[5397] = ItemIdToSetIdMap[5397].concat([3411]);
+	ItemIdToSetIdMap[5398] = ItemIdToSetIdMap[5398].concat([3412]);
+	ItemIdToSetIdMap[5399] = ItemIdToSetIdMap[5399].concat([3413]);
+	ItemIdToSetIdMap[5400] = ItemIdToSetIdMap[5400].concat([3414]);
+	CardIdToSetIdMap[1245] = CardIdToSetIdMap[1245].concat([3403, 3405, 3408, 3409]);
+	CardIdToSetIdMap[1348] = CardIdToSetIdMap[1348].concat([3399, 3400, 3401, 3402, 3404, 3406, 3407]);
+	CardIdToSetIdMap[2311] = CardIdToSetIdMap[2311].concat([3396, 3397, 3398]);
+	CardIdToSetIdMap[4094] = [3410];
+	ItemIdToSetIdMap[5474] = [3155];
+	ItemIdToSetIdMap[5473] = [3156];
+	ItemIdToSetIdMap[5476] = [3153];
+	ItemIdToSetIdMap[5475] = [3144];
+	ItemIdToSetIdMap[5477] = [3154];
+	ItemIdToSetIdMap[5478] = [3164];
+	ItemIdToSetIdMap[5471] = [3161];
+	ItemIdToSetIdMap[5465] = [3158];
+	ItemIdToSetIdMap[5463] = [3162];
+	ItemIdToSetIdMap[5464] = [3165];
+	ItemIdToSetIdMap[5470] = [3160];
+	ItemIdToSetIdMap[5469] = [3163];
+	ItemIdToSetIdMap[5466] = [3159];
+	ItemIdToSetIdMap[5472] = [3166];
+	ItemIdToSetIdMap[5467] = [3157];
+	ItemIdToSetIdMap[5458] = [3147];
+	ItemIdToSetIdMap[5459] = [3167];
+	// --- 2026-02-10 ---
+	w_SE[3415] = [-4139,-4138,-1245,];
+	CardIdToSetIdMap[4138] = [3415,];
+	w_SE[3416] = [-4141,-4140,-1245,];
+	CardIdToSetIdMap[4140] = [3416,];
+	w_SE[3417] = [-4143,-4142,-1348,];
+	CardIdToSetIdMap[4142] = [3417,];
+	w_SE[3418] = [-4145,-4144,-1245,];
+	CardIdToSetIdMap[4144] = [3418,];
+	CardIdToSetIdMap[1245] = CardIdToSetIdMap[1245].concat([3415, 3416, 3418]);
+	CardIdToSetIdMap[1348] = CardIdToSetIdMap[1348].concat([3417]);
+	// --- 2026-03-10 ---
+	w_SE[3419] = [-4180,-4179,-2043,];
+	CardIdToSetIdMap[4179] = [3419,];
+	w_SE[3420] = [-4182,-4181,-2043,];
+	CardIdToSetIdMap[4181] = [3420,];
+	CardIdToSetIdMap[2043] = CardIdToSetIdMap[2043].concat([3419, 3420]);
+	// --- 2026-03-18 ---
+	w_SE[3421] = [-4184,-4183,-1245,];
+	CardIdToSetIdMap[4183] = [3421,];
+	w_SE[3422] = [-4186,-4185,-1348,];
+	CardIdToSetIdMap[4185] = [3422,];
+	CardIdToSetIdMap[1245] = CardIdToSetIdMap[1245].concat([3421]);
+	CardIdToSetIdMap[1348] = CardIdToSetIdMap[1348].concat([3422]);
+	// --- 2026-04-08 ---
+	w_SE[3423] = [-4200,-4199,-1245,];
+	CardIdToSetIdMap[4199] = [3423,];
+	w_SE[3424] = [-4202,-4201,-1245,];
+	CardIdToSetIdMap[4201] = [3424,];
+	w_SE[3425] = [-4204,-4203,-1245,];
+	CardIdToSetIdMap[4203] = [3425,];
+	w_SE[3426] = [-4206,-4205,-1245,];
+	CardIdToSetIdMap[4205] = [3426,];
+	w_SE[3427] = [-4208,-4207,-1245,];
+	CardIdToSetIdMap[4207] = [3427,];
+	w_SE[3428] = [-4210,-4209,-1348,];
+	CardIdToSetIdMap[4209] = [3428,];
+	w_SE[3429] = [-4212,-4211,-1348,];
+	CardIdToSetIdMap[4211] = [3429,];
+	w_SE[3430] = [-4214,-4213,-1245,];
+	CardIdToSetIdMap[4213] = [3430,];
+	w_SE[3431] = [-4216,-4215,-1245,];
+	CardIdToSetIdMap[4215] = [3431,];
+	w_SE[3432] = [-4218,-4217,-1245,];
+	CardIdToSetIdMap[4217] = [3432,];
+	w_SE[3433] = [-4220,-4219,-1245,];
+	CardIdToSetIdMap[4219] = [3433,];
+	w_SE[3434] = [-4222,-4221,-1348,];
+	CardIdToSetIdMap[4221] = [3434,];
+	w_SE[3435] = [-4224,-4223,-1348,];
+	CardIdToSetIdMap[4223] = [3435,];
+	w_SE[3436] = [-4226,-4225,-1245,];
+	CardIdToSetIdMap[4225] = [3436,];
+	w_SE[3437] = [-4228,-4227,-1245,];
+	CardIdToSetIdMap[4227] = [3437,];
+	w_SE[3438] = [-4230,-4229,-1245,];
+	CardIdToSetIdMap[4229] = [3438,];
+	w_SE[3439] = [-4232,-4231,-1245,];
+	CardIdToSetIdMap[4231] = [3439,];
+	w_SE[3440] = [-4234,-4233,-1245,];
+	CardIdToSetIdMap[4233] = [3440,];
+	w_SE[3441] = [-4236,-4235,-1348,];
+	CardIdToSetIdMap[4235] = [3441,];
+	w_SE[3442] = [-4238,-4237,-1348,];
+	CardIdToSetIdMap[4237] = [3442,];
+	w_SE[3443] = [-4240,-4239,-1348,];
+	CardIdToSetIdMap[4239] = [3443,];
+	w_SE[3444] = [-4242,-4241,-1348,];
+	CardIdToSetIdMap[4241] = [3444,];
+	w_SE[3445] = [-4244,-4243,-1348,];
+	CardIdToSetIdMap[4243] = [3445,];
+	w_SE[3446] = [-4246,-4245,-1348,];
+	CardIdToSetIdMap[4245] = [3446,];
+	w_SE[3447] = [-4248,-4247,-1348,];
+	CardIdToSetIdMap[4247] = [3447,];
+	w_SE[3448] = [-4250,-4249,-1348,];
+	CardIdToSetIdMap[4249] = [3448,];
+	w_SE[3449] = [-4255,-4254,-1348,];
+	CardIdToSetIdMap[4254] = [3449,];
+	w_SE[3450] = [-4257,-4256,-1348,];
+	CardIdToSetIdMap[4256] = [3450,];
+	w_SE[3451] = [-4259,-4258,-1245,];
+	CardIdToSetIdMap[4258] = [3451,];
+	w_SE[3452] = [-4261,-4260,-2123,];
+	CardIdToSetIdMap[4260] = [3452,];
+	w_SE[3453] = [-4263,-4262,-1381,];
+	CardIdToSetIdMap[4262] = [3453,];
+	w_SE[3454] = [-4265,-4264,-1381,];
+	CardIdToSetIdMap[4264] = [3454,];
+	w_SE[3455] = [5620,5672,-2643,];
+	w_SE[3456] = [-2101,-2098,5672,];
+	ItemIdToSetIdMap[5672] = [3455,3456];
+	w_SE[3457] = [5675,5674,-2028,];
+	w_SE[3460] = [-2663,5674,-2662],
+	ItemIdToSetIdMap[5674] = [3457,3460];
+	w_SE[3458] = [5677,5676,-1813,];
+	w_SE[3461] = [5574,-3838,5676,];
+	ItemIdToSetIdMap[5676] = [3458,3461];
+	w_SE[3462] = [-3632,-3631,5678];
+	ItemIdToSetIdMap[5678] = [3462];
+	w_SE[3459] = [5680,5679,-1975,];
+	w_SE[3463] = [-3319,-3318,5679];
+	ItemIdToSetIdMap[5679] = [3459,3463];
+	w_SE[3464] = [5684,5683,-3609,];
+	ItemIdToSetIdMap[5683] = [3464,];
+	w_SE[3465] = [5686,5685,-3085,];
+	ItemIdToSetIdMap[5685] = [3465,];
+	CardIdToSetIdMap[1245] = CardIdToSetIdMap[1245].concat([3423, 3424, 3425, 3426, 3427, 3430, 3431, 3432, 3433, 3436, 3437, 3438, 3439, 3440, 3451]);
+	CardIdToSetIdMap[1348] = CardIdToSetIdMap[1348].concat([3428, 3429, 3434, 3435, 3441, 3442, 3443, 3444, 3445, 3446, 3447, 3448, 3449, 3450]);
+	CardIdToSetIdMap[1381] = CardIdToSetIdMap[1381].concat([3453, 3454]);
+	CardIdToSetIdMap[1813] = CardIdToSetIdMap[1813].concat([3458]);
+	CardIdToSetIdMap[1975] = CardIdToSetIdMap[1975].concat([3459]);
+	CardIdToSetIdMap[2028] = CardIdToSetIdMap[2028].concat([3457]);
+	CardIdToSetIdMap[2098] = CardIdToSetIdMap[2098].concat([3456]);
+	CardIdToSetIdMap[2123] = CardIdToSetIdMap[2123].concat([3452]);
+	CardIdToSetIdMap[2643] = CardIdToSetIdMap[2643].concat([3455]);
+	CardIdToSetIdMap[3085] = CardIdToSetIdMap[3085].concat([3465]);
+	CardIdToSetIdMap[3318] = CardIdToSetIdMap[3318].concat([3463]);
+	CardIdToSetIdMap[3609] = CardIdToSetIdMap[3609].concat([3464]);
+	CardIdToSetIdMap[3631] = CardIdToSetIdMap[3631].concat([3462]);
+	CardIdToSetIdMap[3838] = CardIdToSetIdMap[3838].concat([3461]);
+	// --- 2026-04-14 ---
+	w_SE[3466] = [-4268,-4267,-1348,];
+	CardIdToSetIdMap[4267] = [3466,];
+	w_SE[3467] = [-4270,-4269,-1245,];
+	CardIdToSetIdMap[4269] = [3467,];
+	w_SE[3468] = [-4272,-4271,-1348,];
+	CardIdToSetIdMap[4271] = [3468,];
+	w_SE[3469] = [-4274,-4273,-1348,];
+	CardIdToSetIdMap[4273] = [3469,];
+	w_SE[3470] = [-4276,-4275,-1245,];
+	CardIdToSetIdMap[4275] = [3470,];
+	w_SE[3471] = [-4278,-4277,-1348,];
+	CardIdToSetIdMap[4277] = [3471,];
+	w_SE[3472] = [-4280,-4279,-1348,];
+	CardIdToSetIdMap[4279] = [3472,];
+	w_SE[3473] = [-4282,-4281,-1245,];
+	CardIdToSetIdMap[4281] = [3473,];
+	CardIdToSetIdMap[1245] = CardIdToSetIdMap[1245].concat([3467, 3470, 3473]);
+	CardIdToSetIdMap[1348] = CardIdToSetIdMap[1348].concat([3466, 3468, 3469, 3471, 3472]);
+	w_SE[3474] = [-4284,-4283,-1245,];    // 潜在解放(アリテアXVIII) + 真理の解放
+	CardIdToSetIdMap[4283] = [3474,];
+	w_SE[3475] = [-4286,-4285,-1245,];    // 潜在解放(トルバドゥール&トルヴェールXVI) + 真理の解放
+	CardIdToSetIdMap[4285] = [3475,];
+
 	// itemset はセーブデータに書き出されないので
 	// 現実的な範囲において itemsetID の上限値を気にする必要はありません
-})();
-
+if (typeof window !== 'undefined') {
+    window.ItemIdToSetIdMap = ItemIdToSetIdMap;
+    window.w_SE = w_SE;
+    window.CardIdToSetIdMap = CardIdToSetIdMap;
+    window.PetIdToSetIdMap = PetIdToSetIdMap;
+}

@@ -1,12 +1,12 @@
 let last_updated = ""; // last_updatedを初期化
 
 // 背景色切替
-g_BGColorSwitch = false;
+window.g_BGColorSwitch = false;
 function SwitchBGColor() {
 	var index  = 0;
 	var objBodies = null;
 	var objBody = null;
-	g_BGColorSwitch = !g_BGColorSwitch;
+	window.g_BGColorSwitch = !window.g_BGColorSwitch;
 	objBodies = document.getElementsByTagName("body");
 	for (index = 0; index < objBodies.length; index++) {
 		objBody = objBodies[index];
@@ -59,21 +59,19 @@ fetch('../date.json')
 		  <li class="menu-item"><span class="menu-title"><a href="../../roro/other/element.html">属性表</a></span></li>
 
 		  <li class="menu-header"><span>Information</span></li>
-          <li class="menu-item"><span class="menu-title"><a href="../../information/index.html" class="local">このサイトについて</a></span></li>
-          <li class="menu-item"><span class="menu-title"><a href="https://github.com/roratorio-hub/ratorio/wiki" target="_blank">使い方Wiki</a></span></li>
+          <li class="menu-item"><span class="menu-title"><a href="https://github.com/roratorio-hub/ratorio/wiki/introduction" target="_blank">サイト紹介・使い方</a></span></li>
           <li class="menu-item"><span class="menu-title"><a href="https://github.com/orgs/roratorio-hub/projects/1/views/1" target="_blank">今後の予定</a></span></li>
           <li class="menu-item"><span class="menu-title"><a href="https://github.com/roratorio-hub/ratorio/issues?q=label%3Arelease+" target="_blank">更新履歴</a></span></li>
-          <!--<li class="menu-item"><span class="menu-title"><a href="../../information/alert/index.html" class="local">不具合のお知らせ</a></span></li>-->
-          <!--<li class="menu-item"><span class="menu-title"><a href="../../information/wanted/index.html" class="local">[募集] スキル情報</a></span></li>-->
+          <li class="menu-item"><span class="menu-title">権利表記 (
+            <a href="https://github.com/roratorio-hub/ratorio/blob/master/LICENSE_jp" target="_blank">JP</a> / 
+            <a href="https://github.com/roratorio-hub/ratorio/blob/master/LICENSE" target="_blank">EN</a>
+          )</span></li>
 
 		  <li class="menu-header" style="padding-top: 10px"><span>Contact Us</span></li>
-          <!--<li class="menu-item"><span class="menu-title"><a href="../../information/response/index.html" class="local">Q&A</a></span></li>-->
 		      <li class="menu-item"><span class="menu-title"><a href="${formurl}">Googleフォーム</a></span></li>
           <li class="menu-item"><span class="menu-title"><a href="https://discord.gg/wcKE7PkQ9x">Discord</a></span></li>
-          <li class="menu-item"><span class="menu-title"><a href="https://github.com/roratorio-hub/ratorio">Github</a></span></li>
 
 		  <li class="menu-header" style="padding-top: 10px"><span>Link</span></li>
-          <li class="menu-item"><span class="menu-title"><a href="https://roratorio-hinanjo.net/roro/main/main.html">ROラトリオ避難所</a></span></li>
           <li class="menu-item"><span class="menu-title"><a href="http://roratorio.2-d.jp/ro/">ROラトリオ</a></span></li>
 
 		  <li class="menu-header" style="padding-top: 20px"><span>Updated</span></li>
@@ -130,3 +128,4 @@ fetch('../date.json')
       }
     })
   });
+if (typeof window !== 'undefined') { Object.assign(window, { SwitchBGColor }); }

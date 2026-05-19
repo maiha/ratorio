@@ -1,3 +1,5 @@
+import { CGlobalConstManager } from './CGlobalConstManager.js';
+import { CInstanceManager } from './CInstanceManager.js';
 //----------------------------------------------------------------
 // 拡張情報の種類
 //----------------------------------------------------------------
@@ -50,6 +52,7 @@ CGlobalConstManager.DefineEnum(
 		"EXTRA_INFO_EFFECTIVE_SP_KIND_NONE",
 
 		"EXTRA_INFO_EFFECTIVE_SP_KIND_STATUS_BASIC",
+		"EXTRA_INFO_EFFECTIVE_SP_KIND_STATUS_SPECIAL",
 		"EXTRA_INFO_EFFECTIVE_SP_KIND_STATUS_EXTRA",
 		"EXTRA_INFO_EFFECTIVE_SP_KIND_STATUS_ALL",
 	],
@@ -63,7 +66,7 @@ CGlobalConstManager.DefineEnum(
  * 拡張情報の種類のテキストを取得する.
  * @param infoId 拡張情報ID
  */
-function GetExtraInfoText(infoId) {
+export function GetExtraInfoText(infoId) {
 
 	switch (infoId) {
 	case EXTRA_INFO_ID_NONE:
@@ -125,7 +128,8 @@ function GetExtraInfoText(infoId) {
 /**
  * 拡張情報エリアコンポーネントマネージャクラス.
  */
-function CExtraInfoAreaComponentManager () {
+export function CExtraInfoAreaComponentManager () {
+	var itemCount = 0, sklLv = 0;
 
 	// マネージャクラスのインスタンスＩＤ
 	this.managerInstanceId = CExtraInfoAreaComponentManager.instanceManager.registerInstance(this);
@@ -673,10 +677,12 @@ function CExtraInfoAreaComponentManager () {
 	 * 拡張情報の表示欄を更新する（ヒール回復力）.
 	 */
 	this.RefreshDispAreaHealing = function () {
+		var i = 0;
 		var lv = 0;
 		var lvMax = 0;
 		var healType = 0;
 		var healTarget = 0;
+		var ptmCount = 0;
 		var valueMinArray = [];
 		var valueMaxArray = [];
 		var valueText = "";
@@ -864,6 +870,7 @@ function CExtraInfoAreaComponentManager () {
 		var objTbody = null;
 		var objTr = null;
 		var objTd = null;
+		var objSelect = null;
 
 		var learnSkillIdArray = g_constDataManager.GetDataObject(CONST_DATA_KIND_JOB, n_A_JOB).GetLearnSkillIdArray();
 
@@ -968,6 +975,7 @@ function CExtraInfoAreaComponentManager () {
 		var typeText = "";
 		var valueText = "";
 		var valueTextArrayHP = null;
+		var valueTextArraySP = null;
 
 		var objRoot = null;
 		var objTable = null;
@@ -1126,6 +1134,7 @@ function CExtraInfoAreaComponentManager () {
 		var objTbody = null;
 		var objTr = null;
 		var objTd = null;
+		var objSelect = null;
 
 		var learnSkillIdArray = g_constDataManager.GetDataObject(CONST_DATA_KIND_JOB, n_A_JOB).GetLearnSkillIdArray();
 
@@ -2466,16 +2475,12 @@ function CExtraInfoAreaComponentManager () {
 	 * 拡張情報の表示欄を構築する（状態異常耐性）.
 	 */
 	this.RebuildDispAreaResistState = function () {
-
 		var idx = 0;
-
 		var objRoot = null;
 		var objTable = null;
 		var objTbody = null;
 		var objTr = null;
 		var objTd = null;
-
-
 
 		// 指定の領域をクリア
 		objRoot = document.getElementById("OBJID_TD_EXTRA_INFO_" + this.managerInstanceId);
@@ -2485,8 +2490,6 @@ function CExtraInfoAreaComponentManager () {
 		objTable = HtmlCreateElement("table", objRoot);
 		objTable.setAttribute("style", "width : 100%;");
 		objTbody = HtmlCreateElement("tbody", objTable);
-
-
 
 		// 表示欄
 		objTr = HtmlCreateElement("tr", objTbody);
@@ -2499,26 +2502,20 @@ function CExtraInfoAreaComponentManager () {
 	 * 拡張情報の表示欄を更新する（状態異常耐性）.
 	 */
 	this.RefreshDispAreaResistState = function () {
-
 		var idx = 0;
-
 		var lv = 0;
 		var lvMax = 0;
 		var value = 0;
-
 		var typeText = "";
 		var valueText = "";
 		var equipValueArray = null;
 		var paramValueArray = null;
-
 		var objRoot = null;
 		var objTable = null;
 		var objTbody = null;
 		var objTr = null;
 		var objTd = null;
 		var objSpan = null;
-
-
 
 		//--------------------------------
 		// 状態異常耐性計算
@@ -2529,39 +2526,32 @@ function CExtraInfoAreaComponentManager () {
 
 		// 装備効果等による耐性
 		for (idx = 0; idx <= STATE_ID_STONE; idx++) {
-
 			equipValueArray[idx] = n_tok[ITEM_SP_RESIST_STATE_POISON + idx];
 
 			switch (idx) {
-
-			case STATE_ID_SLEEP:
-			case STATE_ID_BLEEDING:
-				paramValueArray[idx] = n_A_AGI;
-				break;
-
-			case STATE_ID_POISON:
-			case STATE_ID_STUN:
-				paramValueArray[idx] = n_A_VIT;
-				break;
-
-			case STATE_ID_BLIND:
-			case STATE_ID_SILENCE:
-				paramValueArray[idx] = n_A_INT;
-				break;
-
-			case STATE_ID_CURSED:
-			case STATE_ID_CONFUSE:
-				paramValueArray[idx] = n_A_LUK;
-				break;
-
-			case STATE_ID_FROZEN:
-			case STATE_ID_STONE:
-				paramValueArray[idx] = CExtraInfoAreaComponentManager.charaData[CHARA_DATA_INDEX_MDEF_DIV_IGNORE_BUFF];
-				break;
-
-			default:
-				paramValueArray[idx] = 0;
-				break;
+				case STATE_ID_SLEEP:
+				case STATE_ID_BLEEDING:
+					paramValueArray[idx] = n_A_AGI;
+					break;
+				case STATE_ID_POISON:
+				case STATE_ID_STUN:
+					paramValueArray[idx] = n_A_VIT;
+					break;
+				case STATE_ID_BLIND:
+				case STATE_ID_SILENCE:
+					paramValueArray[idx] = n_A_INT;
+					break;
+				case STATE_ID_CURSED:
+				case STATE_ID_CONFUSE:
+					paramValueArray[idx] = n_A_LUK;
+					break;
+				case STATE_ID_FROZEN:
+				case STATE_ID_STONE:
+					paramValueArray[idx] = CExtraInfoAreaComponentManager.charaData[CHARA_DATA_INDEX_MDEF_DIV_IGNORE_BUFF];
+					break;
+				default:
+					paramValueArray[idx] = 0;
+					break;
 			}
 		}
 
@@ -2605,6 +2595,11 @@ function CExtraInfoAreaComponentManager () {
 		objTd.setAttribute("class", "CSSCLS_EXTRA_INFO_DISP_TABLE");
 		HtmlCreateTextSpan("ステ耐性", objTd, CExtraInfoAreaComponentManager.fontSizeClassName);
 
+		// BaseLv差ペナルティ
+		const mobBaseLv = MonsterObjNew[CMonsterMapAreaComponentManager.GetMonsterId()][MONSTER_DATA_INDEX_LEVEL];
+		const diffBaseLv = mobBaseLv - n_A_BaseLV;
+		const penalty = (diffBaseLv > 0) ? Math.ceil((Math.pow(diffBaseLv, 2) / 5)) : 0;
+
 		// 石化まで表示
 		for (idx = 0; idx <= STATE_ID_STONE; idx++) {
 
@@ -2641,8 +2636,22 @@ function CExtraInfoAreaComponentManager () {
 			else if (paramValueArray[idx] < 0) {
 				objSpan.setAttribute("class", "CSSCLS_EXTRA_INFO_DISP_TABLE_RED");
 			}
-
 			HtmlCreateTextSpan(paramValueArray[idx] + "%", objSpan, CExtraInfoAreaComponentManager.fontSizeClassName);
+
+			if (penalty > 0) {
+				// 素の耐性に取り消し線を引く
+				objSpan.classList.add('strike-line');
+				// ペナルティ適用後の耐性を追記する
+				const value_after_decay = Math.max(paramValueArray[idx] - penalty, 0);
+				objSpan = HtmlCreateElement("span", objTd);
+				if (value_after_decay > 0) {
+					objSpan.setAttribute("class", "CSSCLS_EXTRA_INFO_DISP_TABLE_BLUE");
+				}
+				else if (value_after_decay < 0) {
+					objSpan.setAttribute("class", "CSSCLS_EXTRA_INFO_DISP_TABLE_RED");
+				}
+				HtmlCreateTextSpan(` → ${value_after_decay} %`, objSpan, CExtraInfoAreaComponentManager.fontSizeClassName);
+			}
 		}
 	};
 
@@ -2995,6 +3004,7 @@ function CExtraInfoAreaComponentManager () {
 		var funcSelectData = null;
 		var loopDataArrayGeneral = 0;
 		var loopDataArrayActive = 0;
+		var spanClassName = "";
 
 		var objRoot = null;
 		var objTable = null;
@@ -3351,6 +3361,7 @@ function CExtraInfoAreaComponentManager () {
 		var objTbody = null;
 		var objTr = null;
 		var objTd = null;
+		var objSelect = null;
 
 
 
@@ -3798,6 +3809,7 @@ function CExtraInfoAreaComponentManager () {
 		var objTbody = null;
 		var objTr = null;
 		var objTd = null;
+		var objSelect = null;
 
 
 
@@ -3913,6 +3925,7 @@ function CExtraInfoAreaComponentManager () {
 	this.RefreshDispAreaStatusSum = function () {
 
 		var idx = 0;
+		var idxBase = 0;
 		var idxLoopInfo = 0;
 		var idxEffective = 0;
 		var idxEffectivePrev = 0;
@@ -3971,6 +3984,11 @@ function CExtraInfoAreaComponentManager () {
 		};
 
 		var loopInfo = null;
+		var loopInfoCheck = null;
+		var paramArray = null;
+		var selectedTargetId = 0;
+		var remainPlus = 0;
+		var remainMinus = 0;
 
 		var loopInfoArrayWork = null;
 		var loopInfoArrayWorkAll = null;
@@ -4704,7 +4722,6 @@ function CExtraInfoAreaComponentManager () {
 		magicalValueArray[3] = ["", n_tok[ITEM_SP_MAGICAL_DAMAGE_UP_PLAYER_DORAM]];
 		magicalValueArray[4] = ["", magicalValueArray[0][1] + magicalValueArray[3][1]];
 
-if (_APPLY_UPDATE_LV200) {
 		resistValueArray[0] = ["", n_tok[ITEM_SP_RESIST_PLAYER_ALL]];
 		resistOverArray[0] = Math.max(0, n_tok_no_limit[ITEM_SP_RESIST_PLAYER_ALL] - n_tok[ITEM_SP_RESIST_PLAYER_ALL]);
 
@@ -4719,14 +4736,6 @@ if (_APPLY_UPDATE_LV200) {
 
 		resistValueArray[4] = ["", Math.min(95, resistValueArray[0][1] + resistValueArray[3][1])];
 		resistOverArray[4] = Math.max(0, resistValueArray[0][1] + resistValueArray[3][1] - 95) + resistOverArray[0] + resistOverArray[3];
-}
-else {
-		resistValueArray[0] = ["", n_tok[ITEM_SP_RESIST_PLAYER_ALL]];
-		resistValueArray[1] = ["", n_tok[ITEM_SP_RESIST_PLAYER_HUMAN] + n_tok[ITEM_SP_RESIST_RACE_HUMAN]];
-		resistValueArray[2] = ["", resistValueArray[0][1] + resistValueArray[1][1]];
-		resistValueArray[3] = ["", n_tok[ITEM_SP_RESIST_PLAYER_DORAM]];
-		resistValueArray[4] = ["", resistValueArray[0][1] + resistValueArray[3][1]];
-}
 
 		for (idx = 0; idx < 5; idx++) {
 			physicalValueArray[idx][0] = funcSelectClassName(physicalValueArray[idx][1], "CSSCLS_EXTRA_INFO_DISP_TABLE_SPEC_VALUE_BLUE", "", "CSSCLS_EXTRA_INFO_DISP_TABLE_SPEC_VALUE_RED")
@@ -5001,12 +5010,14 @@ else {
 		var idx = 0;
 
 		var targetArray = null;
+		var value = 0;
 
 		var objRoot = null;
 		var objTable = null;
 		var objTbody = null;
 		var objTr = null;
 		var objTd = null;
+		var objSelect = null;
 
 
 
@@ -5034,6 +5045,7 @@ else {
 		objSelect.setAttribute("id", "OBJID_SELECT_EXTRA_INFO_EFFECTIVE_SP_DISP_KIND_" + this.managerInstanceId);
 		objSelect.setAttribute("onChange", "CExtraInfoAreaComponentManager.RebuildAndRefreshDispArea(" + this.managerInstanceId + ")");
 		HtmlCreateElementOption(EXTRA_INFO_EFFECTIVE_SP_KIND_STATUS_BASIC, "基本ステータス", objSelect);
+		HtmlCreateElementOption(EXTRA_INFO_EFFECTIVE_SP_KIND_STATUS_SPECIAL, "特性ステータス", objSelect);
 		HtmlCreateElementOption(EXTRA_INFO_EFFECTIVE_SP_KIND_STATUS_EXTRA, "拡張ステータス", objSelect);
 		HtmlCreateElementOption(EXTRA_INFO_EFFECTIVE_SP_KIND_STATUS_ALL, "全ステータス（※縦長注意）", objSelect);
 		this.RestoreSelectedValue("OBJID_SELECT_EXTRA_INFO_EFFECTIVE_SP_DISP_KIND_" + this.managerInstanceId, EXTRA_INFO_EFFECTIVE_SP_KIND_STATUS_BASIC);
@@ -5059,6 +5071,10 @@ else {
 		var dispInfoArrayArray = null;
 		var dispValue = "";
 		var valueObjectClassName = "";
+		var value = 0;
+		var confval = 0;
+		var bufLv = 0;
+		var objSpan = null;
 
 		var funcCreateDispValueText = function (valueF, bAddPlusSignF, bPercentF) {
 
@@ -5132,6 +5148,23 @@ else {
 
 			return "";
 		}
+
+		var funcGetValueObjectClassNameByValue = function (valueF, bReverse, bAddPlusSignF, bPercentF) {
+
+			if (!valueF) {
+				valueF = 0;
+			}
+
+			if (valueF > 0) {
+				return (!bReverse ? "CSSCLS_EXTRA_INFO_DISP_TABLE_SPEC_VALUE_BLUE" : "CSSCLS_EXTRA_INFO_DISP_TABLE_SPEC_VALUE_RED");
+			}
+			else if (valueF < 0) {
+				return (!bReverse ? "CSSCLS_EXTRA_INFO_DISP_TABLE_SPEC_VALUE_RED" : "CSSCLS_EXTRA_INFO_DISP_TABLE_SPEC_VALUE_BLUE");
+			}
+
+			return "";
+		}
+
 
 		var objRoot = null;
 		var objTable = null;
@@ -5256,6 +5289,239 @@ else {
 			HtmlCreateTextSpan("※『＋○○』欄にある()内の数値は、", objSpan, CExtraInfoAreaComponentManager.fontSizeClassName);
 			HtmlCreateElement("br", objSpan);
 			HtmlCreateTextSpan("　集中力向上の計算に含まれる値。", objSpan, CExtraInfoAreaComponentManager.fontSizeClassName);
+
+			break;
+
+		default:
+			break;
+
+		}
+
+
+		switch (dispKind) {
+
+		case EXTRA_INFO_EFFECTIVE_SP_KIND_STATUS_SPECIAL:
+		case EXTRA_INFO_EFFECTIVE_SP_KIND_STATUS_ALL:
+
+			//------------------------------------------------------------------------------------------------
+			//
+			// 特性ステータス対応
+			//
+			//------------------------------------------------------------------------------------------------
+			var wSPC_SPEC_ALL = GetEquippedTotalSPEquip(ITEM_SP_ALL_SPECS_PLUS);
+
+			var wSPC_POW = GetEquippedTotalSPEquip(ITEM_SP_POW_PLUS) + GetEquippedTotalSPCardAndElse(ITEM_SP_POW_PLUS);
+			var wSPC_STA = GetEquippedTotalSPEquip(ITEM_SP_STA_PLUS) + GetEquippedTotalSPCardAndElse(ITEM_SP_STA_PLUS);
+			var wSPC_WIS = GetEquippedTotalSPEquip(ITEM_SP_WIS_PLUS) + GetEquippedTotalSPCardAndElse(ITEM_SP_WIS_PLUS);
+			var wSPC_SPL = GetEquippedTotalSPEquip(ITEM_SP_SPL_PLUS) + GetEquippedTotalSPCardAndElse(ITEM_SP_SPL_PLUS);
+			var wSPC_CON = GetEquippedTotalSPEquip(ITEM_SP_CON_PLUS) + GetEquippedTotalSPCardAndElse(ITEM_SP_CON_PLUS);
+			var wSPC_CRT = GetEquippedTotalSPEquip(ITEM_SP_CRT_PLUS) + GetEquippedTotalSPCardAndElse(ITEM_SP_CRT_PLUS);
+
+			// ランダムエンチャント効果
+			wSPC_SPEC_ALL += GetRndOptTotalValue(ITEM_SP_ALL_SPECS_PLUS, null, false);
+
+			wSPC_POW += GetRndOptTotalValue(ITEM_SP_POW_PLUS, null, false);
+			wSPC_STA += GetRndOptTotalValue(ITEM_SP_STA_PLUS, null, false);
+			wSPC_WIS += GetRndOptTotalValue(ITEM_SP_WIS_PLUS, null, false);
+			wSPC_SPL += GetRndOptTotalValue(ITEM_SP_SPL_PLUS, null, false);
+			wSPC_CON += GetRndOptTotalValue(ITEM_SP_CON_PLUS, null, false);
+			wSPC_CRT += GetRndOptTotalValue(ITEM_SP_CRT_PLUS, null, false);
+
+			// 全ステ上昇を分配
+			wSPC_POW += wSPC_SPEC_ALL;
+			wSPC_STA += wSPC_SPEC_ALL;
+			wSPC_WIS += wSPC_SPEC_ALL;
+			wSPC_SPL += wSPC_SPEC_ALL;
+			wSPC_CON += wSPC_SPEC_ALL;
+			wSPC_CRT += wSPC_SPEC_ALL;
+
+
+			//----------------------------------------------------------------
+			// 「性能カスタマイズ」の、効果
+			//----------------------------------------------------------------
+			confval = g_objCharaConfCustomSpecStatus.GetConf(CCharaConfCustomSpecStatus.CONF_ID_POW_PLUS);
+			if (confval != 0) {
+				wSPC_POW += confval;
+			}
+
+			confval = g_objCharaConfCustomSpecStatus.GetConf(CCharaConfCustomSpecStatus.CONF_ID_STA_PLUS);
+			if (confval != 0) {
+				wSPC_STA += confval;
+			}
+
+			confval = g_objCharaConfCustomSpecStatus.GetConf(CCharaConfCustomSpecStatus.CONF_ID_WIS_PLUS);
+			if (confval != 0) {
+				wSPC_WIS += confval;
+			}
+
+			confval = g_objCharaConfCustomSpecStatus.GetConf(CCharaConfCustomSpecStatus.CONF_ID_SPL_PLUS);
+			if (confval != 0) {
+				wSPC_SPL += confval;
+			}
+
+			confval = g_objCharaConfCustomSpecStatus.GetConf(CCharaConfCustomSpecStatus.CONF_ID_CON_PLUS);
+			if (confval != 0) {
+				wSPC_CON += confval;
+			}
+
+			confval = g_objCharaConfCustomSpecStatus.GetConf(CCharaConfCustomSpecStatus.CONF_ID_CRT_PLUS);
+			if (confval != 0) {
+				wSPC_CRT += confval;
+			}
+
+
+
+			// 「砂時計のネックレス」の効果（ペナルティ）
+			if ((itemCount = EquipNumSearch(ITEM_ID_SUNADOKENO_NECKLACE)) > 0) {
+				confval = Math.min(6, Math.floor(n_A_JobLV / 5)) * itemCount;
+
+				wSPC_POW -= confval;
+				wSPC_STA -= confval;
+				wSPC_WIS -= confval;
+				wSPC_SPL -= confval;
+				wSPC_CON -= confval;
+				wSPC_CRT -= confval;
+			}
+
+			// 「ソウルアセティック」スキル「霊道術修練」による効果
+			if ((sklLv = Math.max(LearnedSkillSearch(SKILL_ID_REIDOZYUTSU_SHUREN), UsedSkillSearch(SKILL_ID_REIDOZYUTSU_SHUREN))) > 0) {
+				wSPC_SPL += sklLv;
+			}
+
+			// 四次職支援「レリギオ」による効果
+			// 術者側の H.Plus +100 あたり効果量 +2 加算は未実装
+			// SKILL_ID_RERIGIO
+			if ((bufLv = g_confDataYozi[CCharaConfYozi.CONF_ID_RERIGIO]) > 0) {
+				value = 2 * bufLv;
+				wSPC_STA += value;
+				wSPC_WIS += value;
+				wSPC_SPL += value;
+			}
+
+			// 四次職支援「ベネディクトゥム」による効果
+			// 術者側の H.Plus +100 あたり効果量 +2 加算は未実装
+			// SKILL_ID_BENEDICTUM
+			if ((bufLv = g_confDataYozi[CCharaConfYozi.CONF_ID_BENEDICTUM]) > 0) {
+
+				value = 2 * bufLv;
+
+				wSPC_POW += value;
+				wSPC_CON += value;
+				wSPC_CRT += value;
+			}
+
+			// 四次職支援「サンドフェスティバル」による効果
+			if ((bufLv = g_confDataYozi[CCharaConfYozi.CONF_ID_SAND_FESTIVAL]) > 0) {
+				if (g_confDataYozi[CCharaConfYozi.CONF_ID_RERIGIO] == 0) {
+					value = 2 * bufLv;
+
+					wSPC_STA += value;
+					wSPC_WIS += value;
+					wSPC_SPL += value;
+				}
+			}
+
+			// 四次職支援「マリンフェスティバル」による効果
+			if ((bufLv = g_confDataYozi[CCharaConfYozi.CONF_ID_MARIN_FESTIVAL]) > 0) {
+				if (g_confDataYozi[CCharaConfYozi.CONF_ID_BENEDICTUM] == 0) {
+					value = 2 * bufLv;
+
+					wSPC_POW += value;
+					wSPC_CON += value;
+					wSPC_CRT += value;	
+				}
+			}
+
+			// 「ナイトウォッチ」スキル「グレネードマスタリー」による効果
+			if ((sklLv = Math.max(LearnedSkillSearch(SKILL_ID_GRENADE_MASTERY), UsedSkillSearch(SKILL_ID_GRENADE_MASTERY))) > 0) {
+				wSPC_CON += sklLv
+			}
+
+
+
+
+			// ジョブボーナス取得
+			jobBonusArray = GetJobBonus(n_A_JOB, n_A_JobLV);
+
+			// 表示情報配列を生成
+			dispInfoArrayArray = [
+				["POW", jobBonusArray[6], wSPC_POW, ITEM_SP_NONE],
+				["STA", jobBonusArray[7], wSPC_STA, ITEM_SP_NONE],
+				["WIS", jobBonusArray[8], wSPC_WIS, ITEM_SP_NONE],
+				["SPL", jobBonusArray[9], wSPC_SPL, ITEM_SP_NONE],
+				["CON", jobBonusArray[10], wSPC_CON, ITEM_SP_NONE],
+				["CRT", jobBonusArray[11], wSPC_CRT, ITEM_SP_NONE],
+			];
+
+			// 表示用テーブル生成
+			objTable = HtmlCreateElement("table", objRoot);
+			objTable.setAttribute("class", "CSSCLS_EXTRA_INFO_DISP_TABLE");
+			objTable.setAttribute("style", "width : 100%;");
+			objTbody = HtmlCreateElement("tbody", objTable);
+
+			// ヘッダ
+			objTr = HtmlCreateElement("tr", objTbody);
+
+			objTd = HtmlCreateElement("td", objTr);
+			objTd.setAttribute("class", "CSSCLS_EXTRA_INFO_DISP_TABLE_GRAY_BACK");
+			HtmlCreateTextSpan("能力", objTd, CExtraInfoAreaComponentManager.fontSizeClassName);
+
+			objTd = HtmlCreateElement("td", objTr);
+			objTd.setAttribute("class", "CSSCLS_EXTRA_INFO_DISP_TABLE_GRAY_BACK");
+			HtmlCreateTextSpan("Job補正", objTd, CExtraInfoAreaComponentManager.fontSizeClassName);
+
+			objTd = HtmlCreateElement("td", objTr);
+			objTd.setAttribute("class", "CSSCLS_EXTRA_INFO_DISP_TABLE_GRAY_BACK");
+			HtmlCreateTextSpan("＋○○", objTd, CExtraInfoAreaComponentManager.fontSizeClassName);
+
+			objTd = HtmlCreateElement("td", objTr);
+			objTd.setAttribute("class", "CSSCLS_EXTRA_INFO_DISP_TABLE_GRAY_BACK");
+			HtmlCreateTextSpan("○○％", objTd, CExtraInfoAreaComponentManager.fontSizeClassName);
+
+
+			// データ表示
+			for (idx = 0; idx < dispInfoArrayArray.length; idx++) {
+
+				dispInfoArray = dispInfoArrayArray[idx];
+
+				// 行生成
+				objTr = HtmlCreateElement("tr", objTbody);
+
+				// 能力名
+				objTd = HtmlCreateElement("td", objTr);
+				objTd.setAttribute("class", "CSSCLS_EXTRA_INFO_DISP_TABLE");
+				HtmlCreateTextSpan(dispInfoArray[0], objTd, CExtraInfoAreaComponentManager.fontSizeClassName);
+
+				// Job補正
+				dispValue = funcCreateDispValueText(dispInfoArray[1], true, false);
+				valueObjectClassName = "";
+
+				objTd = HtmlCreateElement("td", objTr);
+				objTd.setAttribute("class", "CSSCLS_EXTRA_INFO_DISP_TABLE");
+				objSpan = HtmlCreateElement("span", objTd);
+				objSpan.setAttribute("class", valueObjectClassName);
+				HtmlCreateTextSpan(dispValue, objSpan, CExtraInfoAreaComponentManager.fontSizeClassName);
+
+				// 固定値上昇
+				dispValue = funcCreateDispValueText(dispInfoArray[2], true, false);
+				valueObjectClassName = funcGetValueObjectClassNameByValue(dispInfoArray[2], false);
+
+				objTd = HtmlCreateElement("td", objTr);
+				objTd.setAttribute("class", "CSSCLS_EXTRA_INFO_DISP_TABLE");
+				objSpan = HtmlCreateElement("span", objTd);
+				objSpan.setAttribute("class", valueObjectClassName);
+				HtmlCreateTextSpan(dispValue, objSpan, CExtraInfoAreaComponentManager.fontSizeClassName);
+
+				// ％上昇
+				dispValue = funcCreateDispValueTextBySpId(dispInfoArray[3], true, true);
+				valueObjectClassName = funcGetValueObjectClassNameByValue(dispInfoArray[3], false);
+
+				objTd = HtmlCreateElement("td", objTr);
+				objTd.setAttribute("class", "CSSCLS_EXTRA_INFO_DISP_TABLE");
+				objSpan = HtmlCreateElement("span", objTd);
+				objSpan.setAttribute("class", valueObjectClassName);
+				HtmlCreateTextSpan(dispValue, objSpan, CExtraInfoAreaComponentManager.fontSizeClassName);
+			}
 
 			break;
 
@@ -5589,7 +5855,10 @@ CExtraInfoAreaComponentManager.RefreshDispAreaAll = function () {
 	}
 };
 
-
+if (typeof window !== 'undefined') {
+	window.GetExtraInfoText = GetExtraInfoText;
+	window.CExtraInfoAreaComponentManager = CExtraInfoAreaComponentManager;
+}
 
 /*
 CExtraInfoAreaComponentManager.testes = function () {

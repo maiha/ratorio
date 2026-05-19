@@ -1,7 +1,11 @@
 $(function () {
   const buildForm = () => {
+	let test = document.getElementById("history_graph");
+	if (test) {
+      return;
+	}
     $("#OBJID_ATTACK_SETTING_BLOCK_MIG").after(`
-<div style="margin-left:1em;width:4em">
+<div id="history_button" style="margin-left:1em;width:4em">
 <input type="button" id="history_clip" value="Clip" style="width:100%"><br>
 <label style="font-size:x-small;white-space: nowrap;"><input type="checkbox" id="clip_with_memo">memo</label>
 <input type="button" id="history_list" value="List" style="margin-top:0.5em;width:100%;font-size:x-small;">
@@ -92,7 +96,7 @@ div.clip_memo {
       return items[0].dataset.metadata[items[0].parsed.x].memo;
     };
     const ctx = document.getElementById("history_graph");
-    const chart = new Chart(ctx, {
+    let chart = new Chart(ctx, {
       type: 'line',
       data: data,
       options: {
@@ -135,7 +139,7 @@ div.clip_memo {
           const canvasPosition = Chart.helpers.getRelativePosition(e, chart);
           const dataX = chart.scales.x.getValueForPixel(canvasPosition.x);
           if (chart.data.datasets[0].data.length > dataX) {
-            url = chart.data.datasets[0].metadata[Math.abs(dataX)]["url"];
+            let url = chart.data.datasets[0].metadata[Math.abs(dataX)]["url"];
             CSaveController.loadFromURL(url);
             CItemInfoManager.OnClickExtractSwitch();
           }
@@ -153,9 +157,13 @@ div.clip_memo {
         chart.data.datasets[3].data = [];
         target = $(".OBJID_MONSTER_MAP_MONSTER").val();
       }
+      const mgr = CSaveController.getSaveDataManagerCur();
+      mgr.ReCalcManager();
+      calc();
+      LoadSelect2();
       const metadata = { "memo": "", "url": CSaveController.encodeToURL() };
       if ($("#clip_with_memo").prop('checked')) {
-        memo = prompt("clipメモ");
+        let memo = prompt("clipメモ");
         if (memo) metadata["memo"] = memo;
       }
       chart.data.labels.push(chart.data.labels.length + 1);
@@ -173,6 +181,8 @@ div.clip_memo {
       const cycle = parseFloat($(btlrslt_damage_details.get(cycle_index)).text().replaceAll(",", ""));
       chart.data.datasets[3].data.push(isNaN(cycle) ? 0 : cycle);
       chart.update();
+      g_Chart = chart;
+      if (typeof window !== 'undefined') window.g_Chart = g_Chart;
     });
     $("#history_reset").click(e => {
       chart.data.labels = [];
@@ -183,6 +193,8 @@ div.clip_memo {
       chart.data.datasets[3].data = [];
       target = 0;
       chart.update();
+      g_Chart = null;
+      if (typeof window !== 'undefined') window.g_Chart = g_Chart;
     });
     $("#history_list").click(e => {
       $("#history_graph").insertBefore("#clip_modal_table");
@@ -203,8 +215,8 @@ div.clip_memo {
     }
     const reload_history_table = () => {
       $("#clip_modal_table tbody *").remove();
-      body = ""
-      for (i = 0; i < data.labels.length; i++) {
+      let body = ""
+      for (let i = 0; i < data.labels.length; i++) {
         body += `<tr>
                   <td class="col no">${data.labels[i].toLocaleString()}</td>
                   <td class="col">${data.datasets[0].data[i].toLocaleString()}</td>
@@ -224,6 +236,8 @@ div.clip_memo {
       data.datasets[0].metadata[index]["memo"] = e.target.value;
       chart.update();
       reload_history_table();
+      g_Chart = chart;
+      if (typeof window !== 'undefined') window.g_Chart = g_Chart;
     });
     $(document).on("blur", "input.clip_memo", (e) => {
       $(e.target).toggle();
@@ -236,6 +250,7 @@ div.clip_memo {
         flip_clip(index, index - 1);
         chart.update();
         reload_history_table();
+        g_Chart = chart;
       }
     });
     $(document).on("click", ".down_clip", (e) => {
@@ -245,6 +260,7 @@ div.clip_memo {
         flip_clip(index, index + 1);
         chart.update();
         reload_history_table();
+        g_Chart = chart;
       }
     });
     $(document).on("click", ".remove_clip", (e) => {
@@ -258,6 +274,7 @@ div.clip_memo {
       data.datasets[3].data.splice(index, 1);
       chart.update();
       reload_history_table();
+      g_Chart = chart;
     });
     $("#clip_modal").on("modal:before-close", () => {
       $("#history_graph").appendTo("#history_container");
@@ -265,3 +282,9 @@ div.clip_memo {
   };
   buildForm();
 });
+export let g_Chart;
+
+if (typeof window !== 'undefined') {
+    window.g_Chart = g_Chart;
+}
+

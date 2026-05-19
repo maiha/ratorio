@@ -336,8 +336,8 @@ $(document).ready(function () {
 				[EQUIP_REGION_ID_BODY]: '鎧',
 				[EQUIP_REGION_ID_SHOULDER]: '肩にかけるもの',
 				[EQUIP_REGION_ID_SHOES]: '靴',
-				[EQUIP_REGION_ID_ACCESSARY_1]: 'アクセサリ1',
-				[EQUIP_REGION_ID_ACCESSARY_2]: 'アクセサリ2'
+				[EQUIP_REGION_ID_ACCESSORY_1]: 'アクセサリ1',
+				[EQUIP_REGION_ID_ACCESSORY_2]: 'アクセサリ2'
 			};
 			return labels[regionId] || `部位${regionId}`;
 		}
@@ -372,6 +372,11 @@ $(document).ready(function () {
 					this.toggle();
 				}
 			});
+
+			// 背景オーバーレイ（クリックで閉じる）
+			this.$overlay = $('<div class="stash-modal-overlay"></div>').hide();
+			$('body').append(this.$overlay);
+			this.$overlay.on('click', () => this.hide());
 
             this.$stashAll.off('click').on('click', () => {
                 const slot = this.data.getCurrentSlot();
@@ -429,13 +434,33 @@ $(document).ready(function () {
         }
 
         bindAddButtons() {
+            // 履歴選択モーダルを作成
+            this.$historyModal = $(StashUI.HTML_DIV_STASH_HISTORY_MODAL).hide();
+            $('body').append(this.$historyModal);
+            this.$historyModal.find('.stash-history-close').on('click', () => this.$historyModal.hide());
+            $(document).on('click', (e) => {
+                if (this.$historyModal.is(':visible') && !$(e.target).closest('.stash-history-modal, .CSSCLS_STASH_HISTORY_BUTTON').length) {
+                    this.$historyModal.hide();
+                }
+            });
+
             for (const [regionId, def] of StashEquipBinder.regionMappings.entries()) {
                 const $elem = $('#' + def.itemSelectId);
+                if ($elem.length === 0 || $elem.css('visibility') === 'hidden') continue;
+
                 const $container = $('<div style="position: relative;"></div>');
+
+                // 履歴ボタン
+                const $historyBtn = $('<span class="CSSCLS_STASH_HISTORY_BUTTON" title="履歴から選択">履歴</span>');
+                $historyBtn.data('regionId', regionId);
+                $historyBtn.click((e) => {
+                    e.stopPropagation();
+                    this.showHistoryModal(regionId, $historyBtn);
+                });
+
+                // 追加ボタン
                 const $btn = $('<span class="CSSCLS_STASH_COPY_BUTTON" title="Stashに追加">➕</span>');
                 $btn.data('regionId', regionId);
-                $elem.wrap($container);
-                $elem.parent().append($btn);
                 $btn.click((e) => {
                     e.stopPropagation();
                     const binder = StashEquipBinder.fromRegionId(regionId);
@@ -448,10 +473,40 @@ $(document).ready(function () {
                         this.show();
                     }
                 });
+
+                $elem.wrap($container);
+                $elem.parent().append($historyBtn, $btn);
             }
-        
+
             const $toggle = $('#OBJID_STASH_CURRENT_SLOT').off('click').empty().on('click', e => this.toggle());
             this.updateCurrentSlotLabel();
+        }
+
+        showHistoryModal(regionId, $anchor) {
+            const slot = this.data.getCurrentSlot();
+            const items = slot.regionMap.get(regionId) || [];
+            const $list = this.$historyModal.find('.stash-history-list').empty();
+
+            if (items.length === 0) {
+                $list.append('<div class="stash-history-empty">履歴がありません</div>');
+            } else {
+                for (const item of items) {
+                    const $item = $('<div class="stash-history-item"></div>')
+                        .text(item.toDisplayString(',', false))
+                        .on('click', () => {
+                            this.restoreItem(regionId, item);
+                            this.$historyModal.hide();
+                        });
+                    $list.append($item);
+                }
+            }
+
+            // モーダルの位置を調整
+            const offset = $anchor.offset();
+            this.$historyModal.css({
+                top: offset.top + $anchor.outerHeight() + 5,
+                left: Math.min(offset.left, $(window).width() - this.$historyModal.outerWidth() - 10)
+            }).show();
         }
  
         updateCurrentSlotLabel() {
@@ -502,6 +557,7 @@ $(document).ready(function () {
             if (!skipPostProcess) {
                     StAllCalc();
                     LoadSelect2();
+		    calc();
             }
         }
 
@@ -533,9 +589,15 @@ $(document).ready(function () {
                 <div>保存データ (JSON)</div>
                 <textarea id="STASH_EDIT_TEXTAREA"></textarea>
                 <div class="edit-buttons">
-                    <button id="STASH_EDIT_SAVE">保存</button>
-                    <button id="STASH_EDIT_CANCEL">キャンセル</button>
+                    <button type="button" id="STASH_EDIT_SAVE">保存</button>
+                    <button type="button" id="STASH_EDIT_CANCEL">キャンセル</button>
                 </div>
+            </div>
+        `;
+
+        static HTML_DIV_STASH_HISTORY_MODAL = `
+            <div class="stash-history-modal">
+                <div class="stash-history-list"></div>
             </div>
         `;
 
@@ -544,14 +606,14 @@ $(document).ready(function () {
                 <div class="stash-header">
                     <div class="stash-tabs"></div>
                     <div class="stash-controls">
-                        <button class="edit-data-button edit-data-toggle-off">直接編集</button>
-                        <button class="close-button">閉じる</button>
+                        <button type="button" class="edit-data-button edit-data-toggle-off">直接編集</button>
+                        <button type="button" class="close-button">閉じる</button>
                     </div>
                 </div>
                 <div class="stash-content"></div>
                 <div class="stash-footer">
-                    <button class="stash-all-btn">↑ 一括保存</button>
-                    <button class="restore-all-btn">↓ 一括装備</button>
+                    <button type="button" class="stash-all-btn">↑ 一括保存</button>
+                    <button type="button" class="restore-all-btn">↓ 一括装備</button>
                 </div>
             </div>
         `;
@@ -796,10 +858,15 @@ $(document).ready(function () {
             }
         
             $container.append(table);
-        }                
-                
-        show() { this.render(); this.$modal.show(); this.updateCurrentSlotLabel(); }
-		hide() { this.$modal.hide(); this.updateCurrentSlotLabel();}
+        }
+
+        show() {
+            this.render();
+            this.$overlay.show();
+            this.$modal.show();
+            this.updateCurrentSlotLabel();
+        }
+		hide() { this.$modal.hide(); this.$overlay.hide(); this.updateCurrentSlotLabel();}
 		toggle() { this.$modal.is(':visible') ? this.hide() : this.show(); }
 	}
 
@@ -920,10 +987,11 @@ $(document).ready(function () {
 		[EQUIP_REGION_ID_BODY, 'OBJID_BODY', 'OBJID_BODY_REFINE', [CARD_REGION_ID_BODY, CARD_REGION_ID_ENCHANT_BODY_1, CARD_REGION_ID_ENCHANT_BODY_2, CARD_REGION_ID_ENCHANT_BODY_3]],
 		[EQUIP_REGION_ID_SHOULDER, 'OBJID_SHOULDER', 'OBJID_SHOULDER_REFINE', [CARD_REGION_ID_SHOULDER, CARD_REGION_ID_ENCHANT_SHOULDER_1, CARD_REGION_ID_ENCHANT_SHOULDER_2, CARD_REGION_ID_ENCHANT_SHOULDER_3]],
 		[EQUIP_REGION_ID_SHOES, 'OBJID_SHOES', 'OBJID_SHOES_REFINE', [CARD_REGION_ID_SHOES, CARD_REGION_ID_ENCHANT_SHOES_1, CARD_REGION_ID_ENCHANT_SHOES_2, CARD_REGION_ID_ENCHANT_SHOES_3]],
-		[EQUIP_REGION_ID_ACCESSARY_1, 'OBJID_ACCESSARY_1', null, [CARD_REGION_ID_ACCESSARY_1, CARD_REGION_ID_ENCHANT_ACCESSARY_1_1, CARD_REGION_ID_ENCHANT_ACCESSARY_1_2, CARD_REGION_ID_ENCHANT_ACCESSARY_1_3]],
-		[EQUIP_REGION_ID_ACCESSARY_2, 'OBJID_ACCESSARY_2', null, [CARD_REGION_ID_ACCESSARY_2, CARD_REGION_ID_ENCHANT_ACCESSARY_2_1, CARD_REGION_ID_ENCHANT_ACCESSARY_2_2, CARD_REGION_ID_ENCHANT_ACCESSARY_2_3]]
+		[EQUIP_REGION_ID_ACCESSORY_1, 'OBJID_ACCESSORY_1', null, [CARD_REGION_ID_ACCESSORY_1, CARD_REGION_ID_ENCHANT_ACCESSORY_1_1, CARD_REGION_ID_ENCHANT_ACCESSORY_1_2, CARD_REGION_ID_ENCHANT_ACCESSORY_1_3]],
+		[EQUIP_REGION_ID_ACCESSORY_2, 'OBJID_ACCESSORY_2', null, [CARD_REGION_ID_ACCESSORY_2, CARD_REGION_ID_ENCHANT_ACCESSORY_2_1, CARD_REGION_ID_ENCHANT_ACCESSORY_2_2, CARD_REGION_ID_ENCHANT_ACCESSORY_2_3]]
 	];
 	for (const [a, b, c, d] of defs) StashEquipBinder.define(a, b, c, d);
 
+	window.StashEquipBinder = StashEquipBinder;
 	window.StashUI = new StashUI();
 });

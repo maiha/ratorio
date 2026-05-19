@@ -1,9 +1,11 @@
+import { CSaveDataUnitBase } from './CSaveDataUnitBase.js';
+import { CSaveDataConst } from './CSaveDataConst.js';
 /**
  * 計算機の挙動に関する設定を保持するクラス
  * 本クラスは単体で用いられるのでparse時のデータ長不足に特に注意を払う必要があります
  * 他のCSaveDataUnitクラスは複数のクラスと連結された文字列をparseするのでデータ長不足になる可能性が低いです
  */
-class CSaveDataUnitSettings extends CSaveDataUnitBase {
+export class CSaveDataUnitSettings extends CSaveDataUnitBase {
 
     /**
      * タイプ値.
@@ -16,7 +18,7 @@ class CSaveDataUnitSettings extends CSaveDataUnitBase {
      * バージョン番号.
      */
     static get version () {
-        return 3;
+        return 6;
     }
 
     // オーバーライドされた parse 関数
@@ -27,13 +29,25 @@ class CSaveDataUnitSettings extends CSaveDataUnitBase {
         // CSaveDataUnitSettings は他のクラスと異なりデータ長でバージョン判定する必要がある
         const STATE_VERSION_1 = dataText.length < 7;
         const STATE_VERSION_2 = dataText.length < 8;
-        const STATE_VERSION_3 = dataText.length < 17;
+        const STATE_VERSION_3 = dataText.length < 19;
+        const STATE_VERSION_4 = dataText.length < 22;
+        const STATE_VERSION_5 = dataText.length < 25;
+        const STATE_VERSION_6 = dataText.length < 26;
         // データ延長
         if (STATE_VERSION_1) {
             extend += "0";
         }
         if (STATE_VERSION_2) {
             extend += "iA0000000w";
+        }
+        if (STATE_VERSION_3) {
+            extend += "0000";
+        }
+        if (STATE_VERSION_4) {
+            extend += "0";
+        }
+        if (STATE_VERSION_5) {
+            extend += "0";
         }
         // 延長後データを読み込む
         nextOffset = super.parse(dataText + extend, bitOffset);
@@ -72,9 +86,15 @@ class CSaveDataUnitSettings extends CSaveDataUnitBase {
             CSaveDataConst.propNameFloatingInfo4InfoName,
             CSaveDataConst.propNameFloatingInfo5CategoryName,
             CSaveDataConst.propNameFloatingInfo5InfoName,
+            CSaveDataConst.propNameFloatingInfo6CategoryName,
+            CSaveDataConst.propNameFloatingInfo6InfoName,
+            CSaveDataConst.propNameFloatingInfo7CategoryName,
+            CSaveDataConst.propNameFloatingInfo7InfoName,
             CSaveDataConst.propNameItemInfoSwitch,
             CSaveDataConst.propNameItemInfoAutoSwitch,
             CSaveDataConst.propNameItemInfoTimeEffectSwitch,
+            CSaveDataConst.propNamePointCap,
+            CSaveDataConst.propNameDPSActual,
         ];
     }
 
@@ -91,7 +111,7 @@ class CSaveDataUnitSettings extends CSaveDataUnitBase {
     constructor () {
         super();
         // プロパティ定義情報の登録
-        this.registerPropInfo(CSaveDataConst.propNameParseCtrlFlag, 21);    // version 3 で 5 → 21 へ増加
+        this.registerPropInfo(CSaveDataConst.propNameParseCtrlFlag, 26);
         this.registerPropInfo(CSaveDataConst.propNameConfirmDialogSwitch, 1);
         this.registerPropInfo(CSaveDataConst.propNameResultDigit3, 1);
         this.registerPropInfo(CSaveDataConst.propNameAttackInterval, 6);
@@ -111,9 +131,15 @@ class CSaveDataUnitSettings extends CSaveDataUnitBase {
         this.registerPropInfo(CSaveDataConst.propNameFloatingInfo4InfoName, 6);
         this.registerPropInfo(CSaveDataConst.propNameFloatingInfo5CategoryName, 3);
         this.registerPropInfo(CSaveDataConst.propNameFloatingInfo5InfoName, 6);
+        this.registerPropInfo(CSaveDataConst.propNameFloatingInfo6CategoryName, 3);
+        this.registerPropInfo(CSaveDataConst.propNameFloatingInfo6InfoName, 6);
+        this.registerPropInfo(CSaveDataConst.propNameFloatingInfo7CategoryName, 3);
+        this.registerPropInfo(CSaveDataConst.propNameFloatingInfo7InfoName, 6);
         this.registerPropInfo(CSaveDataConst.propNameItemInfoSwitch, 1);
         this.registerPropInfo(CSaveDataConst.propNameItemInfoAutoSwitch, 1);
         this.registerPropInfo(CSaveDataConst.propNameItemInfoTimeEffectSwitch, 1);
+        this.registerPropInfo(CSaveDataConst.propNamePointCap, 1);
+        this.registerPropInfo(CSaveDataConst.propNameDPSActual, 1);
     }
 
     /**
@@ -141,10 +167,16 @@ class CSaveDataUnitSettings extends CSaveDataUnitBase {
         this.setProp(CSaveDataConst.propNameFloatingInfo4InfoName, 0);
         this.setProp(CSaveDataConst.propNameFloatingInfo5CategoryName, 0);
         this.setProp(CSaveDataConst.propNameFloatingInfo5InfoName, 0);
+        this.setProp(CSaveDataConst.propNameFloatingInfo6CategoryName, 0);
+        this.setProp(CSaveDataConst.propNameFloatingInfo6InfoName, 0);
+        this.setProp(CSaveDataConst.propNameFloatingInfo7CategoryName, 0);
+        this.setProp(CSaveDataConst.propNameFloatingInfo7InfoName, 0);
         this.setProp(CSaveDataConst.propNameItemInfoSwitch, 0);
         this.setProp(CSaveDataConst.propNameItemInfoAutoSwitch, 0);
         this.setProp(CSaveDataConst.propNameItemInfoTimeEffectSwitch, 0);
-    }
+        this.setProp(CSaveDataConst.propNamePointCap, 0);
+        this.setProp(CSaveDataConst.propNameDPSActual, 0);
+	}
 
     /**
      * データのコンパクション（不要データの削除）を行う.

@@ -2,7 +2,7 @@
 /**
  * アイテム情報マネージャクラス.
  */
-function CItemInfoManager () {
+export function CItemInfoManager () {
 
 }
 
@@ -183,13 +183,7 @@ CItemInfoManager.RebuildControls = function () {
 	objTr = HtmlCreateElement("tr", objTbody);
 
 	objTd = HtmlCreateElement("td", objTr);
-	// TODO: データ移行過渡処理
-	if (IsEnableMigrationBlockNewProcess()) {
-		objTd.setAttribute("rowspan", 3);
-	}
-	else {
-		objTd.setAttribute("rowspan", 2);
-	}
+	objTd.setAttribute("rowspan", 2);
 	objSelect = HtmlCreateElement("select", objTd);
 	objSelect.setAttribute("id", "OBJID_SELECT_ITEM_INFO_ITEM");
 	objSelect.setAttribute("onchange", "CItemInfoManager.OnChangeSelectItem()");
@@ -234,24 +228,6 @@ CItemInfoManager.RebuildControls = function () {
 	//----------------------------------------------------------------
 	// 公式ツール検索（将来対応）
 	//----------------------------------------------------------------
-	// TODO: データ移行過渡処理
-	if (IsEnableMigrationBlockNewProcess()) {
-		objTr = HtmlCreateElement("tr", objTbody);
-
-		objTd = HtmlCreateElement("td", objTr);
-		objSelect = HtmlCreateElement("select", objTd);
-		objSelect.setAttribute("id", "OBJID_SELECT_ITEM_INFO_TRADE_WORLD");
-		objSelect.setAttribute("onchange", "CItemInfoManager.OnChangeWorldSelect()");
-		HtmlCreateElementOption(13, "Breidablik", objSelect);
-		HtmlCreateElementOption(15, "Noatun", objSelect);
-		HtmlSetObjectValueById("OBJID_SELECT_ITEM_INFO_TRADE_WORLD", CItemInfoManager.tradeWorld);
-
-
-		objTd = HtmlCreateElement("td", objTr);
-		objA = HtmlCreateElement("a", objTd);
-		objA.setAttribute("id", "OBJID_A_ITEM_INFO_OPEN_OFFICIAL_TRADE_INFOMATION");
-		objA.setAttribute("target", "_blank");
-	}
 
 
 
@@ -454,9 +430,9 @@ CItemInfoManager.RefreshItemSelectBox = function (optionIdNew) {
 			case ITEM_KIND_SHIELD:
 			case ITEM_KIND_SHOULDER:
 			case ITEM_KIND_FOOT:
-			case ITEM_KIND_ACCESSARY:
-			case ITEM_KIND_ACCESSARY_ON1:
-			case ITEM_KIND_ACCESSARY_ON2:
+			case ITEM_KIND_ACCESSORY:
+			case ITEM_KIND_ACCESSORY_ON1:
+			case ITEM_KIND_ACCESSORY_ON2:
 				break;
 			default:
 				continue;
@@ -471,7 +447,7 @@ CItemInfoManager.RefreshItemSelectBox = function (optionIdNew) {
 			case ITEM_ID_NOEQUIP_SHIELD:
 			case ITEM_ID_NOEQUIP_SHOULDER:
 			case ITEM_ID_NOEQUIP_SHOES:
-			case ITEM_ID_NOEQUIP_ACCESSARY:
+			case ITEM_ID_NOEQUIP_ACCESSORY:
 			case ITEM_ID_NOEQUIP_SET:
 				continue;
 		}
@@ -503,9 +479,9 @@ CItemInfoManager.RefreshItemSelectBox = function (optionIdNew) {
 			case CARD_KIND_BODY:
 			case CARD_KIND_SHOULDER:
 			case CARD_KIND_FOOT:
-			case CARD_KIND_ACCESSARY:
-			case CARD_KIND_ACCESSARY_ON1:
-			case CARD_KIND_ACCESSARY_ON2:
+			case CARD_KIND_ACCESSORY:
+			case CARD_KIND_ACCESSORY_ON1:
+			case CARD_KIND_ACCESSORY_ON2:
 			case CARD_KIND_ENCHANT:
 			case CARD_KIND_ANY:
 				break;
@@ -529,8 +505,8 @@ CItemInfoManager.RefreshItemSelectBox = function (optionIdNew) {
 		EQUIP_REGION_ID_SHADOW_ARMS_LEFT,
 		EQUIP_REGION_ID_SHADOW_BODY,
 		EQUIP_REGION_ID_SHADOW_FOOT,
-		EQUIP_REGION_ID_SHADOW_ACCESSARY_1,
-		EQUIP_REGION_ID_SHADOW_ACCESSARY_2,
+		EQUIP_REGION_ID_SHADOW_ACCESSORY_1,
+		EQUIP_REGION_ID_SHADOW_ACCESSORY_2,
 	]
 	for (let idx = 0; idx < eqprgnIDs.length; idx++) {
 		const eqpRegionId = eqprgnIDs[idx];
@@ -566,7 +542,7 @@ CItemInfoManager.RefreshItemSelectBox = function (optionIdNew) {
 			case COSTUME_KIND_BODY:
 			case COSTUME_KIND_SHOULDER:
 			case COSTUME_KIND_FOOT:
-			case COSTUME_KIND_ACCESSARY:
+			case COSTUME_KIND_ACCESSORY:
 				break;
 			default:
 				continue;
@@ -669,13 +645,11 @@ CItemInfoManager.RebuildOfficialTradeInformationAnchor = function (kindId, dataI
 	var dataOfficialId = 0;
 	var dataName = "";
 	var dataSlot = 0;
+	var url = "";
 
 	var objA = null;
 
-	// TODO: データ移行過渡処理
-	if (!IsEnableMigrationBlockNewProcess()) {
-		return;
-	}
+	return;
 
 	// 指定なしの場合は、アンカーの URL をクリアする
 	if (dataId == 0) {
@@ -840,9 +814,9 @@ CItemInfoManager.RebuildInfoTableSubItem = function (objTbody, dataId) {
 	case ITEM_KIND_SHIELD:
 	case ITEM_KIND_SHOULDER:
 	case ITEM_KIND_FOOT:
-	case ITEM_KIND_ACCESSARY:
-	case ITEM_KIND_ACCESSARY_ON1:
-	case ITEM_KIND_ACCESSARY_ON2:
+	case ITEM_KIND_ACCESSORY:
+	case ITEM_KIND_ACCESSORY_ON1:
+	case ITEM_KIND_ACCESSORY_ON2:
 		buildInfoArray = [
 			["DEF", itemData[ITEM_DATA_INDEX_POWER]],
 			["スロット", GetSlotText(itemData[ITEM_DATA_INDEX_SLOT])],
@@ -1141,6 +1115,7 @@ CItemInfoManager.AppendEfficiencyInfoSub = function (objRoot, dataKind, dataId, 
 	var textInfoArray = null;
 	var splittedText = "";
 	var splittedTextArray = null;
+	var sourceText = "";
 	var timeItemData = null;
 	var srcDataArray = null;
 	var colorNameMatcher = null;
@@ -1420,4 +1395,6 @@ CItemInfoManager.AppendSetInfo = function (objRoot, dataIdToSetIdMap, bEnableTim
 	);
 };
 
-
+if (typeof window !== 'undefined') {
+	window.CItemInfoManager = CItemInfoManager;
+}

@@ -1,7 +1,7 @@
 /**
  * セーブデータユニット関連定数クラス.
  */
-class CSaveDataConst {
+export class CSaveDataConst {
 
 	/**
 	 * プロパティ名：タイプ値.
@@ -1936,6 +1936,16 @@ class CSaveDataConst {
 	static propNameResultDigit3 = "resultDigit3";
 
 	/**
+	 * プロパティ名：ステータスポイント上限設定.
+	 */
+	static propNamePointCap = "pointCap";
+
+	/**
+	 * プロパティ名：DPS計算設定設定.
+	 */
+	static propNameDPSActual = "DPSActual";
+
+	/**
 	 * プロパティ名：攻撃間隔.
 	 */
 	static propNameAttackInterval = "attackInterval";
@@ -2009,6 +2019,26 @@ class CSaveDataConst {
 	 * プロパティ名：カスタム表示５情報名
 	 */
 	static propNameFloatingInfo5InfoName = "floatingInfo5InfoName";
+
+	/**
+	 * プロパティ名：カスタム表示6カテゴリ名
+	 */
+	static propNameFloatingInfo6CategoryName = "floatingInfo6CategoryName";
+
+	/**
+	 * プロパティ名：カスタム表示6情報名
+	 */
+	static propNameFloatingInfo6InfoName = "floatingInfo6InfoName";
+
+	/**
+	 * プロパティ名：カスタム表示7カテゴリ名
+	 */
+	static propNameFloatingInfo7CategoryName = "floatingInfo7CategoryName";
+
+	/**
+	 * プロパティ名：カスタム表示7情報名
+	 */
+	static propNameFloatingInfo7InfoName = "floatingInfo7InfoName";
 
 	/**
 	 * プロパティ名：アイテム情報スイッチ
@@ -2112,3 +2142,5 @@ class CSaveDataConst {
 }
 // 定数を凍結
 Object.freeze(CSaveDataConst);
+
+Object.assign(window, { CSaveDataConst });

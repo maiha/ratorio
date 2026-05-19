@@ -1,5 +1,5 @@
 // 定数定義
-CARD_KIND_DMY_FOR_ALL = -1;
+window.CARD_KIND_DMY_FOR_ALL = -1;
 
 // 初期処理の実行
 function OnLoadCardList () {
@@ -25,7 +25,7 @@ function SetUpSelectCardType(){
 	HtmlCreateElementOption(CARD_KIND_BODY, "鎧カード", objSelect);
 	HtmlCreateElementOption(CARD_KIND_SHOULDER, "肩カード", objSelect);
 	HtmlCreateElementOption(CARD_KIND_FOOT, "靴カード", objSelect);
-	HtmlCreateElementOption(CARD_KIND_ACCESSARY, "アクセサリカード", objSelect);
+	HtmlCreateElementOption(CARD_KIND_ACCESSORY, "アクセサリカード", objSelect);
 	HtmlCreateElementOption(CARD_KIND_ANY, "全部位カード", objSelect);
 	HtmlCreateElementOption(CARD_KIND_ENCHANT, "エンチャント効果", objSelect);
 	objSelect.value = CARD_KIND_ARMS;
@@ -88,9 +88,9 @@ function PivotData(selectedCardKind) {
 				case CARD_KIND_BODY:
 				case CARD_KIND_SHOULDER:
 				case CARD_KIND_FOOT:
-				case CARD_KIND_ACCESSARY:
-				case CARD_KIND_ACCESSARY_ON1:
-				case CARD_KIND_ACCESSARY_ON2:
+				case CARD_KIND_ACCESSORY:
+				case CARD_KIND_ACCESSORY_ON1:
+				case CARD_KIND_ACCESSORY_ON2:
 				case CARD_KIND_ENCHANT:
 				case CARD_KIND_ANY:
 					break;
@@ -106,9 +106,9 @@ function PivotData(selectedCardKind) {
 				if (selectedCardKind !== CARD_KIND_HEAD) {
 					continue;
 				}
-			} else if ([CARD_KIND_ACCESSARY, CARD_KIND_ACCESSARY_ON1, CARD_KIND_ACCESSARY_ON2].includes(CARD_KIND)) {
+			} else if ([CARD_KIND_ACCESSORY, CARD_KIND_ACCESSORY_ON1, CARD_KIND_ACCESSORY_ON2].includes(CARD_KIND)) {
 			// アクセサリーの場合
-				if (selectedCardKind !== CARD_KIND_ACCESSARY) {
+				if (selectedCardKind !== CARD_KIND_ACCESSORY) {
 					continue;
 				}
 			} else if (CARD_KIND != selectedCardKind) {
@@ -140,6 +140,7 @@ function GetItemToEnchInfoMapAllEnchList() {
 	var idxSlot = 0;
 	var enchListIdArray = null;
 	var enchInfoArrayAllSlots = null;
+	var enchIdToItemIdMapByItemKind = null;
 	var dataMap = null;
 	var itemToSlotInfoMap = null;
 	// 結果用配列を用意
@@ -206,6 +207,13 @@ function DispData(selectedCardKind, cardDataArray) {
 	let enchListId = null;
 	let enchListArrayTo_ItemToEnchInfoMap = null;
 	let itemToEnchInfoMap = null;
+	var enchIdToItemIdMapByItemKind = null;
+	var card_prefix = null;
+	var prefix_index = -1;
+	var prefix = "";
+	var suffix = "";
+	var hit = false;
+	var tmp = null;
 	// ルートオブジェクト取得
 	objRoot = document.getElementById("OBJID_SPAN_ROOT_OF_CARD_LIST");
 	// テーブル生成
@@ -357,13 +365,13 @@ function DispData(selectedCardKind, cardDataArray) {
 				case CARD_KIND_FOOT:
 					partName = "靴";
 					break;
-				case CARD_KIND_ACCESSARY:
+				case CARD_KIND_ACCESSORY:
 					partName = "アクセサリー";
 					break;
-				case CARD_KIND_ACCESSARY_ON1:
+				case CARD_KIND_ACCESSORY_ON1:
 					partName = "アクセサリー(1)";
 					break;
-				case CARD_KIND_ACCESSARY_ON2:
+				case CARD_KIND_ACCESSORY_ON2:
 					partName = "アクセサリー(2)";
 					break;
 				case CARD_KIND_ENCHANT:
@@ -477,18 +485,18 @@ function OnChangeShowEnchantInfo() {
 	以下、slotpager.js からコピペ。
 */
 
-SLOTPAGER_MODE_CARD = 0;
-SLOTPAGER_MODE_RNDENCH = 1;
-SLOTPAGER_MODE_RNDOPT = 1;		// 1 のエイリアス
+window.SLOTPAGER_MODE_CARD = 0;
+window.SLOTPAGER_MODE_RNDENCH = 1;
+window.SLOTPAGER_MODE_RNDOPT = 1;		// 1 のエイリアス
 
-SLOT_INDEX_CARD_MIN = 1;
-SLOT_INDEX_CARD_MAX = 4;
+window.SLOT_INDEX_CARD_MIN = 1;
+window.SLOT_INDEX_CARD_MAX = 4;
 
-SLOT_INDEX_COSTUME_MIN = 1;
-SLOT_INDEX_COSTUME_MAX = 1;
+window.SLOT_INDEX_COSTUME_MIN = 1;
+window.SLOT_INDEX_COSTUME_MAX = 1;
 
-SLOT_INDEX_RNDENCH_MIN = 1;
-SLOT_INDEX_RNDENCH_MAX = 5;
+window.SLOT_INDEX_RNDENCH_MIN = 1;
+window.SLOT_INDEX_RNDENCH_MAX = 5;
 
 
 /*
@@ -792,12 +800,6 @@ function RebuildCardSelectSubSortCollectedEnchListData(enchInfoArrayAllSlots) {
 
 			// 該当がない場合は、後ろに設定する
 			if (enchInfoArray[idx][3] < 0) {
-
-				// デバッグ時はログ出力
-				if (_DEBUG) {
-					WriteConsoleLog("エンチャント並び順未定義" + " : " + "cardId == " + EnumCardId.GetDefinedName(enchInfoArray[idx][1]));
-				}
-
 				enchInfoArray[idx][3] = g_constDataManager.enchListDataManager.sortedEnchantCardIdArray.length + idx;
 			}
 		}
@@ -811,4 +813,14 @@ function RebuildCardSelectSubSortCollectedEnchListData(enchInfoArrayAllSlots) {
 			}
 		);
 	}
+}
+if (typeof window !== 'undefined') {
+	Object.assign(window, {
+		OnLoadCardList, SetUpSelectCardType, RefreshCardListTable, PivotData,
+		GetItemToEnchInfoMapAllEnchList, DispData, OnChangeKindRestrict, OnChangeShowEnchantInfo,
+		RebuildCardSelectSubCollectEnchListData,
+		RebuildCardSelectSubCollectEnchListDataSubUpgradeShinennoKairo,
+		RebuildCardSelectSubCollectEnchListDataSubUpgradeShinentaiBuki,
+		RebuildCardSelectSubSortCollectedEnchListData,
+	});
 }

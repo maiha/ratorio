@@ -1,3 +1,4 @@
+import { CGlobalConstManager } from './CGlobalConstManager.js';
 
 //----------------------------------------------------------------
 // EnumItemDataIndex データの要素番号
@@ -91,9 +92,9 @@ CGlobalConstManager.DefineEnum(
 		"ITEM_KIND_SHIELD",
 		"ITEM_KIND_SHOULDER",
 		"ITEM_KIND_FOOT",
-		"ITEM_KIND_ACCESSARY",
-		"ITEM_KIND_ACCESSARY_ON1",
-		"ITEM_KIND_ACCESSARY_ON2",
+		"ITEM_KIND_ACCESSORY",
+		"ITEM_KIND_ACCESSORY_ON1",
+		"ITEM_KIND_ACCESSORY_ON2",
 	],
 	60,
 	1
@@ -116,9 +117,9 @@ CGlobalConstManager.DefineEnum(
 		"ITEM_KIND_SHADOW_SHIELD",			
 		"ITEM_KIND_SHADOW_SHOULDER",
 		"ITEM_KIND_SHADOW_FOOT",			// 80 シャドウシューズ
-		"ITEM_KIND_SHADOW_ACCESSARY",
-		"ITEM_KIND_SHADOW_ACCESSARY_ON1",	// 82 シャドウアクセサリー１
-		"ITEM_KIND_SHADOW_ACCESSARY_ON2",	// 83 シャドウアクセサリー２
+		"ITEM_KIND_SHADOW_ACCESSORY",
+		"ITEM_KIND_SHADOW_ACCESSORY_ON1",	// 82 シャドウアクセサリー１
+		"ITEM_KIND_SHADOW_ACCESSORY_ON2",	// 83 シャドウアクセサリー２
 	],
 	70,
 	1
@@ -181,13 +182,13 @@ CGlobalConstManager.DefineEnum(
 CGlobalConstManager.DefineEnum(
 	"EnumEquipFlag",
 	[
-		"ITEM_EQPFLG_SERIES_NOVICE",			// 50
+		"ITEM_EQPFLG_SERIES_NOVICE",			// 50 ノービス
 		"ITEM_EQPFLG_SERIES_SWORDMAN",			// 51 ソードマン
 		"ITEM_EQPFLG_SERIES_THIEF_NINJA",		// 52 シーフ
 		"ITEM_EQPFLG_SERIES_ACOLYTE",			// 53
 		"ITEM_EQPFLG_SERIES_ARCHER",			// 54
 		"ITEM_EQPFLG_SERIES_MAGICIAN_LINKER",	// 55 マジシャン リンカー
-		"ITEM_EQPFLG_SERIES_MARCHANT",
+		"ITEM_EQPFLG_SERIES_MARCHANT",			// 56 マーチャント系
 		"ITEM_EQPFLG_RESERVED_57",						// 57 は欠番
 		"ITEM_EQPFLG_SERIES_NINJA",
 		"ITEM_EQPFLG_SERIES_GUNSLINGER",
@@ -198,12 +199,12 @@ CGlobalConstManager.DefineEnum(
 		"ITEM_EQPFLG_SERIES_UPPER_OF_ACOLYTE",			// プリースト系 モンク系
 		"ITEM_EQPFLG_SERIES_UPPER_OF_ARCHER",			// ハンター系 バード系 ダンサー系
 		"ITEM_EQPFLG_SERIES_UPPER_OF_MAGICIAN_LINKER",	// ウィザード系 セージ系 ソウルリンカー系
-		"ITEM_EQPFLG_SERIES_UPPER_OF_MARCHANT",			// ブラックスミス系 アルケミスト系
+		"ITEM_EQPFLG_SERIES_UPPER_OF_MARCHANT",			// 66 ブラックスミス系 アルケミスト系
 		"ITEM_EQPFLG_RESERVED_67",						// 67 は欠番
 		"ITEM_EQPFLG_SERIES_UPPER_OF_NINJA",
 		"ITEM_EQPFLG_SERIES_UPPER_OF_GUNSLINGER",
 
-		"ITEM_EQPFLG_SERIES_SWORDMAN_MARCHANT",			// 70
+		"ITEM_EQPFLG_SERIES_SWORDMAN_MARCHANT",			// 70 ソードマン/マーチャント
 		"ITEM_EQPFLG_TYPE_SILKROBE",					// 剣/聖/魔/商
 		"ITEM_EQPFLG_SERIES_SWORDMAN_THIEF_MARCHANT",
 		"ITEM_EQPFLG_SERIES_ACOLYTE_MARCHANT",
@@ -225,7 +226,7 @@ CGlobalConstManager.DefineEnum(
 		"ITEM_EQPFLG_SERIES_HUNTER_ROGUE",
 		"ITEM_EQPFLG_SERIES_ACOLYTE_ARCHER_MAGICIAN_LINKER",
 
-		"ITEM_EQPFLG_TYPE_ONEHAND_AXE",					// 素/剣/商/暗のみ
+		"ITEM_EQPFLG_TYPE_ONEHAND_AXE",					// 90 素/剣/商/暗/ドルイド のみ
 		"ITEM_EQPFLG_TYPE_SENTO_GREEVE",				// 剣/盗/商/拳/忍
 		"ITEM_EQPFLG_TYPE_DOFRENO_ONO",					// 剣/商/GX/＋
 		"ITEM_EQPFLG_SERIES_3RD_EX2ND",
@@ -273,6 +274,7 @@ CGlobalConstManager.DefineEnum(
 		"ITEM_EQPFLG_SERIES_ZYPSY",
 		"ITEM_EQPFLG_SERIES_PROFESSOR",
 		"ITEM_EQPFLG_SERIES_CREATOR",
+		"ITEM_EQPFLG_SERIES_DRUID"
 	],
 	50,
 	1
@@ -309,7 +311,7 @@ CGlobalConstManager.DefineEnum(
 		"ITEM_EQPFLG_CARDINAL",
 		"ITEM_EQPFLG_WIND_HAWK",
 		"ITEM_EQPFLG_ARCH_MAGE",
-		"ITEM_EQPFLG_MEISTER",
+		"ITEM_EQPFLG_MEISTER",			// 164
 		"ITEM_EQPFLG_IMPERIAL_GUARD",
 		"ITEM_EQPFLG_ABYSS_CHASER",
 		"ITEM_EQPFLG_INQUISITOR",
@@ -324,6 +326,8 @@ CGlobalConstManager.DefineEnum(
 		"ITEM_EQPFLG_NIGHT_WATCH",
 		"ITEM_EQPFLG_HYPER_NOVICE",
 		"ITEM_EQPFLG_SPIRIT_HANDLER",
+		"ITEM_EQPFLG_ALITEA",
+		"ITEM_EQPFLG_SERIES_SWORDMAN_MARCHANT_DRUID", // 179 ソードマン/マーチャント/ドルイド
 	],
 	141,
 	1
@@ -340,7 +344,7 @@ CGlobalConstManager.DefineEnum(
 		"ITEM_EQPFLG_MAJO_NO_HOUKI",			// 193 ハイパーノービス 4次職マジシャン系 4次職アコライト系 ソウルアセティック
 		"ITEM_EQPFLG_TROUBADOUR_TROUVERE",		// 194 トルバドゥール&トルヴェール
 		"ITEM_EQPFLG_4TH_THIEF",				// 195 4次職シーフ系
-		"ITEM_EQPFLG_4TH_EXCLUDE_CAT", 			// 196 4次職 天帝 ソウルアセティック 蜃気楼 不知火 ナイトウォッチ ハイパーノービス
+		"ITEM_EQPFLG_4TH_EXCLUDE_CAT", 			// 196 4次職 天帝 ソウルアセティック 蜃気楼 不知火 ナイトウォッチ ハイパーノービス アリテア
 		"ITEM_EQPFLG_4TH_SWORDMAN_MERCHANT",	// 197 4次職ソードマン系 4次職マーチャント系
 		"ITEM_EQPFLG_4TH_BLADE_USER", 			// 198 ハイパーノービス 4次職ソードマン系 4次職マジシャン系 4次職アーチャー系 4次職シーフ系 4次職マーチャント系 ソウルアセティック 蜃気楼 不知火
 		"ITEM_EQPFLG_4TH_SWORDMAN", 			// 199 4次職ソードマン系
@@ -372,6 +376,7 @@ CGlobalConstManager.DefineEnum(
 		"ITEM_EQPFLG_4TH_ACOLYTE",						// 203 4次職アコライト系
 		"ITEM_EQPFLG_4TH_HAMMER_USER",					// 204 ハイパーノービス 4次職ソードマン系 4次職アコライト系 4次職マーチャント系
 		"ITEM_EQPFLG_4TH_BOW_USER",						// 205 4次職アーチャー系 アビスチェイサー
+		"ITEM_EQPFLG_4TH_SWORDMAN_MERCHANT_ALITEA",		// 206 4次職ソードマン系 4次職マーチャント系 アリテア
 	],
 	202,
 	1
@@ -475,7 +480,7 @@ CGlobalConstManager.DefineEnum(
 		"ITEM_SP_RESIST_ELM_UNDEAD",	// 69 不死属性耐性
 
 		"ITEM_SP_CRITICAL_DAMAGE_UP",		// 70 クリティカルダメージ増加
-		"ITEM_SP_REFLECT_PHYSICAL_DAMAGE",
+		"ITEM_SP_REFLECT_PHYSICAL_DAMAGE",	// 71 物理ダメージ反射
 		"ITEM_SP_LONGRANGE_CRI_PLUS",
 		"ITEM_SP_SKILL_CAST_TIME",			// 73 変動詠唱時間
 		"ITEM_SP_SKILL_DELAY_DOWN",			// 74 ディレイ
@@ -485,7 +490,7 @@ CGlobalConstManager.DefineEnum(
 		"ITEM_SP_RESIST_LONGRANGE",			// 78 遠距離耐性
 		"ITEM_SP_RESIST_NOTBOSS",			// 79 一般耐性
 
-		"ITEM_SP_PHYSICAL_DAMAGE_UP",		// 80
+		"ITEM_SP_PHYSICAL_DAMAGE_UP",		// 80 物理ダメージUP
 		"ITEM_SP_DAMAGE_UP_GROUP_GOBLIN",
 		"ITEM_SP_DAMAGE_UP_GROUP_COBOLD",
 		"ITEM_SP_DAMAGE_UP_GROUP_ORC",
@@ -557,7 +562,7 @@ CGlobalConstManager.DefineEnum(
 		"ITEM_SP_APPEND_STATE_BREAK_SHIELD",
 		"ITEM_SP_APPEND_STATE_BREAK_SHOULDER",
 		"ITEM_SP_APPEND_STATE_BREAK_SHOES",
-		"ITEM_SP_APPEND_STATE_BREAK_ACCESSARY",
+		"ITEM_SP_APPEND_STATE_BREAK_ACCESSORY",
 		"ITEM_SP_PHYSICAL_RESIST_SIZE_SMALL",
 		"ITEM_SP_PHYSICAL_RESIST_SIZE_MEDIUM",
 		"ITEM_SP_PHYSICAL_RESIST_SIZE_LARGE",
@@ -579,8 +584,8 @@ CGlobalConstManager.DefineEnum(
 		"ITEM_SP_RESIST_STATE_BREAK_SHIELD",	// 163 
 		"ITEM_SP_RESIST_STATE_BREAK_SHOULDER",	// 164 
 		"ITEM_SP_RESIST_STATE_BREAK_SHOES",		// 165 
-		"ITEM_SP_RESIST_STATE_BREAK_ACCESSARY",	// 166 
-		"ITEM_SP_RESERVED_167",				// 未使用（167）
+		"ITEM_SP_RESIST_STATE_BREAK_ACCESSORY",	// 166 
+		"ITEM_SP_DAMAGE_UP_EXCLUDING_CRITICAL",	// 167 命中物理攻撃で与えるダメージ+◯%
 		"ITEM_SP_RESERVED_168",				// 未使用（168）
 		"ITEM_SP_RESERVED_169",				// 未使用（169）
 
@@ -1165,7 +1170,7 @@ CGlobalConstManager.DefinePseudoEnum(
 		"ITEM_SP_BASE_LV_OVER_175_OFFSET",			// 4000000000000000
 
 		"ITEM_SP_BASE_LV_OVER_250_OFFSET",			// 5000000000000000
-		"ITEM_SP_RESERVED_6000000000000000",		// 6
+		"ITEM_SP_BASE_LV_OVER_260_OFFSET",			// 6
 		"ITEM_SP_RESERVED_7000000000000000", 		// 7
 
 		// もう限界なので
@@ -1203,7 +1208,7 @@ CGlobalConstManager.DefinePseudoEnum(
 		"ITEM_SP_EQUIPMENT_LOCATION_BODY",		//  1 * 10^18
 		"ITEM_SP_EQUIPMENT_LOCATION_SHOULDER",	//  2 * 10^18
 		"ITEM_SP_EQUIPMENT_LOCATION_SHOES",		//  3 * 10^18
-		"ITEM_SP_EQUIPMENT_LOCATION_ACCESSARY",	//  4 * 10^18
+		"ITEM_SP_EQUIPMENT_LOCATION_ACCESSORY",	//  4 * 10^18
 		"ITEM_SP_EQUIPMENT_LOCATION_HEAD_MID",	//  5 * 10^18
 	],
 	100000000000000000n,
@@ -1215,7 +1220,7 @@ CGlobalConstManager.DefinePseudoEnum(
  * @param kindId 種別ＩＤ
  * @return 種別名
  */
-function GetItemKindNameText(kindId) {
+export function GetItemKindNameText(kindId) {
 	switch (kindId) {
 		case ITEM_KIND_NONE:
 			return "素手";
@@ -1275,11 +1280,11 @@ function GetItemKindNameText(kindId) {
 			return "肩にかける物";
 		case ITEM_KIND_FOOT:
 			return "靴";
-		case ITEM_KIND_ACCESSARY:
+		case ITEM_KIND_ACCESSORY:
 			return "アクセサリ";
-		case ITEM_KIND_ACCESSARY_ON1:
+		case ITEM_KIND_ACCESSORY_ON1:
 			return "アクセサリ(1)";
-		case ITEM_KIND_ACCESSARY_ON2:
+		case ITEM_KIND_ACCESSORY_ON2:
 			return "アクセサリ(2)";
 		case ITEM_KIND_SHADOW_ARMS_RIGHT:
 			return "シャドウウェポン";
@@ -1289,9 +1294,9 @@ function GetItemKindNameText(kindId) {
 			return "シャドウアーマー";
 		case ITEM_KIND_SHADOW_FOOT:
 			return "シャドウシューズ";
-		case ITEM_KIND_SHADOW_ACCESSARY_ON1:
+		case ITEM_KIND_SHADOW_ACCESSORY_ON1:
 			return "シャドウアクセサリ(1)";
-		case ITEM_KIND_SHADOW_ACCESSARY_ON2:
+		case ITEM_KIND_SHADOW_ACCESSORY_ON2:
 			return "シャドウアクセサリ(2)";
 	}
 	return "不明";
@@ -1302,7 +1307,7 @@ function GetItemKindNameText(kindId) {
  * @param itemKind アイテム種別
  * @return true:DEXベース、false:STRベース
  */
-function IsDexBasedArms (itemKind) {
+export function IsDexBasedArms (itemKind) {
 
 	switch (itemKind) {
 
@@ -1326,7 +1331,7 @@ function IsDexBasedArms (itemKind) {
  * @param itemKind アイテム種別
  * @return true:適用される、false:適用されない
  */
-function IsEffectiveExceededRefinedAtkArms (itemKind) {
+export function IsEffectiveExceededRefinedAtkArms (itemKind) {
 
 	// 基本的には、STRベースの武器のみ適用
 	// ただし、楽器と鞭は、DEXベースだが適用される
@@ -1355,7 +1360,7 @@ function IsEffectiveExceededRefinedAtkArms (itemKind) {
  * @param itemKind アイテム種別
  * @return true:銃系列、false:銃以外
  */
-function IsGunSeriesArms (itemKind) {
+export function IsGunSeriesArms (itemKind) {
 
 	switch (itemKind) {
 
@@ -1376,7 +1381,7 @@ function IsGunSeriesArms (itemKind) {
  * @param eqpflg 装備フラグ
  * @return 職業制限テキスト
  */
-function GetJobRestrictText(eqpflg) {
+export function GetJobRestrictText(eqpflg) {
 
 	switch (eqpflg) {
 		case ITEM_EQPFLG_NONE:
@@ -1425,6 +1430,8 @@ function GetJobRestrictText(eqpflg) {
 
 		case ITEM_EQPFLG_SERIES_SWORDMAN_MARCHANT:
 			return "ソードマン・マーチャント系";
+		case ITEM_EQPFLG_SERIES_SWORDMAN_MARCHANT_DRUID:
+			return "ソードマン・マーチャント・ドルイド系";
 		case ITEM_EQPFLG_TYPE_SILKROBE:
 			return "ソードマン・アコライト・マジシャン・マーチャント系";
 		case ITEM_EQPFLG_SERIES_SWORDMAN_THIEF_MARCHANT:
@@ -1464,7 +1471,7 @@ function GetJobRestrictText(eqpflg) {
 		case ITEM_EQPFLG_SERIES_ACOLYTE_ARCHER_MAGICIAN_LINKER:
 			return "アコライト・アーチャー・マジシャン・ソウルリンカー系";
 		case ITEM_EQPFLG_TYPE_ONEHAND_AXE:
-			return "ノービス・ソードマン・マーチャント・アサシン系";
+			return "ノービス・ソードマン・マーチャント・アサシン・ドルイド系";
 		case ITEM_EQPFLG_TYPE_SENTO_GREEVE:
 			return "ソードマン・シーフ・マーチャント・拳聖・忍者系";
 		case ITEM_EQPFLG_TYPE_DOFRENO_ONO:
@@ -1546,6 +1553,8 @@ function GetJobRestrictText(eqpflg) {
 			return "プロフェッサー系";
 		case ITEM_EQPFLG_SERIES_CREATOR:
 			return "クリエイター系";
+		case ITEM_EQPFLG_SERIES_DRUID:
+			return "ドルイド系";
 
 		case ITEM_EQPFLG_TAEGWON:
 			return "テコンキッド";
@@ -1592,7 +1601,7 @@ function GetJobRestrictText(eqpflg) {
 		case 1000 + ITEM_EQPFLG_NONE:
 			return "転生職";
 		case 1000 + ITEM_EQPFLG_IGNORE_NOVICE_SERIES:
-			return "転生ソードマン系 転生マーチャント系 転生シーフ系 転生アーチャー系 転生マジシャン系";
+			return "転生1次職 上位2次職 3次職 4次職";
 		case 1000 + ITEM_EQPFLG_SERIES_SWORDMAN:
 			return "転生ソードマン系";
 		case 1000 + ITEM_EQPFLG_SERIES_THIEF_NINJA:
@@ -1673,6 +1682,8 @@ function GetJobRestrictText(eqpflg) {
 			return "ナイトウォッチ";
 		case ITEM_EQPFLG_SPIRIT_HANDLER:
 			return "スピリットハンドラー";
+		case ITEM_EQPFLG_ALITEA:
+			return "アリテア";
 		case ITEM_EQPFLG_ABYSS_CHASER:
 			return "アビスチェイサー";
 		case ITEM_EQPFLG_SHINKIRO_SHIRANUI:
@@ -1703,6 +1714,8 @@ function GetJobRestrictText(eqpflg) {
 			return "ハイパーノービス 4次職ソードマン系 4次職アコライト系 4次職マーチャント系";
 		case ITEM_EQPFLG_4TH_BOW_USER:
 			return "4次職アーチャー系 アビスチェイサー";
+		case ITEM_EQPFLG_4TH_SWORDMAN_MERCHANT_ALITEA:
+			return "4次職ソードマン系 4次職マーチャント系 アリテア";
 	}
 	return "不明";
 }
@@ -1713,7 +1726,7 @@ function GetJobRestrictText(eqpflg) {
  * @param wpnlv 武器レベル
  * @returns ペナルティ回避STR
  */
-function GetStrPenaltyAvoidStr(atk, wpnlv) {
+export function GetStrPenaltyAvoidStr(atk, wpnlv) {
 	var penaValue = Math.floor(atk * 2 / 3);
 	var wlvBonus = 4 / (Math.floor(wpnlv) % 10);
 	var needStr = Math.ceil(Math.sqrt(penaValue / wlvBonus)) * 10;
@@ -1726,7 +1739,7 @@ function GetStrPenaltyAvoidStr(atk, wpnlv) {
  * @param wpnlv 武器レベル（当該データに合成しているので）
  * @returns エンチャントタイプID
  */
-function GetEnchantTypeId(wpnlv) {
+export function GetEnchantTypeId(wpnlv) {
 	return Math.floor(wpnlv / 10) % 10000;
 }
 
@@ -1735,7 +1748,7 @@ function GetEnchantTypeId(wpnlv) {
  * @param wpnlv 武器レベル（当該データに合成しているので）
  * @returns ランダムオプションタイプID
  */
-function GetRndOptTypeId(wpnlv) {
+export function GetRndOptTypeId(wpnlv) {
 	return Math.floor(wpnlv / 10 / 10000);
 }
 
@@ -1744,7 +1757,7 @@ function GetRndOptTypeId(wpnlv) {
  * @param slotValue スロット定義値
  * @returns スロット数テキスト
  */
-function GetSlotText(slotValue) {
+export function GetSlotText(slotValue) {
 
 	var slotValueWork = 0;
 	var slotText = "";
@@ -1780,7 +1793,7 @@ function GetSlotText(slotValue) {
  * @param slotValue スロット定義値
  * @returns 最大スロット数
  */
-function GetMaxSlot(slotValue) {
+export function GetMaxSlot(slotValue) {
 
 	var slotValueWork = 0;
 	var slotCount = 0;
@@ -1806,7 +1819,7 @@ function GetMaxSlot(slotValue) {
 }
 
 // TODO: 削除予定
-function GetItemSP(itemId, spid) {
+export function GetItemSP(itemId, spid) {
 
 	var idx = 0;
 	var itemData = ItemObjNew[itemId];
@@ -1829,7 +1842,8 @@ function GetItemSP(itemId, spid) {
  * @param spValue SP値
  * @return 説明テキスト
  */
-function GetItemExplainText(spId, spValue) {
+export function GetItemExplainText(spId, spValue) {
+	var idx = 0;
 
 	let condTextEquipmentLocation = "";
 	let condTextTranscendence = "";
@@ -1869,7 +1883,7 @@ function GetItemExplainText(spId, spValue) {
             case toSafeBigInt(ITEM_SP_EQUIPMENT_LOCATION_SHOES) / baseFlag:  
                 condTextEquipmentLocation = "靴";  
                 break;
-            case toSafeBigInt(ITEM_SP_EQUIPMENT_LOCATION_ACCESSARY) / baseFlag:  
+            case toSafeBigInt(ITEM_SP_EQUIPMENT_LOCATION_ACCESSORY) / baseFlag:  
                 condTextEquipmentLocation = "アクセサリー";  
                 break;  
             case toSafeBigInt(ITEM_SP_EQUIPMENT_LOCATION_HEAD_MID) / baseFlag:  
@@ -1948,6 +1962,9 @@ function GetItemExplainText(spId, spValue) {
 		break;
 	case 5:
 		condTextFriendlyOver = "BaseLvが250以上の時、追加で";
+		break;
+	case 6:
+		condTextFriendlyOver = "BaseLvが260以上の時、追加で";
 		break;
 	}
 
@@ -2291,6 +2308,10 @@ function GetItemExplainText(spId, spValue) {
 		case ITEM_SP_PHYSICAL_DAMAGE_UP:
 			textInfoArray.push(["", "物理攻撃で与えるダメージ" + sign + spValue + "%"]);
 			break;
+		
+		case ITEM_SP_DAMAGE_UP_EXCLUDING_CRITICAL:
+			textInfoArray.push(["", "命中物理攻撃で与えるダメージ" + sign + spValue + "%"]);
+			break;
 
 		case ITEM_SP_DAMAGE_UP_GROUP_GOBLIN:
 			textInfoArray.push(["", "ゴブリン系に対するダメージ" + sign + spValue + "%"]);
@@ -2458,7 +2479,7 @@ function GetItemExplainText(spId, spValue) {
 		case ITEM_SP_APPEND_STATE_BREAK_SHIELD:
 		case ITEM_SP_APPEND_STATE_BREAK_SHOULDER:
 		case ITEM_SP_APPEND_STATE_BREAK_SHOES:
-		case ITEM_SP_APPEND_STATE_BREAK_ACCESSARY:
+		case ITEM_SP_APPEND_STATE_BREAK_ACCESSORY:
 			textInfoArray.push(["", "物理攻撃時、" + spValue + "%の確率で敵を" + GetStateText(spId - ITEM_SP_APPEND_STATE_POISON) + "にする"]);
 			break;
 
@@ -2479,7 +2500,7 @@ function GetItemExplainText(spId, spValue) {
 		case ITEM_SP_RESIST_STATE_BREAK_SHIELD:
 		case ITEM_SP_RESIST_STATE_BREAK_SHOULDER:
 		case ITEM_SP_RESIST_STATE_BREAK_SHOES:
-		case ITEM_SP_RESIST_STATE_BREAK_ACCESSARY:
+		case ITEM_SP_RESIST_STATE_BREAK_ACCESSORY:
 			textInfoArray.push(["", "状態異常 " + GetStateText(spId - ITEM_SP_RESIST_STATE_POISON) + " に対する耐性 + " + spValue + "%"]);
 			break;
 		
@@ -2801,7 +2822,7 @@ function GetItemExplainText(spId, spValue) {
 			break;
 
 		case ITEM_SP_PHYSICAL_DAMAGE_UP_SIZE_ALL:
-			textInfoArray.push(["", "物理攻撃時、全てのサイズのモンスターに与えるダメージ" + sign + spValue + "%。"]);
+			textInfoArray.push(["", "物理攻撃時、小・中・大型モンスターに与えるダメージ" + sign + spValue + "%。"]);
 			break;
 
 		case ITEM_SP_PHYSICAL_DAMAGE_UP_RACE_ALL:
@@ -2831,7 +2852,7 @@ function GetItemExplainText(spId, spValue) {
 			break;
 
 		case ITEM_SP_MAGICAL_DAMAGE_UP_SIZE_ALL:
-			textInfoArray.push(["", "魔法攻撃時、全てのサイズのモンスターに与えるダメージ" + sign + spValue + "%。"]);
+			textInfoArray.push(["", "魔法攻撃時、小・中・大型モンスターに与えるダメージ" + sign + spValue + "%。"]);
 			break;
 
 		case ITEM_SP_MAGICAL_DAMAGE_UP_RACE_ALL:
@@ -3051,46 +3072,46 @@ function GetItemExplainText(spId, spValue) {
 
 			else if (ITEM_SP_SKILL_CAST_TIME_OFFSET <= spId && spId < ITEM_SP_SKILL_CAST_TIME_OFFSET + 2000){
 				if(spValue > 0) {
-					textInfoArray.push(["", "["+ SkillObjNew[spId - ITEM_SP_SKILL_CAST_TIME_OFFSET][SKILL_DATA_INDEX_NAME] + "]の詠唱時間 " + spValue + "%減少"]);
+					textInfoArray.push(["", "["+ SkillObjNew[spId - ITEM_SP_SKILL_CAST_TIME_OFFSET][SKILL_DATA_INDEX_NAME] + "]の変動詠唱時間 - " + spValue + "%"]);
 				}
 				else {
-					textInfoArray.push(["", "["+ SkillObjNew[spId - ITEM_SP_SKILL_CAST_TIME_OFFSET][SKILL_DATA_INDEX_NAME] + "]の詠唱時間 " + (-1 * spValue) + "%増加"]);
+					textInfoArray.push(["", "["+ SkillObjNew[spId - ITEM_SP_SKILL_CAST_TIME_OFFSET][SKILL_DATA_INDEX_NAME] + "]の変動詠唱時間 + " + (-1 * spValue) + "%"]);
 				}
 			}
 
 			else if (ITEM_SP_SKILL_CAST_MINUS_OFFSET <= spId && spId < ITEM_SP_SKILL_CAST_MINUS_OFFSET + 2000){
 				if(spValue > 0) {
-					textInfoArray.push(["", "["+ SkillObjNew[spId - ITEM_SP_SKILL_CAST_MINUS_OFFSET][SKILL_DATA_INDEX_NAME] + "]の詠唱時間 " + (spValue / 1000) + "秒減少"]);
+					textInfoArray.push(["", "["+ SkillObjNew[spId - ITEM_SP_SKILL_CAST_MINUS_OFFSET][SKILL_DATA_INDEX_NAME] + "]の変動詠唱時間 - " + (spValue / 1000) + "秒"]);
 				}
 				else {
-					textInfoArray.push(["", "["+ SkillObjNew[spId - ITEM_SP_SKILL_CAST_MINUS_OFFSET][SKILL_DATA_INDEX_NAME] + "]の詠唱時間 " + (-1 * spValue / 1000) + "秒増加"]);
+					textInfoArray.push(["", "["+ SkillObjNew[spId - ITEM_SP_SKILL_CAST_MINUS_OFFSET][SKILL_DATA_INDEX_NAME] + "]の変動詠唱時間 + " + (-1 * spValue / 1000) + "秒"]);
 				}
 			}
 
 			else if (ITEM_SP_SKILL_FIXED_TIME_OFFSET <= spId && spId < ITEM_SP_SKILL_FIXED_TIME_OFFSET + 2000){
 				if(spValue > 0) {
-					textInfoArray.push(["", "["+ SkillObjNew[spId - ITEM_SP_SKILL_FIXED_TIME_OFFSET][SKILL_DATA_INDEX_NAME] + "]の固定詠唱時間 " + spValue + "%減少"]);
+					textInfoArray.push(["", "["+ SkillObjNew[spId - ITEM_SP_SKILL_FIXED_TIME_OFFSET][SKILL_DATA_INDEX_NAME] + "]の固定詠唱時間 - " + spValue + "%"]);
 				}
 				else {
-					textInfoArray.push(["", "["+ SkillObjNew[spId - ITEM_SP_SKILL_FIXED_TIME_OFFSET][SKILL_DATA_INDEX_NAME] + "]の固定詠唱時間 " + (-1 * spValue) + "%増加"]);
+					textInfoArray.push(["", "["+ SkillObjNew[spId - ITEM_SP_SKILL_FIXED_TIME_OFFSET][SKILL_DATA_INDEX_NAME] + "]の固定詠唱時間 + " + (-1 * spValue) + "%"]);
 				}
 			}
 
 			else if (ITEM_SP_SKILL_FIXED_MINUS_OFFSET <= spId && spId < ITEM_SP_SKILL_FIXED_MINUS_OFFSET + 2000){
 				if(spValue > 0) {
-					textInfoArray.push(["", "["+ SkillObjNew[spId - ITEM_SP_SKILL_FIXED_MINUS_OFFSET][SKILL_DATA_INDEX_NAME] + "]の固定詠唱時間 " + (spValue / 1000) + "秒減少"]);
+					textInfoArray.push(["", "["+ SkillObjNew[spId - ITEM_SP_SKILL_FIXED_MINUS_OFFSET][SKILL_DATA_INDEX_NAME] + "]の固定詠唱時間 - " + (spValue / 1000) + "秒"]);
 				}
 				else {
-					textInfoArray.push(["", "["+ SkillObjNew[spId - ITEM_SP_SKILL_FIXED_MINUS_OFFSET][SKILL_DATA_INDEX_NAME] + "]の固定詠唱時間 " + (-1 * spValue / 1000) + "秒増加"]);
+					textInfoArray.push(["", "["+ SkillObjNew[spId - ITEM_SP_SKILL_FIXED_MINUS_OFFSET][SKILL_DATA_INDEX_NAME] + "]の固定詠唱時間 + " + (-1 * spValue / 1000) + "秒"]);
 				}
 			}
 
 			else if (ITEM_SP_SKILL_COOL_MINUS_OFFSET <= spId && spId < ITEM_SP_SKILL_COOL_MINUS_OFFSET + 2000){
 				if(spValue > 0) {
-					textInfoArray.push(["", "["+ SkillObjNew[spId - ITEM_SP_SKILL_COOL_MINUS_OFFSET][SKILL_DATA_INDEX_NAME] + "]のクールタイム " + (spValue / 1000) + "秒減少"]);
+					textInfoArray.push(["", "["+ SkillObjNew[spId - ITEM_SP_SKILL_COOL_MINUS_OFFSET][SKILL_DATA_INDEX_NAME] + "]の再使用待機時間 - " + (spValue / 1000) + "秒"]);
 				}
 				else {
-					textInfoArray.push(["", "["+ SkillObjNew[spId - ITEM_SP_SKILL_COOL_MINUS_OFFSET][SKILL_DATA_INDEX_NAME] + "]のクールタイム " + (-1 * spValue / 1000) + "秒増加"]);
+					textInfoArray.push(["", "["+ SkillObjNew[spId - ITEM_SP_SKILL_COOL_MINUS_OFFSET][SKILL_DATA_INDEX_NAME] + "]の再使用待機時間 + " + (-1 * spValue / 1000) + "秒"]);
 				}
 			}
 
@@ -3116,4 +3137,19 @@ function GetItemExplainText(spId, spValue) {
 
 
 	return textInfoArray;
+}
+
+if (typeof window !== 'undefined') {
+	window.GetItemKindNameText = GetItemKindNameText;
+	window.IsDexBasedArms = IsDexBasedArms;
+	window.IsEffectiveExceededRefinedAtkArms = IsEffectiveExceededRefinedAtkArms;
+	window.IsGunSeriesArms = IsGunSeriesArms;
+	window.GetJobRestrictText = GetJobRestrictText;
+	window.GetStrPenaltyAvoidStr = GetStrPenaltyAvoidStr;
+	window.GetEnchantTypeId = GetEnchantTypeId;
+	window.GetRndOptTypeId = GetRndOptTypeId;
+	window.GetSlotText = GetSlotText;
+	window.GetMaxSlot = GetMaxSlot;
+	window.GetItemSP = GetItemSP;
+	window.GetItemExplainText = GetItemExplainText;
 }

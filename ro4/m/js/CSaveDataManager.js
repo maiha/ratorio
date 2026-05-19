@@ -1,7 +1,46 @@
+import { CSaveDataConst } from './savedata/CSaveDataConst.js';
+import { CSaveDataUnitTypeManager } from './savedata/CSaveDataUnitTypeManager.js';
+import { CSaveDataUnitParse } from './savedata/CSaveDataUnitParse.js';
+import { SKeyMap } from './savedata/SKeyMap.js';
+import { CSingletonMapper } from './savedata/CSingletonMapper.js';
+import { CMultiValueMapper } from './savedata/CMultiValueMapper.js';
+import {
+	SAVE_DATA_UNIT_TYPE_VERSION,
+	SAVE_DATA_UNIT_TYPE_CHARA,
+	SAVE_DATA_UNIT_TYPE_EQUIPABLE,
+	SAVE_DATA_UNIT_TYPE_EQUIP_REGIONS,
+	SAVE_DATA_UNIT_TYPE_LEARNED_SKILLS,
+	SAVE_DATA_UNIT_TYPE_CHARA_BUFF,
+	SAVE_DATA_UNIT_TYPE_SKILL_BUFF_SELF,
+	SAVE_DATA_UNIT_TYPE_SKILL_BUFF_1ST,
+	SAVE_DATA_UNIT_TYPE_SKILL_BUFF_2ND,
+	SAVE_DATA_UNIT_TYPE_SKILL_BUFF_3RD,
+	SAVE_DATA_UNIT_TYPE_SKILL_BUFF_4TH,
+	SAVE_DATA_UNIT_TYPE_SKILL_BUFF_MUSIC,
+	SAVE_DATA_UNIT_TYPE_SKILL_BUFF_GUILD,
+	SAVE_DATA_UNIT_TYPE_ITEM_BUFF,
+	SAVE_DATA_UNIT_TYPE_TIME_BUFF,
+	SAVE_DATA_UNIT_TYPE_AUTO_SPELLS,
+	SAVE_DATA_UNIT_TYPE_CHARA_DEBUFF,
+	SAVE_DATA_UNIT_TYPE_CHARA_CONF_BASIC,
+	SAVE_DATA_UNIT_TYPE_CHARA_CONF_SPECIALIZE,
+	SAVE_DATA_UNIT_TYPE_CHARA_CONF_SKILL,
+	SAVE_DATA_UNIT_TYPE_MOB,
+	SAVE_DATA_UNIT_TYPE_MOB_CONF_PLAYER,
+	SAVE_DATA_UNIT_TYPE_MOB_CONF_PLAYER2,
+	SAVE_DATA_UNIT_TYPE_MOB_CONF_INPUT,
+	SAVE_DATA_UNIT_TYPE_MOB_BUFF,
+	SAVE_DATA_UNIT_TYPE_MOB_DEBUFF,
+	SAVE_DATA_UNIT_TYPE_ATTACK_CONF,
+	SAVE_DATA_UNIT_TYPE_SETTINGS,
+	SAVE_DATA_UNIT_TYPE_CHARA_CONF_SPEC_BASIC,
+	SAVE_DATA_UNIT_TYPE_EQUIP_ARROW,
+} from './savedata/CSaveDataUnit.js';
+
 /**
  * セーブデータマネージャクラス.
  */
-class CSaveDataManager {
+export class CSaveDataManager {
 
 	/**
 	 * プロパティに対応するHTMLオブジェクトIDのマップ（Map< type, Map< propName, objectID > >）.
@@ -41,8 +80,8 @@ class CSaveDataManager {
 				[CSaveDataConst.propNameEqpRgnBody, "OBJID_BODY"],
 				[CSaveDataConst.propNameEqpRgnShoulder, "OBJID_SHOULDER"],
 				[CSaveDataConst.propNameEqpRgnFoot, "OBJID_SHOES"],
-				[CSaveDataConst.propNameEqpRgnAccessory1, "OBJID_ACCESSARY_1"],
-				[CSaveDataConst.propNameEqpRgnAccessory2, "OBJID_ACCESSARY_2"],
+				[CSaveDataConst.propNameEqpRgnAccessory1, "OBJID_ACCESSORY_1"],
+				[CSaveDataConst.propNameEqpRgnAccessory2, "OBJID_ACCESSORY_2"],
 
 // TODO: 現状、矢は特殊処理
 				[CSaveDataConst.propNameEqpRgnArrow, "OBJID_SELECT_ARROW"],
@@ -214,8 +253,137 @@ class CSaveDataManager {
 		this.#saveDataUnitArray = [];
 	}
 
+
 	/**
-	 * URLクエリ文字列として出力する.
+	 * JSONに変換する.
+	 */
+	encodeToJSON () {
+
+		if (!Array.isArray(this.#saveDataUnitArray)) {
+			return "";
+		}
+
+		// 全てのセーブデータユニットを効率的に JSON に変換
+		const unitDataArray = this.#saveDataUnitArray.map((unit) => {
+			// Map -> Object に変換（JSON 対応）
+			const parsedMapObj = {};
+			unit.parsedMap.forEach((value, key) => {
+				parsedMapObj[key] = value;
+			});
+
+			const propInfoMapObj = {};
+			unit.propInfoMap.forEach((value, key) => {
+				propInfoMapObj[key] = {
+					name: value.name,
+					bits: value.bits
+				};
+			});
+
+			return {
+				parsedMap: parsedMapObj,
+				propInfoMap: propInfoMapObj
+			};
+		});
+
+		// JSON 文字列に変換して返す（BigInt を文字列に変換）
+		return JSON.stringify(unitDataArray, (key, value) => {
+			if (typeof value === 'bigint') {
+				return value.toString();
+			}
+			return value;
+		});
+	}
+
+	/**
+	 * JSON からパース済みデータを復元する.
+	 * @param {Array} restoredUnitArray 復元されたユニット配列
+	 */
+	restoreFromParsedData (restoredUnitArray) {
+		if (!Array.isArray(restoredUnitArray)) {
+			return;
+		}
+
+		// 復元したデータを実際の CSaveDataUnit サブクラスインスタンスに変換
+		this.#saveDataUnitArray = restoredUnitArray.map((unit) => {
+			// 復元されたデータから type を取得
+			const typeValue = unit.parsedMap instanceof Map 
+				? unit.parsedMap.get(CSaveDataConst.propNameType)
+				: (unit.parsedMap[CSaveDataConst.propNameType] !== undefined 
+					? unit.parsedMap[CSaveDataConst.propNameType]
+					: null);
+
+			const unitType = typeValue !== null 
+				? floorBigInt32(typeValue)
+				: null;
+
+			// type に基づいて適切なクラスを生成
+			let newUnit = null;
+			if (unitType !== null) {
+				const unitClass = CSaveDataUnitTypeManager.getUnitClass(unitType);
+				if (unitClass) {
+					newUnit = new unitClass();
+				}
+			}
+
+			if (!newUnit) {
+				// フォールバック：既存のマップデータを使用
+				newUnit = {
+					parsedMap: unit.parsedMap instanceof Map ? unit.parsedMap : new CMultiValueMapper(),
+					propInfoMap: unit.propInfoMap instanceof Map ? unit.propInfoMap : new CSingletonMapper(),
+					getProp: function(propName) {
+						if (this.parsedMap instanceof Map) {
+							return this.parsedMap.get(propName);
+						}
+						return this.parsedMap[propName];
+					},
+					setProp: function(propName, value) {
+						if (this.parsedMap instanceof Map) {
+							this.parsedMap.set(propName, value);
+						} else {
+							this.parsedMap[propName] = value;
+						}
+					}
+				};
+			} else {
+				// 新しく生成されたインスタンスに復元データをセット
+				if (unit.parsedMap instanceof Map) {
+					unit.parsedMap.forEach((value, key) => {
+						newUnit.setProp(key, value);
+					});
+				} else {
+					Object.entries(unit.parsedMap).forEach(([key, value]) => {
+						newUnit.setProp(key, value);
+					});
+				}
+			}
+
+			return newUnit;
+		});
+	}
+
+
+
+	/**
+	 * 計算機の状態を採取して状態を更新する.
+	 */
+	ReCalcManager() {
+		if (!Array.isArray(this.#saveDataUnitArray)) {
+			return "";
+		}
+
+		this.parseDataTextForCreateSave(SaveSystem());
+		this.#collectDataEquipable();
+		this.#collectDataCharaConfDebuff();
+		this.#collectDataShadowEquips();
+		this.doCompaction();
+		this.applyDataToControls();
+		CItemInfoManager.RebuildControls();
+	}
+
+
+	/**
+	 * 計算機の状態を採取してURLクエリ文字列として出力する.
+	 * セーブ時のみ呼び出される.
 	 * @returns {string} URLクエリ文字列
 	 */
 	encodeToURL () {
@@ -226,12 +394,12 @@ class CSaveDataManager {
 
 		// TODO: 暫定対処　旧形式の保存処理を呼び出してパースする
 		// パース処理のなかで、メンバ変数の配列を置き換えるため、データ追記はこれ以降に行う
-		this.parseDataText(SaveSystem())
+		this.parseDataTextForCreateSave(SaveSystem())
 
 		// 次世代版限定データの追加
+		this.#collectDataEquipable();
 		this.#collectDataCharaConfDebuff();
 		this.#collectDataShadowEquips();
-		this.#collectDataTranscendence();
 
 		// コンパクション
 		this.doCompaction();
@@ -244,6 +412,150 @@ class CSaveDataManager {
 		}
 
 		return dataTextWork;
+	}
+
+	/**
+	 * 装備部位データユニットを取得する
+	 * @param {*} reginKind CSaveDataConst.eqpRgnKindItem | CSaveDataConst.eqpRgnKindCostume | CSaveDataConst.eqpRgnKindShadow
+	 * @returns saveDataUnitEqpRgn
+	 */
+	#setupRegionUnit(reginKind) {
+		// 装備箇所 判定用 データユニット 用意（すでに存在する可能性がある）
+		let saveDataUnitEqpRgn = null;
+		for (let idx = 0; idx < this.#saveDataUnitArray.length; idx++) {
+			const saveDataUnit = this.#saveDataUnitArray[idx];
+			// 装備用装備箇所データユニットでなければ、次へ
+			if (saveDataUnit.constructor.type != SAVE_DATA_UNIT_TYPE_EQUIP_REGIONS) {
+				continue;
+			}
+			if (floorBigInt32(saveDataUnit.getProp(CSaveDataConst.propNameDataKind)) != reginKind) {
+				continue;
+			}
+			// ここまで来れば、目的のデータユニット
+			saveDataUnitEqpRgn = saveDataUnit;
+			break;
+		}
+		// メンバ変数の配列に存在しなかった場合は、新規に作成
+		if (!saveDataUnitEqpRgn) {
+			saveDataUnitEqpRgn = new (CSaveDataUnitTypeManager.getUnitClass(SAVE_DATA_UNIT_TYPE_EQUIP_REGIONS))();
+			saveDataUnitEqpRgn.SetUpAsDefault();
+			saveDataUnitEqpRgn.setProp(CSaveDataConst.propNameDataKind, reginKind);
+			this.#saveDataUnitArray.push(saveDataUnitEqpRgn);
+		}
+		return saveDataUnitEqpRgn;
+	}
+
+	/**
+	 * セーブ時、装備欄のデータをセーブデータユニットに追加する
+	 */
+	#collectDataEquipable() {
+		// 装備箇所ID配列
+		const eqpRgnIdArray = [
+			MIG_EQUIP_REGION_ID_ARMS_RIGHT,
+			MIG_EQUIP_REGION_ID_ARMS_LEFT,
+			MIG_EQUIP_REGION_ID_HEAD_TOP,
+			MIG_EQUIP_REGION_ID_HEAD_MID,
+			MIG_EQUIP_REGION_ID_HEAD_UNDER,
+			MIG_EQUIP_REGION_ID_SHIELD,
+			MIG_EQUIP_REGION_ID_BODY,
+			MIG_EQUIP_REGION_ID_SHOULDER,
+			MIG_EQUIP_REGION_ID_FOOT,
+			MIG_EQUIP_REGION_ID_ACCESSORY_1,
+			MIG_EQUIP_REGION_ID_ACCESSORY_2,
+		];
+		// カードマップ
+		const cardMap = {
+			[MIG_EQUIP_REGION_ID_ARMS_RIGHT]: "OBJID_ARMS_RIGHT",
+			[MIG_EQUIP_REGION_ID_ARMS_LEFT]: "OBJID_ARMS_LEFT",
+			[MIG_EQUIP_REGION_ID_HEAD_TOP]: "OBJID_HEAD_TOP",
+			[MIG_EQUIP_REGION_ID_HEAD_MID]: "OBJID_HEAD_MID",
+			[MIG_EQUIP_REGION_ID_HEAD_UNDER]: "OBJID_HEAD_UNDER",
+			[MIG_EQUIP_REGION_ID_SHIELD]: "OBJID_SHIELD",
+			[MIG_EQUIP_REGION_ID_BODY]: "OBJID_BODY",
+			[MIG_EQUIP_REGION_ID_SHOULDER]: "OBJID_SHOULDER",
+			[MIG_EQUIP_REGION_ID_FOOT]: "OBJID_SHOES",
+			[MIG_EQUIP_REGION_ID_ACCESSORY_1]: "OBJID_ACCESSORY_1",
+			[MIG_EQUIP_REGION_ID_ACCESSORY_2]: "OBJID_ACCESSORY_2",
+		};
+		// 精錬値マップ
+		const refineMap = {
+			[MIG_EQUIP_REGION_ID_ARMS_RIGHT]: n_A_Weapon_ATKplus,
+			[MIG_EQUIP_REGION_ID_ARMS_LEFT]: n_A_Weapon2_ATKplus,
+			[MIG_EQUIP_REGION_ID_HEAD_TOP]: n_A_HEAD_DEF_PLUS,
+			[MIG_EQUIP_REGION_ID_BODY]: n_A_BODY_DEF_PLUS,
+			[MIG_EQUIP_REGION_ID_SHIELD]: n_A_SHIELD_DEF_PLUS,
+			[MIG_EQUIP_REGION_ID_SHOULDER]: n_A_SHOULDER_DEF_PLUS,
+			[MIG_EQUIP_REGION_ID_FOOT]: n_A_SHOES_DEF_PLUS,
+		};
+		// 超越値マップ
+		const transcendenceMap = {
+			[MIG_EQUIP_REGION_ID_ARMS_RIGHT]: n_A_Weapon_Transcendence,
+			[MIG_EQUIP_REGION_ID_ARMS_LEFT]: n_A_Weapon2_Transcendence,
+			[MIG_EQUIP_REGION_ID_HEAD_TOP]: n_A_HEAD_DEF_Transcendence,
+			[MIG_EQUIP_REGION_ID_BODY]: n_A_BODY_DEF_Transcendence,
+			[MIG_EQUIP_REGION_ID_SHIELD]: n_A_SHIELD_DEF_Transcendence,
+			[MIG_EQUIP_REGION_ID_SHOULDER]: n_A_SHOULDER_DEF_Transcendence,
+			[MIG_EQUIP_REGION_ID_FOOT]: n_A_SHOES_DEF_Transcendence,
+		};
+		// 装備部位マップ
+		const regionMap = {
+			[MIG_EQUIP_REGION_ID_ARMS_RIGHT]: CSaveDataConst.propNameEqpRgnArmsRight,
+			[MIG_EQUIP_REGION_ID_ARMS_LEFT]: CSaveDataConst.propNameEqpRgnArmsLeft,
+			[MIG_EQUIP_REGION_ID_HEAD_TOP]: CSaveDataConst.propNameEqpRgnHeadTop,
+			[MIG_EQUIP_REGION_ID_HEAD_MID]: CSaveDataConst.propNameEqpRgnHeadMid,
+			[MIG_EQUIP_REGION_ID_HEAD_UNDER]: CSaveDataConst.propNameEqpRgnHeadUnder,
+			[MIG_EQUIP_REGION_ID_SHIELD]: CSaveDataConst.propNameEqpRgnShield,
+			[MIG_EQUIP_REGION_ID_BODY]: CSaveDataConst.propNameEqpRgnBody,
+			[MIG_EQUIP_REGION_ID_SHOULDER]: CSaveDataConst.propNameEqpRgnShoulder,
+			[MIG_EQUIP_REGION_ID_FOOT]: CSaveDataConst.propNameEqpRgnFoot,
+			[MIG_EQUIP_REGION_ID_ACCESSORY_1]: CSaveDataConst.propNameEqpRgnAccessory1,
+			[MIG_EQUIP_REGION_ID_ACCESSORY_2]: CSaveDataConst.propNameEqpRgnAccessory2,
+		};
+		// 衣装を除く、すべての装備箇所のデータを追加する
+		// 避難所の次世代版ソースコードの時点で衣装のセーブ・ロードには未対応だった
+		// bから始まる旧セーブ形式ではサポートされていた
+		const saveDataUnitEqpRgn = this.#setupRegionUnit(CSaveDataConst.eqpRgnKindItem);
+		for (let idx = 0; idx < eqpRgnIdArray.length; idx++) {
+			const eqpRgnId = eqpRgnIdArray[idx];
+			// データユニット生成
+			const saveDataUnit = new (CSaveDataUnitTypeManager.getUnitClass(SAVE_DATA_UNIT_TYPE_EQUIPABLE))();
+			saveDataUnit.SetUpAsDefault();
+			// データ設定
+			saveDataUnit.setProp(CSaveDataConst.propNameEquipItemDefID, eqpRgnId + 1);
+			saveDataUnit.setProp(CSaveDataConst.propNameOptCode, 0);
+			saveDataUnit.setProp(CSaveDataConst.propNameItemID, n_A_Equip[eqpRgnId]);
+			// 精錬値の採取
+			saveDataUnit.setProp(CSaveDataConst.propNameRefinedCount, refineMap[eqpRgnId]|0);
+			// 超越値の採取
+			saveDataUnit.setProp(CSaveDataConst.propNameTranscendenceCount, transcendenceMap[eqpRgnId]|0);
+			// ランダムオプションの採取
+			saveDataUnit.setProp(CSaveDataConst.propNameRndOptID1, GetEquipRndOptTableKind(eqpRgnId, 0));
+			saveDataUnit.setProp(CSaveDataConst.propNameRndOptValue1, GetEquipRndOptTableValue(eqpRgnId, 0));
+			saveDataUnit.setProp(CSaveDataConst.propNameRndOptID2, GetEquipRndOptTableKind(eqpRgnId, 1));
+			saveDataUnit.setProp(CSaveDataConst.propNameRndOptValue2, GetEquipRndOptTableValue(eqpRgnId, 1));
+			saveDataUnit.setProp(CSaveDataConst.propNameRndOptID3, GetEquipRndOptTableKind(eqpRgnId, 2));
+			saveDataUnit.setProp(CSaveDataConst.propNameRndOptValue3, GetEquipRndOptTableValue(eqpRgnId, 2));
+			saveDataUnit.setProp(CSaveDataConst.propNameRndOptID4, GetEquipRndOptTableKind(eqpRgnId, 3));
+			saveDataUnit.setProp(CSaveDataConst.propNameRndOptValue4, GetEquipRndOptTableValue(eqpRgnId, 3));
+			saveDataUnit.setProp(CSaveDataConst.propNameRndOptID5, GetEquipRndOptTableKind(eqpRgnId, 4));
+			saveDataUnit.setProp(CSaveDataConst.propNameRndOptValue5, GetEquipRndOptTableValue(eqpRgnId, 4));
+			// カード情報の採取
+			const cardCategoryArray = g_charaData.cardCategoryMap.get(cardMap[eqpRgnId])
+			if (cardCategoryArray) {
+				saveDataUnit.setProp(CSaveDataConst.propNameCardCategoryID1, cardCategoryArray[0]);
+				saveDataUnit.setProp(CSaveDataConst.propNameCardCategoryID2, cardCategoryArray[1]);
+				saveDataUnit.setProp(CSaveDataConst.propNameCardCategoryID3, cardCategoryArray[2]);
+				saveDataUnit.setProp(CSaveDataConst.propNameCardCategoryID4, cardCategoryArray[3]);
+			}
+			saveDataUnit.setProp(CSaveDataConst.propNameCardID1, HtmlGetObjectValueByIdAsInteger(`${cardMap[eqpRgnId]}_CARD_1`, 0));
+			saveDataUnit.setProp(CSaveDataConst.propNameCardID2, HtmlGetObjectValueByIdAsInteger(`${cardMap[eqpRgnId]}_CARD_2`, 0));
+			saveDataUnit.setProp(CSaveDataConst.propNameCardID3, HtmlGetObjectValueByIdAsInteger(`${cardMap[eqpRgnId]}_CARD_3`, 0));
+			saveDataUnit.setProp(CSaveDataConst.propNameCardID4, HtmlGetObjectValueByIdAsInteger(`${cardMap[eqpRgnId]}_CARD_4`, 0));
+			// 装備箇所データ設定
+			saveDataUnitEqpRgn.setProp(regionMap[eqpRgnId], eqpRgnId + 1);
+			// データユニットをメンバ変数の配列へ追加
+			this.#saveDataUnitArray.push(saveDataUnit);
+		}
 	}
 
 	/**
@@ -261,78 +573,17 @@ class CSaveDataManager {
 	}
 
 	/**
-	 * セーブ時、超越段階のデータをセーブデータユニットに追加する
-	 */
-	#collectDataTranscendence() {
-		// 装備箇所 判定用 データユニット 用意（すでに存在する可能性がある）
-		let saveDataUnitEqpRgn = null;
-		for (let idx = 0; idx < this.#saveDataUnitArray.length; idx++) {
-			const saveDataUnit = this.#saveDataUnitArray[idx];
-			// 装備用装備箇所データユニットでなければ、次へ
-			if (saveDataUnit.constructor.type != SAVE_DATA_UNIT_TYPE_EQUIP_REGIONS) {
-				continue;
-			}
-			if (floorBigInt32(saveDataUnit.getProp(CSaveDataConst.propNameDataKind)) != CSaveDataConst.eqpRgnKindItem) {
-				continue;
-			}
-			// ここまで来れば、目的のデータユニット
-			saveDataUnitEqpRgn = saveDataUnit;
-			break;
-		}
-		// メンバ変数の配列に存在しなかった場合は、新規に作成
-		if (!saveDataUnitEqpRgn) {
-			saveDataUnitEqpRgn = new (CSaveDataUnitTypeManager.getUnitClass(SAVE_DATA_UNIT_TYPE_EQUIP_REGIONS))();
-			saveDataUnitEqpRgn.SetUpAsDefault();
-			saveDataUnitEqpRgn.setProp(CSaveDataConst.propNameDataKind, CSaveDataConst.eqpRgnKindItem);
-			this.#saveDataUnitArray.push(saveDataUnitEqpRgn);
-		}
-		// 全ての装備を走査
-		for (let idx = 0; idx < this.#saveDataUnitArray.length; idx++) {
-			let saveDataUnit = this.#saveDataUnitArray[idx];
-			// 装備データユニットでなければ、次へ
-			if (saveDataUnit.constructor.type != SAVE_DATA_UNIT_TYPE_EQUIPABLE) {
-				continue;
-			}
-			// 装備部位ごとに超越段階をセット（参照渡しなので #saveDataUnitArray にセットできる）
-			switch (saveDataUnit.getProp(CSaveDataConst.propNameEquipItemDefID)) {	// saveDataUnit の部位 (propNameEquipItemDefID) が...
-				case saveDataUnitEqpRgn.getProp(CSaveDataConst.propNameEqpRgnArmsRight):	// 右手 (propNameEqpRgnArmsRight) のとき...
-					saveDataUnit.setProp(CSaveDataConst.propNameTranscendenceCount, n_A_Weapon_Transcendence);	// 右手の超越段階 (n_A_Weapon_Transcendence) を saveDataUnit に追加
-					break;
-				case saveDataUnitEqpRgn.getProp(CSaveDataConst.propNameEqpRgnArmsLeft):
-					saveDataUnit.setProp(CSaveDataConst.propNameTranscendenceCount, n_A_Weapon2_Transcendence);
-					break;
-				case saveDataUnitEqpRgn.getProp(CSaveDataConst.propNameEqpRgnShield):
-					saveDataUnit.setProp(CSaveDataConst.propNameTranscendenceCount, n_A_SHIELD_DEF_Transcendence);
-					break;
-				case saveDataUnitEqpRgn.getProp(CSaveDataConst.propNameEqpRgnHeadTop):
-					saveDataUnit.setProp(CSaveDataConst.propNameTranscendenceCount, n_A_HEAD_DEF_Transcendence);
-					break;
-				case saveDataUnitEqpRgn.getProp(CSaveDataConst.propNameEqpRgnBody):
-					saveDataUnit.setProp(CSaveDataConst.propNameTranscendenceCount, n_A_BODY_DEF_Transcendence);
-					break;
-				case saveDataUnitEqpRgn.getProp(CSaveDataConst.propNameEqpRgnShoulder):
-					saveDataUnit.setProp(CSaveDataConst.propNameTranscendenceCount, n_A_SHOULDER_DEF_Transcendence);
-					break;
-				case saveDataUnitEqpRgn.getProp(CSaveDataConst.propNameEqpRgnFoot):
-					saveDataUnit.setProp(CSaveDataConst.propNameTranscendenceCount, n_A_SHOES_DEF_Transcendence);
-					break;
-			}
-		}
-	}
-
-	/**
 	 * セーブ時、シャドウ装備のデータを収集する.
 	 */
 	#collectDataShadowEquips () {
-
 		// シャドウ装備の装備箇所ID配列
 		const eqpRgnIdArray = [
 			EQUIP_REGION_ID_SHADOW_ARMS_RIGHT,
 			EQUIP_REGION_ID_SHADOW_ARMS_LEFT,
 			EQUIP_REGION_ID_SHADOW_BODY,
 			EQUIP_REGION_ID_SHADOW_FOOT,
-			EQUIP_REGION_ID_SHADOW_ACCESSARY_1,
-			EQUIP_REGION_ID_SHADOW_ACCESSARY_2,
+			EQUIP_REGION_ID_SHADOW_ACCESSORY_1,
+			EQUIP_REGION_ID_SHADOW_ACCESSORY_2,
 		];
 		// シャドウ装備の連想配列キー
 		const eqpRgnKey = {
@@ -340,32 +591,11 @@ class CSaveDataManager {
 			[EQUIP_REGION_ID_SHADOW_ARMS_LEFT]: "OBJID_SHADOW_SHIELD_CARD_",
 			[EQUIP_REGION_ID_SHADOW_BODY]: "OBJID_SHADOW_BODY_CARD_",
 			[EQUIP_REGION_ID_SHADOW_FOOT]: "OBJID_SHADOW_SHOES_CARD_",
-			[EQUIP_REGION_ID_SHADOW_ACCESSARY_1]: "OBJID_SHADOW_ACCESSARY-1_CARD_",
-			[EQUIP_REGION_ID_SHADOW_ACCESSARY_2]: "OBJID_SHADOW_ACCESSARY-2_CARD_",
+			[EQUIP_REGION_ID_SHADOW_ACCESSORY_1]: "OBJID_SHADOW_ACCESSORY-1_CARD_",
+			[EQUIP_REGION_ID_SHADOW_ACCESSORY_2]: "OBJID_SHADOW_ACCESSORY-2_CARD_",
 		}
-
-		// 装備箇所用データユニット用意（すでに存在する可能性がある）
-		let saveDataUnitEqpRgn = null;
-		for (let idx = 0; idx < this.#saveDataUnitArray.length; idx++) {
-			const saveDataUnit = this.#saveDataUnitArray[idx];
-			// シャドウ装備用装備箇所データユニットでなければ、次へ
-			if (saveDataUnit.constructor.type != SAVE_DATA_UNIT_TYPE_EQUIP_REGIONS) {
-				continue;
-			}
-			if (floorBigInt32(saveDataUnit.getProp(CSaveDataConst.propNameDataKind)) != CSaveDataConst.eqpRgnKindShadow) {
-				continue;
-			}
-			// ここまで来れば、目的のデータユニット
-			saveDataUnitEqpRgn = saveDataUnit;
-			break;
-		}
-		// メンバ変数の配列に存在しなかった場合は、新規に作成
-		if (!saveDataUnitEqpRgn) {
-			saveDataUnitEqpRgn = new (CSaveDataUnitTypeManager.getUnitClass(SAVE_DATA_UNIT_TYPE_EQUIP_REGIONS))();
-			saveDataUnitEqpRgn.SetUpAsDefault();
-			saveDataUnitEqpRgn.setProp(CSaveDataConst.propNameDataKind, CSaveDataConst.eqpRgnKindShadow);
-			this.#saveDataUnitArray.push(saveDataUnitEqpRgn);
-		}
+		// 装備箇所 判定用 データユニット
+		const saveDataUnitEqpRgn = this.#setupRegionUnit(CSaveDataConst.eqpRgnKindShadow);
 		// すべての装備箇所のデータを追加する
 		for (let idx = 0; idx < eqpRgnIdArray.length; idx++) {
 			const eqpRgnId = eqpRgnIdArray[idx];
@@ -393,7 +623,6 @@ class CSaveDataManager {
 			saveDataUnit.setProp(CSaveDataConst.propNameCardID2, HtmlGetObjectValueByIdAsInteger(`${shadow_equip_key}2`, 0));
 			saveDataUnit.setProp(CSaveDataConst.propNameCardID3, HtmlGetObjectValueByIdAsInteger(`${shadow_equip_key}3`, 0));
 			saveDataUnit.setProp(CSaveDataConst.propNameCardID4, HtmlGetObjectValueByIdAsInteger(`${shadow_equip_key}4`, 0));
-			
 			// コンパクション実行
 			saveDataUnit.doCompaction();
 			// データなしの場合は次へ
@@ -427,10 +656,10 @@ class CSaveDataManager {
 				case EQUIP_REGION_ID_SHADOW_FOOT:
 					propName = CSaveDataConst.propNameEqpRgnFoot;
 					break;
-				case EQUIP_REGION_ID_SHADOW_ACCESSARY_1:
+				case EQUIP_REGION_ID_SHADOW_ACCESSORY_1:
 					propName = CSaveDataConst.propNameEqpRgnAccessory1;
 					break;
-				case EQUIP_REGION_ID_SHADOW_ACCESSARY_2:
+				case EQUIP_REGION_ID_SHADOW_ACCESSORY_2:
 					propName = CSaveDataConst.propNameEqpRgnAccessory2;
 					break;
 				// 上記以外はNG
@@ -484,19 +713,34 @@ class CSaveDataManager {
 	 * @throws {Error} パース中に異常が検出された場合
 	 */
 	parseDataText (dataText) {
-
 		let offset = 0;
-
 		// 強制文字列化
 		dataText = "" + dataText;
-
 		// パースユニットのインスタンスを用意してパース開始
 		const unitParse = new CSaveDataUnitParse();
 		offset += unitParse.parse(dataText, 0);
-
 		// メンバ変数にデータを保持
 		this.#saveDataUnitArray = unitParse.saveDataUnitArray;
+		// オフセット位置はパースした文字数に一致する
+		return offset;
+	}
 
+	/**
+	 * parseDataText 関数からコピーしたセーブ専用の暫定処理
+	 * セーブとロードが両方とも parseDataText 関数を利用していて場合分けが複雑になりすぎるため
+	 * @param {*} dataText 
+	 * @returns {int} パースした文字数
+	 * @throws {Error} パース中に異常が検出された場合
+	 */
+	parseDataTextForCreateSave (dataText) {
+		let offset = 0;
+		// 強制文字列化
+		dataText = "" + dataText;
+		// パースユニットのインスタンスを用意してパース開始
+		const unitParse = new CSaveDataUnitParse();
+		offset += unitParse.parseForCreateSave(dataText, 0);
+		// メンバ変数にデータを保持
+		this.#saveDataUnitArray = unitParse.saveDataUnitArray;
 		// オフセット位置はパースした文字数に一致する
 		return offset;
 	}
@@ -595,7 +839,7 @@ class CSaveDataManager {
 
 		// グローバル変数の初期化（移行対応変数のみ）
 		ResetConfDataAllMIG(false);
-		n_A_Arrow = 0;		// 再ロード時のバグ対応
+		window.n_A_Arrow = 0;		// 再ロード時のバグ対応
 
 		// 必要な情報を収集する
 		const idxMap = new SKeyMap();
@@ -685,15 +929,6 @@ class CSaveDataManager {
 		const funcCallApplyAttackConf = (thisF, unitTypeF) => {
 			thisF.#applyDataToControlsAttackConf(unitTypeF, idxMap.get(unitTypeF));
 		};
-
-		// TODO: 構造変更後、撤去予定
-		// 矢の調整
-//		const idxArrow = idxMapEqpRgns.get(CSaveDataConst.eqpRgnKindItem);
-//		const equipableID = (idxArrow !== undefined) ? this.#saveDataUnitArray[idxArrow].getProp(CSaveDataConst.propNameEqpRgnArrow) : undefined;
-//		const idxEquipable = (equipableID !== undefined) ? mapDefEquipables.get(floorBigInt32(equipableID)) : undefined;
-//		const itemIDArrow = (idxEquipable !== undefined) ? this.#saveDataUnitArray[idxEquipable].getProp(CSaveDataConst.propNameItemID) : undefined;
-//		n_A_Arrow = (itemIDArrow !== undefined) ? (floorBigInt32(itemIDArrow) - ITEM_ID_ARROW_NONE) : ARROW_ID_NONE;
-//		HtmlSetObjectValueById("OBJID_SELECT_ARROW", n_A_Arrow);
 
 		let arrowArray = [];
 		funcCallApplyConfig(this, SAVE_DATA_UNIT_TYPE_EQUIP_ARROW, arrowArray);
@@ -815,13 +1050,13 @@ class CSaveDataManager {
 		// 画面表示リフレッシュ処理（既存移植）
 		OnClickSkillSWLearned();
 		if(arrowArray[0] === undefined){
-			n_A_Arrow = 0;
+			window.n_A_Arrow = 0;
 		}
 		else{
-			n_A_Arrow = (arrowArray[0] - 1);
+			window.n_A_Arrow = (arrowArray[0] - 1);
 		}
 		const obj_select_arrow = document.getElementById("OBJID_SELECT_ARROW")
-		HtmlSelectObjectValueAsInteger(obj_select_arrow, n_A_Arrow);
+		HtmlSelectObjectValueAsInteger(obj_select_arrow, window.n_A_Arrow);
 		Click_A8(false);	// BuffChara（旧：支援スキル８（その他の支援/設定））
 		Click_A1(false);	// BuffSelf
 		g_objCharaConfIchizi.OnSaveDataLoaded();
@@ -977,8 +1212,8 @@ class CSaveDataManager {
 					[CSaveDataConst.propNameEqpRgnBody, EQUIP_REGION_ID_BODY],
 					[CSaveDataConst.propNameEqpRgnShoulder, EQUIP_REGION_ID_SHOULDER],
 					[CSaveDataConst.propNameEqpRgnFoot, EQUIP_REGION_ID_SHOES],
-					[CSaveDataConst.propNameEqpRgnAccessory1, EQUIP_REGION_ID_ACCESSARY_1],
-					[CSaveDataConst.propNameEqpRgnAccessory2, EQUIP_REGION_ID_ACCESSARY_2],
+					[CSaveDataConst.propNameEqpRgnAccessory1, EQUIP_REGION_ID_ACCESSORY_1],
+					[CSaveDataConst.propNameEqpRgnAccessory2, EQUIP_REGION_ID_ACCESSORY_2],
 				])
 			],
 		]);
@@ -1015,55 +1250,60 @@ class CSaveDataManager {
 			],
 		]);
 
-		// カード設定用関数（旧処理の移植）
+		/**
+		 * カード設定用関数
+		 * @param {*} objIdPrifixF 装備部位
+		 * @param {*} slotNoF スロット番号
+		 * @param {*} enchListIdF エンチャントカテゴリID
+		 * @param {*} cardIdF カードID
+		 */
 		const funcLoadAndSetCard = (objIdPrifixF, slotNoF, enchListIdF, cardIdF) => {
-
-			// データ補正
+			// エンチャントカテゴリIDの補正
 			enchListIdF = (enchListIdF === undefined) ? 0 : enchListIdF;
+			// エンチャントIDの補正
 			cardIdF = (cardIdF === undefined) ? 0 : cardIdF;
-
 			// 従来の設定方法による設定
 			HtmlSetObjectValueById(objIdPrifixF + "_CARD_" + slotNoF, cardIdF);
-
-			// 可能であれば、エンチャントリストの選択状態を復元する
-			do {
-
-				// セレクトボックス取得
-				const objSelectF = document.getElementById(objIdPrifixF + "_CARD_" + slotNoF);
-				if (!objSelectF) {
-					break;
+			// エンチャントの場合はカテゴリも復元する
+			if (enchListIdF != 0) {
+				// 対象のセレクトボックスを取得
+				const objId = objIdPrifixF + "_CARD_" + slotNoF;
+				const objSelectF = document.getElementById(objId);
+				if (objSelectF) {
+					// 1. まずは指定された optgroup 内に該当の cardId があるか確認
+					let targetOption = objSelectF.querySelector(`optgroup[data-ench-list-id="${enchListIdF}"] > option[value="${cardIdF}"]`);
+					// 2. 指定カテゴリに見つからない場合、セレクトボックス全体から検索
+					if (!targetOption && cardIdF !== 0) {
+						targetOption = objSelectF.querySelector(`option[value="${cardIdF}"]`);
+					}
+					// 3. 反映処理
+					if (targetOption) {
+						// 見つかった場合はその option を選択状態にする
+						objSelectF.value = cardIdF; 
+						// 親の optgroup から最新の ID を取得して変数を更新
+						const parentGroup = targetOption.closest('optgroup');
+						if (parentGroup && parentGroup.dataset.enchListId) {
+							// 変数 enchListIdF を最新の状態に更新. これにより、次にセーブ処理が走った際に最新のカテゴリIDが保存される
+							enchListIdF = parentGroup.dataset.enchListId;
+						}
+					} else {
+						// どこにも見つからない場合は「無し(0)」にフォールバック
+						objSelectF.value = "0";
+						enchListIdF = "0";
+					}
+					// 4. 変更を通知
+					const event = new Event('change', { bubbles: true });
+					objSelectF.dispatchEvent(event);
 				}
-
-				// optgroup のリストを取得
-				const objOptgroup = objSelectF.querySelector(":scope > optgroup[data-ench-list-id=\"" + enchListIdF + "\"]");
-				if (!objOptgroup) {
-					break;
-				}
-
-				// エンチャントを取得
-				const objOption = objOptgroup.querySelector(":scope > option[value=\"" + cardIdF + "\"]");
-				if (!objOption) {
-					// エンチャントが一覧に存在しない場合は「無し」に変更する
-					cardIdF = 0;
-					$(`#${objIdPrifixF}_CARD_${slotNoF}`).val("0").trigger("change");
-					break;
-				}
-
-				objOption.selected = true;
-
-			} while (false);
-
+			}
 			// エンチャントリストIDデータ設定
-			const rgnTextF = objIdPrifixF.replace(/^OBJECT_/, "");
-
+			const rgnTextF = objIdPrifixF.replace(/^OBJID_/, "");
 			let cardCategoryIDArrayF = g_charaData.cardCategoryMap.get(rgnTextF);
 			if (!cardCategoryIDArrayF) {
 				cardCategoryIDArrayF = [0, 0, 0, 0];
 				g_charaData.cardCategoryMap.set(rgnTextF, cardCategoryIDArrayF);
 			}
-
 			cardCategoryIDArrayF[slotNoF - SLOT_INDEX_CARD_MIN] = enchListIdF;
-
 			// ステートフルデータ設定
 			SetStatefullData("DATA_" + objIdPrifixF + "_CARD_" + slotNoF, cardIdF);
 		};
@@ -1944,4 +2184,8 @@ class CSaveDataManager {
 		//  攻撃手段の設定設定を変更
 		CAttackMethodAreaComponentManager.SetAttackMethodConf(attackMethodConf);
 	}
+}
+
+if (typeof window !== 'undefined') {
+    window.CSaveDataManager = CSaveDataManager;
 }

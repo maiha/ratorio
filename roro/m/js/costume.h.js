@@ -1,4 +1,6 @@
 
+import { CGlobalConstManager } from './CGlobalConstManager.js';
+
 //----------------------------------------------------------------
 // データの要素番号
 //----------------------------------------------------------------
@@ -39,7 +41,7 @@ CGlobalConstManager.DefineEnum(
 		"COSTUME_KIND_BODY",
 		"COSTUME_KIND_SHOULDER",
 		"COSTUME_KIND_FOOT",
-		"COSTUME_KIND_ACCESSARY",
+		"COSTUME_KIND_ACCESSORY",
 	],
 	0,
 	1

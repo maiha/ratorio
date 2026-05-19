@@ -41,20 +41,96 @@
 	cursor: pointer;
 }
 
-div.CSSCLS_DIV_FLOATING_MENU *.CSSCLS_FLOATING_MENU_FONT_SIZE_SMALL_SMALL {
-	font-size : x-small;
+div.CSSCLS_DIV_FLOATING_MENU *.CSSCLS_FLOATING_MENU_FONT_SIZE_8PX {
+	font-size : 8px;
 }
 
-div.CSSCLS_DIV_FLOATING_MENU *.CSSCLS_FLOATING_MENU_FONT_SIZE_SMALL {
-	font-size : small;
+div.CSSCLS_DIV_FLOATING_MENU *.CSSCLS_FLOATING_MENU_FONT_SIZE_9PX {
+	font-size : 9px;
 }
 
-div.CSSCLS_DIV_FLOATING_MENU *.CSSCLS_FLOATING_MENU_FONT_SIZE_LARGE {
-	font-size : large;
+div.CSSCLS_DIV_FLOATING_MENU *.CSSCLS_FLOATING_MENU_FONT_SIZE_10PX {
+	font-size : 10px;
 }
 
-div.CSSCLS_DIV_FLOATING_MENU *.CSSCLS_FLOATING_MENU_FONT_SIZE_LARGE_LARGE {
-	font-size : x-large;
+div.CSSCLS_DIV_FLOATING_MENU *.CSSCLS_FLOATING_MENU_FONT_SIZE_10PX {
+	font-size : 10px;
+}
+
+div.CSSCLS_DIV_FLOATING_MENU *.CSSCLS_FLOATING_MENU_FONT_SIZE_11PX {
+	font-size : 11px;
+}
+
+div.CSSCLS_DIV_FLOATING_MENU *.CSSCLS_FLOATING_MENU_FONT_SIZE_12PX {
+	font-size : 12px;
+}
+
+div.CSSCLS_DIV_FLOATING_MENU *.CSSCLS_FLOATING_MENU_FONT_SIZE_13PX {
+	font-size : 13px;
+}
+
+div.CSSCLS_DIV_FLOATING_MENU *.CSSCLS_FLOATING_MENU_FONT_SIZE_14PX {
+	font-size : 14px;
+}
+
+div.CSSCLS_DIV_FLOATING_MENU *.CSSCLS_FLOATING_MENU_FONT_SIZE_15PX {
+	font-size : 15px;
+}
+
+div.CSSCLS_DIV_FLOATING_MENU *.CSSCLS_FLOATING_MENU_FONT_SIZE_17PX {
+	font-size : 17px;
+}
+
+div.CSSCLS_DIV_FLOATING_MENU *.CSSCLS_FLOATING_MENU_FONT_SIZE_18PX {
+	font-size : 18px;
+}
+
+div.CSSCLS_DIV_FLOATING_MENU *.CSSCLS_FLOATING_MENU_FONT_SIZE_19PX {
+	font-size : 19px;
+}
+
+div.CSSCLS_DIV_FLOATING_MENU *.CSSCLS_FLOATING_MENU_FONT_SIZE_20PX {
+	font-size : 20px;
+}
+
+div.CSSCLS_DIV_FLOATING_MENU *.CSSCLS_FLOATING_MENU_FONT_SIZE_21PX {
+	font-size : 21px;
+}
+
+div.CSSCLS_DIV_FLOATING_MENU *.CSSCLS_FLOATING_MENU_FONT_SIZE_22PX {
+	font-size : 22px;
+}
+
+div.CSSCLS_DIV_FLOATING_MENU *.CSSCLS_FLOATING_MENU_FONT_SIZE_23PX {
+	font-size : 23px;
+}
+
+div.CSSCLS_DIV_FLOATING_MENU *.CSSCLS_FLOATING_MENU_FONT_SIZE_24PX {
+	font-size : 24px;
+}
+
+div.CSSCLS_DIV_FLOATING_MENU *.CSSCLS_FLOATING_MENU_FONT_SIZE_25PX {
+	font-size : 25px;
+}
+
+div.CSSCLS_DIV_FLOATING_MENU *.CSSCLS_FLOATING_MENU_FONT_SIZE_26PX {
+	font-size : 26px;
+}
+
+div.CSSCLS_DIV_FLOATING_MENU *.CSSCLS_FLOATING_MENU_FONT_SIZE_27PX {
+	font-size : 27px;
+}
+
+div.CSSCLS_DIV_FLOATING_MENU *.CSSCLS_FLOATING_MENU_FONT_SIZE_28PX {
+	font-size : 28px;
+}
+
+div.CSSCLS_DIV_FLOATING_MENU *.CSSCLS_FLOATING_MENU_FONT_SIZE_29PX {
+	font-size : 29px;
+}
+
+div.CSSCLS_DIV_FLOATING_MENU *.CSSCLS_FLOATING_MENU_FONT_SIZE_30PX {
+	font-size : 30px;
 }
 
 td.CSSCLS_FLOATING_INFO_DISP_TABLE {
@@ -481,6 +557,24 @@ td.CSSCLS_EXTRA_INFO_DISP_TABLE_SKILL_CARD_NG {
 	color: #888;
 }
 
+/* ツールチップ:改行を許可（\n を反映） */
+#OBJID_DIV_BATTLE_RESULT_TINY .tooltip-target[data-tooltip]::before{
+  white-space: pre;
+}
+
+/* ツールチップ:左寄せ */
+#OBJID_DIV_BATTLE_RESULT_TINY .tooltip-target::before{
+  left: 0;
+  transform: translateY(5px);
+  text-align: left;
+}
+
+/* ツールチップ:左寄せ */
+#OBJID_DIV_BATTLE_RESULT_TINY .tooltip-target:hover::before{
+  transform: translateY(0);
+}
+
+
 
 /* 簡易 */
 #OBJID_DIV_SIMPLE_TIMED_EFFECT button.on {
@@ -834,7 +928,6 @@ td.CSSCLS_EXTRA_INFO_DISP_TABLE_SKILL_CARD_NG {
 
 /* スタッシュ情報 */
 #OBJID_STASH_CURRENT_SLOT {
-	display: inline-block;
 	font-size: 16px;
 	color: #0a0;
 	background-color: #e8ffe8;
@@ -842,7 +935,6 @@ td.CSSCLS_EXTRA_INFO_DISP_TABLE_SKILL_CARD_NG {
 	border-radius: 4px;
 	user-select: none;
 	cursor: pointer;
-	vertical-align: bottom;
 }
 
 #OBJID_STASH_CURRENT_SLOT::first-letter {
@@ -906,4 +998,748 @@ td.CSSCLS_EXTRA_INFO_DISP_TABLE_SKILL_CARD_NG {
 	padding: 1px;
 	border-radius: 4px;
 	user-select: none;
+	z-index: 10;
+}
+
+/* 履歴ボタン */
+.CSSCLS_STASH_HISTORY_BUTTON {
+	position: absolute;
+	right: 24px;
+	top: 50%;
+	transform: translateY(-50%);
+	cursor: pointer;
+	font-size: 11px;
+	color: #0a0;
+	background-color: #e8ffe8;
+	padding: 2px 4px;
+	border-radius: 4px;
+	user-select: none;
+	z-index: 10;
+}
+
+/* 非表示selectの隣のボタンは非表示 */
+select:disabled ~ .CSSCLS_STASH_COPY_BUTTON,
+select:disabled ~ .CSSCLS_STASH_HISTORY_BUTTON {
+	display: none;
+}
+
+/* Stashモーダル背景オーバーレイ */
+.stash-modal-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.3);
+	z-index: 999;
+}
+
+/* 履歴選択モーダル */
+.stash-history-modal {
+	display: none;
+	position: absolute;
+	z-index: 1000;
+	background: #fff;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+	max-height: 200px;
+	overflow-y: auto;
+	min-width: 200px;
+}
+
+.stash-history-item {
+	padding: 6px 10px;
+	cursor: pointer;
+	border-bottom: 1px solid #eee;
+	white-space: nowrap;
+}
+
+.stash-history-item:last-child {
+	border-bottom: none;
+}
+
+.stash-history-item:hover {
+	background-color: #e8ffe8;
+}
+
+.stash-history-empty {
+	padding: 10px;
+	color: #999;
+	text-align: center;
+}
+
+/* ========================================
+   Enoch モーダル（部位最適化 & 装備セット最適化）
+   ======================================== */
+
+.enoch-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.5);
+	z-index: 1100;
+}
+
+.enoch-modal {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 90%;
+	max-height: 90vh;
+	background: #fff;
+	border-radius: 8px;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+	z-index: 1101;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+}
+
+.enoch-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 12px 16px;
+	background: #4a90d9;
+	color: #fff;
+}
+
+.enoch-header h3 {
+	margin: 0;
+	font-size: 16px;
+}
+
+.enoch-close {
+	background: none;
+	border: none;
+	color: #fff;
+	font-size: 24px;
+	cursor: pointer;
+	padding: 0;
+	line-height: 1;
+}
+
+.enoch-body {
+	flex: 1;
+	overflow-y: auto;
+	padding: 16px;
+}
+
+/* セクション */
+.enoch-section {
+	margin-bottom: 12px;
+}
+
+.enoch-section-title {
+	font-size: 12px;
+	font-weight: bold;
+	color: #495057;
+	margin-bottom: 6px;
+}
+
+/* 評価値グリッド */
+.enoch-metric-grid {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	padding: 10px;
+	background: #f0f7ff;
+	border-radius: 6px;
+}
+
+.enoch-metric-btn {
+	padding: 6px 12px;
+	border: 1px solid #adb5bd;
+	border-radius: 4px;
+	background: #fff;
+	font-size: 12px;
+	cursor: pointer;
+	transition: all 0.15s;
+}
+
+.enoch-metric-btn:hover {
+	background: #e9ecef;
+	border-color: #6c757d;
+}
+
+.enoch-metric-btn.selected {
+	background: #17a2b8;
+	border-color: #17a2b8;
+	color: #fff;
+}
+
+/* 装備セット最適化用 評価値グリッド */
+.enoch-combo-metric-grid {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	padding: 10px;
+	background: #f0f7ff;
+	border-radius: 6px;
+}
+
+.enoch-combo-metric-btn {
+	padding: 6px 12px;
+	border: 1px solid #adb5bd;
+	border-radius: 4px;
+	background: #fff;
+	font-size: 12px;
+	cursor: pointer;
+	transition: all 0.15s;
+}
+
+.enoch-combo-metric-btn:hover {
+	background: #e9ecef;
+	border-color: #6c757d;
+}
+
+.enoch-combo-metric-btn.selected {
+	background: #17a2b8;
+	border-color: #17a2b8;
+	color: #fff;
+}
+
+/* 装備部位テーブル */
+.enoch-region-grid {
+	padding: 10px;
+	background: #f8f9fa;
+	border-radius: 6px;
+}
+
+.enoch-region-table {
+	display: table;
+	border-collapse: separate;
+	border-spacing: 4px;
+}
+
+.enoch-region-table tr {
+	display: table-row;
+}
+
+.enoch-region-table td {
+	display: table-cell;
+	vertical-align: top;
+	padding: 0;
+}
+
+.enoch-region {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	padding: 4px 6px;
+	background: #fff;
+	border: 1px solid #dee2e6;
+	border-radius: 4px;
+	white-space: nowrap;
+	margin-bottom: 2px;
+}
+
+.enoch-equip-btn {
+	padding: 4px 8px;
+	border: 1px solid #adb5bd;
+	border-radius: 4px;
+	background: #e8f4fc;
+	font-size: 11px;
+	font-weight: bold;
+	cursor: pointer;
+	transition: all 0.15s;
+	text-align: center;
+	width: 36px;
+	flex-shrink: 0;
+}
+
+.enoch-equip-btn:hover:not(:disabled) {
+	background: #e9ecef;
+	border-color: #6c757d;
+}
+
+.enoch-equip-btn.selected {
+	background: #ffc107;
+	border-color: #ffc107;
+	color: #212529;
+}
+
+.enoch-equip-btn:disabled {
+	background: #e9ecef;
+	color: #adb5bd;
+	cursor: not-allowed;
+}
+
+.enoch-card-btn {
+	padding: 4px 8px;
+	border: 1px solid #adb5bd;
+	border-radius: 4px;
+	background: #fff;
+	font-size: 11px;
+	cursor: pointer;
+	transition: all 0.15s;
+	text-align: center;
+	white-space: nowrap;
+}
+
+.enoch-card-btn:hover:not(:disabled) {
+	background: #e9ecef;
+	border-color: #6c757d;
+}
+
+.enoch-card-btn.selected {
+	background: #ffc107;
+	border-color: #ffc107;
+	color: #212529;
+}
+
+.enoch-card-btn:disabled {
+	background: #f8f9fa;
+	color: #ced4da;
+	cursor: not-allowed;
+}
+
+
+/* 設定行 */
+.enoch-config {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+	margin-bottom: 12px;
+	padding: 10px;
+	background: #fff;
+	border: 1px solid #dee2e6;
+	border-radius: 6px;
+}
+
+.enoch-config label {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	font-size: 12px;
+}
+
+.enoch-config select,
+.enoch-config input {
+	padding: 4px 6px;
+	border: 1px solid #ccc;
+	border-radius: 3px;
+	font-size: 12px;
+}
+
+.enoch-config input[type="number"] {
+	width: 60px;
+}
+
+/* コントロール */
+.enoch-controls {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	margin-bottom: 12px;
+}
+
+.enoch-selected-info {
+	font-size: 12px;
+	color: #666;
+}
+
+.enoch-start,
+.enoch-stop,
+.enoch-combo-start,
+.enoch-combo-stop {
+	padding: 8px 16px;
+	border: none;
+	border-radius: 6px;
+	font-size: 13px;
+	font-weight: bold;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.enoch-start,
+.enoch-combo-start {
+	background: #28a745;
+	color: #fff;
+}
+
+.enoch-start:hover:not(:disabled),
+.enoch-combo-start:hover:not(:disabled) {
+	background: #218838;
+}
+
+.enoch-start:disabled,
+.enoch-combo-start:disabled {
+	background: #ccc;
+	cursor: not-allowed;
+}
+
+.enoch-stop,
+.enoch-combo-stop {
+	background: #dc3545;
+	color: #fff;
+}
+
+.enoch-stop:hover:not(:disabled),
+.enoch-combo-stop:hover:not(:disabled) {
+	background: #c82333;
+}
+
+.enoch-stop:disabled,
+.enoch-combo-stop:disabled {
+	background: #ccc;
+	cursor: not-allowed;
+}
+
+.enoch-progress {
+	margin-bottom: 16px;
+}
+
+.enoch-progress-bar {
+	height: 8px;
+	background: #e9ecef;
+	border-radius: 4px;
+	overflow: hidden;
+	margin-bottom: 4px;
+}
+
+.enoch-progress-fill {
+	height: 100%;
+	background: #4a90d9;
+	transition: width 0.2s;
+}
+
+.enoch-progress-text {
+	font-size: 12px;
+	color: #666;
+}
+
+.enoch-results-table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 13px;
+}
+
+.enoch-results-table th,
+.enoch-results-table td {
+	padding: 8px;
+	border: 1px solid #dee2e6;
+	text-align: left;
+}
+
+.enoch-results-table th {
+	background: #f8f9fa;
+	font-weight: bold;
+	white-space: nowrap;
+}
+
+.enoch-results-table tr:hover {
+	background: #f5f5f5;
+}
+
+.enoch-result-link {
+	color: #007bff;
+	text-decoration: none;
+}
+
+.enoch-result-link:hover {
+	text-decoration: underline;
+}
+
+.enoch-final-message {
+	margin-top: 12px;
+	padding: 8px;
+	background: #d4edda;
+	border-radius: 4px;
+	color: #155724;
+	font-size: 13px;
+	text-align: center;
+}
+
+/* 開くボタン */
+.enoch-open-button {
+	padding: 2px 8px;
+	border: 1px solid #4a90d9;
+	border-radius: 4px;
+	background: #e0f0ff;
+	color: #1a5490;
+	font-size: 14px;
+	font-weight: bold;
+	cursor: pointer;
+	transition: all 0.2s;
+	white-space: nowrap;
+}
+
+.enoch-open-button:hover {
+	background: #4a90d9;
+	color: #fff;
+}
+
+/* タブ */
+.enoch-tabs {
+	display: flex;
+	gap: 4px;
+	padding: 0 16px;
+	border-bottom: 1px solid #dee2e6;
+	background: #f8f9fa;
+}
+
+.enoch-tab {
+	padding: 8px 16px;
+	border: none;
+	background: transparent;
+	color: #666;
+	font-size: 14px;
+	cursor: pointer;
+	border-bottom: 2px solid transparent;
+	margin-bottom: -1px;
+}
+
+.enoch-tab:hover {
+	color: #333;
+}
+
+.enoch-tab.active {
+	color: #1a5490;
+	border-bottom-color: #4a90d9;
+	font-weight: bold;
+}
+
+/* 組み合わせ最適化 */
+.enoch-combo-toolbar {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-bottom: 12px;
+}
+
+.enoch-load-stash {
+	padding: 6px 12px;
+	border: 1px solid #4a90d9;
+	border-radius: 4px;
+	background: #e0f0ff;
+	color: #1a5490;
+	font-size: 13px;
+	cursor: pointer;
+}
+
+.enoch-load-stash:hover {
+	background: #4a90d9;
+	color: #fff;
+}
+
+.enoch-combo-toolbar-label {
+	font-size: 13px;
+	color: #666;
+	margin-right: 8px;
+}
+
+.enoch-combo-slot-buttons {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+}
+
+.enoch-slot-btn {
+	padding: 4px 10px;
+	border: 1px solid #4a90d9;
+	border-radius: 4px;
+	background: #fff;
+	color: #1a5490;
+	font-size: 12px;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.enoch-slot-btn:hover {
+	background: #e0f0ff;
+}
+
+.enoch-slot-btn.loaded {
+	background: #4a90d9;
+	color: #fff;
+	font-weight: bold;
+}
+
+.enoch-no-stash {
+	color: #999;
+	font-size: 12px;
+}
+
+.enoch-combo-status {
+	color: #28a745;
+	font-size: 13px;
+	margin-left: auto;
+}
+
+.enoch-combo-empty {
+	width: 100%;
+	padding: 20px;
+	text-align: center;
+	color: #999;
+}
+
+.enoch-combo-candidates {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+	margin-bottom: 16px;
+	max-height: 50vh;
+	overflow-y: auto;
+	padding: 8px;
+	background: #f8f9fa;
+	border-radius: 6px;
+}
+
+.enoch-combo-region {
+	flex: 1 1 200px;
+	min-width: 180px;
+	background: #fff;
+	border: 1px solid #dee2e6;
+	border-radius: 6px;
+	padding: 8px;
+}
+
+.enoch-combo-region-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 8px;
+	padding-bottom: 6px;
+	border-bottom: 1px solid #eee;
+}
+
+.enoch-combo-region-label {
+	font-weight: bold;
+	color: #495057;
+}
+
+.enoch-combo-region-actions button {
+	font-size: 10px;
+	padding: 2px 6px;
+	margin-left: 4px;
+	border: 1px solid #ccc;
+	border-radius: 3px;
+	background: #f8f9fa;
+	cursor: pointer;
+}
+
+.enoch-combo-region-actions button:hover {
+	background: #e9ecef;
+}
+
+.enoch-combo-region-items {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.enoch-combo-item {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	padding: 4px 6px;
+	background: #f8f9fa;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+.enoch-combo-item:hover {
+	background: #e9ecef;
+}
+
+/* 実行済み: 透明度で存在感を抑制 */
+.enoch-combo-item.enoch-combo-done {
+	background: #f8f9fa;
+	color: #adb5bd;
+	opacity: 0.5;
+}
+
+/* ベスト: 薄い緑（最高結果） */
+.enoch-combo-item.enoch-combo-best {
+	background: #d4edda;
+	opacity: 1;
+}
+
+/* 実行中: 黄色で強調 */
+.enoch-combo-item.enoch-combo-processing {
+	background: #fff9db;
+	border-left: 4px solid #fab005;
+	font-weight: bold;
+}
+
+.enoch-combo-item-check {
+	cursor: pointer;
+}
+
+.enoch-combo-item-name {
+	font-size: 12px;
+	color: #333;
+	word-break: break-all;
+}
+
+.enoch-combo-count {
+	font-size: 13px;
+}
+
+.enoch-warning {
+	color: #dc3545;
+	font-weight: bold;
+}
+
+.enoch-combo-export {
+	margin-top: 12px;
+}
+
+.enoch-combo-tsv {
+	padding: 6px 12px;
+	border: 1px solid #28a745;
+	border-radius: 4px;
+	background: #d4edda;
+	color: #155724;
+	font-size: 13px;
+	cursor: pointer;
+}
+
+.enoch-combo-tsv:hover:not(:disabled) {
+	background: #28a745;
+	color: #fff;
+}
+
+.enoch-combo-tsv:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.enoch-combo-cell {
+	font-size: 12px;
+}
+
+.enoch-combo-apply {
+	cursor: pointer;
+	color: #007bff;
+}
+
+.enoch-combo-apply:hover {
+	text-decoration: underline;
+}
+
+.enoch-result-item {
+	display: inline-block;
+	margin-right: 8px;
+}
+
+.enoch-result-region {
+	color: #666;
+	font-size: 11px;
+}
+
+.enoch-best {
+	background: #d4edda !important;
+}
+
+.enoch-progress-current {
+	font-size: 11px;
+	color: #666;
+	margin-top: 4px;
 }

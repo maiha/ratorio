@@ -17,7 +17,7 @@ $(function () {
   });
 });
 
-function generateImage() {
+export function generateImage() {
   const v = (selector) => {
     return $(selector).val() || $(selector).text();
   }
@@ -31,8 +31,8 @@ function generateImage() {
     return t(selector);
   }
   const ench_count = (selector, is_weapon = false) => {
-    count = 0;
-    for (i = 1; i < 5; i++) {
+    let count = 0;
+    for (let i = 1; i < 5; i++) {
       const card_id = v(`#DATA_${selector}_CARD_${i}`)
       if (i == 1 || is_weapon) {
         if (CARD_KIND_ENCHANT == CardObjNew[card_id][1]) {
@@ -60,7 +60,7 @@ function generateImage() {
       text += `[★${transcendence}] `;
     }
     text += equip_name + " ( ";
-    enchants = [];
+    const enchants = [];
     [1, 2, 3, 4].forEach(v => {
       const card_id = t(`#DATA_${selector}_CARD_${v}`);
       enchants.push(card_id == 0 ? "-" : CardObjNew[card_id][2]);
@@ -73,8 +73,8 @@ function generateImage() {
     return g_equipRndOptTable[id].filter(v=>{return v[0]>0}).length>0? "exists" : "";
   }
   const randopt = (id) => {
-    text = "[ ";
-    options = []
+    let text = "[ ";
+    const options = []
     g_equipRndOptTable[id].forEach(value => {
       if (value[0] != 0) {
         options.push(GetRndOptDispName(g_rndOptArray[value[0]][RND_OPT_DATA_INDEX_SPID]) + " " + value[1])
@@ -96,12 +96,12 @@ function generateImage() {
     const shadow_name = ItemObjNew[shadow_id][8];
     const opt_info = g_shadowEquipController.getRndOptInfoArray(selector)
 
-    text = "";
+    let text = "";
     if (refined != 0) {
       text += `+${refined} `;
     }
     text += shadow_name + " ( ";
-    options = []
+    const options = []
     opt_info.forEach(value => {
       if (value[0] != 0) {
         options.push(GetRndOptDispName(g_rndOptArray[value[0]][RND_OPT_DATA_INDEX_SPID]) + " " + value[1])
@@ -111,15 +111,15 @@ function generateImage() {
     text += " )"
     return text;
   }
-    regist_elm_vanity = [];
-    elm_ratio = [];
-    regist_ratio = [];
-    for (idx = 0; idx < ELM_ID_COUNT; idx++) {
+    let regist_elm_vanity = [];
+    let elm_ratio = [];
+    let regist_ratio = [];
+    for (let idx = 0; idx < ELM_ID_COUNT; idx++) {
       regist_elm_vanity[idx] = n_tok[ITEM_SP_RESIST_ELM_VANITY + idx];
       elm_ratio[idx] = zokusei[n_A_BodyZokusei * 10 + 1][idx] + 100;
       regist_ratio[idx] = Math.floor(elm_ratio[idx] - Math.floor(regist_elm_vanity[idx] * elm_ratio[idx]) / 100);
     }
-    tpl = `
+    let tpl = `
     <style>
     #imgdiv {
       background-color: white;
@@ -571,12 +571,12 @@ function generateImage() {
         <dd class="randopt ${randopt_exists(EQUIP_REGION_ID_SHOES)}">${randopt(EQUIP_REGION_ID_SHOES)}</dd>
         <dd class="shadow ${shadow_exists("eqprgn-foot")}">${shadow("eqprgn-foot")}</dd>
         <dt>【アクセサリー(1)】</dt>
-        <dd class="ench${ench_count("OBJID_ACCESSARY_1")}">${equip("OBJID_ACCESSARY_1")}</dd>
-        <dd class="randopt ${randopt_exists(EQUIP_REGION_ID_ACCESSARY_1)}">${randopt(EQUIP_REGION_ID_ACCESSARY_1)}</dd>
+        <dd class="ench${ench_count("OBJID_ACCESSORY_1")}">${equip("OBJID_ACCESSORY_1")}</dd>
+        <dd class="randopt ${randopt_exists(EQUIP_REGION_ID_ACCESSORY_1)}">${randopt(EQUIP_REGION_ID_ACCESSORY_1)}</dd>
         <dd class="shadow ${shadow_exists("eqprgn-accessory-1")}">${shadow("eqprgn-accessory-1")}</dd>
         <dt>【アクセサリー(2)】</dt>
-        <dd class="ench${ench_count("OBJID_ACCESSARY_2")}">${equip("OBJID_ACCESSARY_2")}</dd>
-        <dd class="randopt ${randopt_exists(EQUIP_REGION_ID_ACCESSARY_2)}">${randopt(EQUIP_REGION_ID_ACCESSARY_2)}</dd>
+        <dd class="ench${ench_count("OBJID_ACCESSORY_2")}">${equip("OBJID_ACCESSORY_2")}</dd>
+        <dd class="randopt ${randopt_exists(EQUIP_REGION_ID_ACCESSORY_2)}">${randopt(EQUIP_REGION_ID_ACCESSORY_2)}</dd>
         <dd class="shadow ${shadow_exists("eqprgn-accessory-2")}">${shadow("eqprgn-accessory-2")}</dd>
       </dl>
 
@@ -589,16 +589,20 @@ function generateImage() {
     </div>
     `;
     $("#imgdiv").remove();
-    div = $("<div>", {
+    let div = $("<div>", {
       id: "imgdiv",
     }).css({
       position: "relative",
     })
     div.append(tpl);
     $(".content").append(div);
-    dd = $("#equip dd");
-    for (i = 0; i < dd.length; i++) {
+    const dd = $("#equip dd");
+    for (let i = 0; i < dd.length; i++) {
       $(dd[i]).text($(dd[i]).text().replace(/ *\(\+\d+以上\)/g, ""))
       $(dd[i]).text($(dd[i]).text().replace(/【習】/g, ""))
     }
+}
+
+if (typeof window !== 'undefined') {
+    window.generateImage = generateImage;
 }
