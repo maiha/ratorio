@@ -22778,3 +22778,10 @@ SimpleTimedEffect.render = function() {
 		root.append(button);
 	}
 };
+
+// インライン onclick（グローバルスコープで実行される）から参照できるように公開する。
+// head.js は ESモジュールのため、未公開だと SimpleTimedEffect が module スコープに閉じ、
+// render() が生成するボタンの onclick="SimpleTimedEffect.change(...)" が ReferenceError になる。
+if (typeof window !== 'undefined') {
+	window.SimpleTimedEffect = SimpleTimedEffect;
+}
