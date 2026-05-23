@@ -10844,8 +10844,9 @@ export function BuildBattleResultHtmlMIG(charaData, specData, mobData, attackMet
 		}
 
 		if (hintId) {
-			$(objCell).attr({
-				'class': "tooltip-target",
+			// addClass で既存クラス(CSSCLS_BATTLE_TINY_VALUE / ENOCH_VALUE)を保ったまま付与する
+			// （attr({class:...}) だと上書きされ、値spanの CSSCLS_BATTLE_TINY_VALUE が消えていた）
+			$(objCell).addClass("tooltip-target").attr({
 				'data-tooltip': NTokHint.text(hintId),
 			})
 		}
@@ -11885,6 +11886,15 @@ export function BuildBattleResultHtmlMIG(charaData, specData, mobData, attackMet
 	// 簡易戦闘結果: "被ダメ 135,640"
 	funcRenderResultTinyHtml(objGridTiny, "被ダメ", __DIG3(g_receiveDamageAverage));
 	Enoch.update_value("TAKEN_DMG", -1 * g_receiveDamageAverage);
+	// 簡易戦闘結果: "被XX" = モンスターが使うスキルXXを受けたときの被ダメージ(物理/魔法)
+	//   辞書参照・物理魔法の振り分け・描画は TinyMobSkill.js に集約。head.js は被ダメ計算2関数の
+	//   参照だけを注入して1回呼ぶ(計算関数は n_tok等のmoduleスコープ状態に密結合のため head.js に残す)。
+	if (typeof TinyMobSkill !== "undefined") {
+		TinyMobSkill.render(charaData, mobData, {
+			calcPhysical: calcReceivedDamageByCondition,
+			calcMagic:    calcReceivedMagicDamageByCondition,
+		});
+	}
 
 	const objMagicalDamageView = HtmlCreateElement("div", objGridDmg);
 	objMagicalDamageView.setAttribute("id", "OBJID_RECEIVED_DAMAGE_MAGICAL");
@@ -12320,6 +12330,274 @@ export function calcReceivedDamage(charaData, specData, mobData, attackMethodCon
 }
 
 /**
+ * 指定した倍率・属性で受ける【物理】ダメージ(平均)を計算して返す（FORM 非依存）。
+ * 簡易戦闘結果の「被XX」(物理スキル) 用。calcReceivedMagicDamageByCondition の物理版。
+ * 画面の倍率/属性選択(OBJID_ENEMY_SKILL_*)や反射・デスバウンド計算、グローバル
+ * w_HiDam / g_receiveDamageAverage 等には一切触れない副作用なしの実装。
+ * 本家 calcReceivedDamage の改変（=rebase 時の conflict）を避けるため、計算ロジックは
+ * あえて複製している（複製元: 平均被ダメージ算出部のみ。反射/デスバウンド/描画は除外）。
+ * 本家側の計算式が更新された場合は当関数にも手で追従させること。
+ * @param {*} charaData
+ * @param {*} mobData
+ * @param {number} skillRatio スキル倍率(%)
+ * @param {number} attackElemental 攻撃属性ID(ELM_ID_*)。負値は無属性(VOID)扱い。
+ * @returns {number} 受ける物理ダメージ(平均)
+ */
+export function calcReceivedDamageByCondition(charaData, mobData, skillRatio, attackElemental){
+	let wBHD;
+
+	/* ATK依存攻撃力: ボス耐性などの減衰を受ける */
+	let mobMaxATK = mobData[MONSTER_DATA_EXTRA_INDEX_ATK_MAX];
+	let mobMinATK = mobData[MONSTER_DATA_EXTRA_INDEX_ATK_MIN];
+	/* STR依存攻撃力 ボス耐性などの減衰を受けない */
+	let mobStATK = mobData[MONSTER_DATA_INDEX_LEVEL] * 2;
+	if(mobData[MONSTER_DATA_INDEX_QUALIFIED] == 1){
+		mobStATK = mobData[MONSTER_DATA_INDEX_LEVEL] + mobData[MONSTER_DATA_INDEX_STR];
+	}
+	if(mobMinATK <= mobStATK) mobMinATK = mobStATK;
+	if(mobMinATK > mobMaxATK){
+		mobMinATK = mobMaxATK - 1;
+		mobStATK = mobMaxATK - 1;
+	}
+	mobMinATK -= mobStATK;
+	mobMaxATK -= mobStATK;
+	let hiDam = [];
+	hiDam[0] = mobMinATK;
+	hiDam[1] = (mobMinATK *5 + mobMaxATK) /6;
+	hiDam[2] = (mobMinATK *4 + mobMaxATK *2) /6;
+	hiDam[3] = (mobMinATK + mobMaxATK) /2;
+	hiDam[4] = (mobMinATK *2 + mobMaxATK *4) /6;
+	hiDam[5] = (mobMinATK + mobMaxATK *5) /6;
+	hiDam[6] = mobMaxATK;
+	if(mobMinATK == mobMaxATK){
+		for(let i=0;i<=6;i++) hiDam[i] = mobMaxATK;
+	}
+
+	const skill_ratio = Math.min(60000, Math.max(100, Number(skillRatio) || 100));
+	const attack_elemental = Number(attackElemental);
+	hiDam = hiDam.map(damage => Math.floor(damage * skill_ratio / 100));
+	mobStATK = Math.floor(mobStATK * skill_ratio / 100);
+
+	// 特定モンスター耐性
+	wBHD = getResistanceOfEnvironment(mobData[0]);
+	hiDam = hiDam.map(damage => damage - Math.floor(damage * wBHD /100));
+
+	/** サイズ耐性 */
+	{
+		wBHD = n_tok[ITEM_SP_RESIST_SIZE_SMALL + mobData[17]];
+		wBHD += n_tok[ITEM_SP_PHYSICAL_RESIST_SIZE_SMALL + mobData[17]];
+		wBHD = Math.min(95, wBHD);
+		hiDam = hiDam.map(damage => damage - Math.floor(damage * wBHD /100));
+	}
+
+	/** ボス／一般耐性 */
+	{
+		wBHD = (mobData[20] == MONSTER_BOSSTYPE_BOSS) ? n_tok[ITEM_SP_RESIST_BOSS] : n_tok[ITEM_SP_RESIST_NOTBOSS];
+		wBHD = Math.min(95, wBHD);
+		hiDam = hiDam.map(damage => damage - Math.floor(damage * wBHD /100));
+	}
+
+	/** 属性相性: VOID攻撃（通常攻撃）はスキップ。無属性(ELM_ID_VANITY)は適用する */
+	if (attack_elemental >= ELM_ID_VANITY) {
+		wBHD = zokusei[n_A_BodyZokusei * 10 + 1][attack_elemental] + 100;
+		hiDam = hiDam.map(damage => Math.floor(damage * wBHD /100));
+	}
+
+	/** 属性耐性 */
+	{
+		const elm_for_resist = (attack_elemental >= ELM_ID_VANITY) ? attack_elemental : ELM_ID_VANITY;
+		wBHD = n_tok[ ITEM_SP_RESIST_ELM_VANITY + elm_for_resist ];
+		wBHD = Math.min(95, wBHD);
+		hiDam = hiDam.map(damage => damage - Math.floor(damage * wBHD /100));
+	}
+
+	/** モンスター属性耐性 */
+	{
+		wBHD = n_tok[ITEM_SP_RESIST_MONSTER_ELM_VANITY + Math.floor(mobData[18] / 10)];
+		wBHD = Math.min(95, wBHD);
+		hiDam = hiDam.map(damage => damage - Math.floor(damage * wBHD /100));
+	}
+
+	// これ以降の耐性は素手ATKにも効果がある
+	hiDam = hiDam.map(damage => damage + mobStATK);
+
+	//--------------------------------
+	// 種族耐性
+	//--------------------------------
+	{
+		wBHD = 0;
+		// 対プレイヤーでない場合
+		if (mobData[0] != MONSTER_ID_PLAYER) {
+			wBHD += n_tok[ITEM_SP_RESIST_RACE_SOLID + mobData[19]];
+			if (mobData[19] == RACE_ID_HUMAN) {
+				wBHD += n_tok[ITEM_SP_RESIST_RACE_HUMAN_NOT_PLAYER];
+			}
+		}
+		// 対プレイヤーの場合
+		else {
+			wBHD += n_tok[ITEM_SP_RESIST_PLAYER_ALL];
+			switch (n_B_TAISEI[MOB_CONF_PLAYER_ID_SHUZOKU]) {
+				case MOB_CONF_PLAYER_ID_SHUZOKU_HUMAN:
+					wBHD += n_tok[ITEM_SP_RESIST_RACE_HUMAN];
+					wBHD += n_tok[ITEM_SP_RESIST_PLAYER_HUMAN];
+					break;
+				case MOB_CONF_PLAYER_ID_SHUZOKU_DORAM:
+					wBHD += n_tok[ITEM_SP_RESIST_PLAYER_DORAM];
+					break;
+			}
+		}
+		wBHD = Math.min(95, wBHD);
+		hiDam = hiDam.map(damage => damage - Math.floor(damage * wBHD /100));
+	}
+
+	//--------------------------------
+	// 遠距離耐性
+	//--------------------------------
+	if(mobData[12] >= 4){
+		wBHD = n_tok[ITEM_SP_RESIST_LONGRANGE];
+		wBHD = Math.min(95, wBHD);
+		hiDam = hiDam.map(damage => damage - Math.floor(damage * wBHD /100));
+	}
+
+	/** 除算Def, Res, 減算Def によるダメージ減少 */
+	const res = GetRes();
+	hiDam = hiDam.map(damage => {
+		let new_damage = Math.floor(damage * (4000 + charaData[CHARA_DATA_INDEX_DEF_DIV]) / (4000 + charaData[CHARA_DATA_INDEX_DEF_DIV] * 10));
+		const decay = Math.floor(new_damage * (1 - (2000 + res) / (2000 + 5 * res)));
+		new_damage -= decay;
+		new_damage -= charaData[CHARA_DATA_INDEX_DEF_MINUS];
+		return new_damage;
+	});
+
+	/** スキルによるダメージ減少効果 */
+	{
+		// ディバインプロテクション
+		if ((GetMonseterElmBasicType(mobData[MONSTER_DATA_INDEX_ELEMENT]) == ELM_ID_UNDEAD)
+			|| (mobData[MONSTER_DATA_INDEX_RACE] == RACE_ID_DEMON)) {
+			wBHD = Math.round((3 + 4 / 100 * n_A_BaseLV) * Math.max(LearnedSkillSearch(SKILL_ID_DIVINE_PROTECTION), UsedSkillSearch(SKILL_ID_DIVINE_PROTECTION)));
+			for (let i = 0; i <= 6; i++) {
+				hiDam[i] -= wBHD;
+			}
+		}
+
+		// レンジャーメイン
+		switch (mobData[MONSTER_DATA_INDEX_RACE]) {
+			case RACE_ID_ANIMAL:
+			case RACE_ID_PLANT:
+			case RACE_ID_FISH:
+				for (let i = 0; i <= 6; i++) {
+					const ranger_main_lv = Math.max(LearnedSkillSearch(SKILL_ID_RANGER_MAIN), UsedSkillSearch(SKILL_ID_RANGER_MAIN));
+					hiDam[i] -= 5 * ranger_main_lv;
+				}
+		}
+
+		// 火と大地の研究
+		if ((GetMonseterElmBasicType(mobData[MONSTER_DATA_INDEX_ELEMENT]) == ELM_ID_EARTH)
+			|| (GetMonseterElmBasicType(mobData[MONSTER_DATA_INDEX_ELEMENT]) == ELM_ID_FIRE)) {
+			for (let i = 0; i <= 6; i++) {
+				hiDam[i] -= 10 * Math.max(LearnedSkillSearch(SKILL_ID_HITO_DAICHINO_KENKYU), UsedSkillSearch(SKILL_ID_HITO_DAICHINO_KENKYU));
+			}
+		}
+
+		// 太陽の安楽
+		if (UsedSkillSearch(SKILL_ID_TAIYONO_ANRAKU)) {
+			switch (UsedSkillSearch(SKILL_ID_TAIYOTO_TSUKITO_HOSHINO_HI)) {
+				case 1:	// 今日の日付
+					let today = (new Date()).getDate();
+					if (today % 2 == 1)	break; // 太陽の日ではない（奇数）
+				case 0:	// 無条件発動
+				case 2: // 太陽の日
+					wBHD = Math.floor((n_A_BaseLV + n_A_LUK + n_A_DEX) / 2);
+					for (let i = 0; i <= 6; i++) {
+						hiDam[i] -= wBHD;
+					}
+			}
+		}
+
+		// ディフェンダー
+		if (mobData[MONSTER_DATA_INDEX_RANGE] >= 4){
+			let sklLv = Math.max(0, UsedSkillSearch(SKILL_ID_DEFENDER), g_confDataNizi[CCharaConfNizi.CONF_ID_DEFENDER]);
+			wBHD = 5 + 15 * sklLv;
+			for (let i = 0; i <= 6; i++) {
+				hiDam[i] -= Math.floor(hiDam[i] * wBHD /100);
+			}
+		}
+
+		// エナジーコート
+		const energy_coat = Math.max(UsedSkillSearch(SKILL_ID_ENERGY_COAT), n_A_PassSkill7[50]);
+		wBHD = 6 * energy_coat;
+		hiDam = hiDam.map(damage => damage - Math.floor(damage * wBHD /100));
+	}
+
+	/** 排他スキルによるダメージ減少効果 */
+	{
+		let ratio = 0;
+		let prefetch = 0;
+		if (TimeItemNumSearch(TIME_ITEM_ID_WOLF_HEZIN)) {
+			// ストーンスキン
+			ratio = Math.max(ratio, 20);
+		}
+		if (UsedSkillSearch(SKILL_ID_KONGO)) {
+			// 金剛
+			ratio = Math.max(ratio, 90);
+		}
+		if (UsedSkillSearch(SKILL_ID_UZUKUMARU)) {
+			// うずくまる
+			if (n_B_TAISEI[MOB_CONF_PLAYER_ID_SENTO_AREA] == MOB_CONF_PLAYER_ID_SENTO_AREA_YE_COLOSSEUM) {
+				ratio = Math.max(ratio, 50);
+			} else {
+				ratio = Math.max(ratio, 80);
+			}
+		}
+		prefetch = UsedSkillSearch(SKILL_ID_NATURE_PROTECTION);
+		if (prefetch > 0) {
+			// ネイチャープロテクション
+			ratio = Math.max(ratio, [0, 30, 45, 60, 80, 95][prefetch]);
+		}
+		prefetch = UsedSkillSearch(SKILL_ID_IRON_HOWLING);
+		if (prefetch > 0) {
+			// アイアンハウリング
+			ratio = Math.max(ratio, 15 + 5 * prefetch);
+		}
+		for (let i = 0; i <= 6; i++) {
+			hiDam[i] -= Math.floor(hiDam[i] * ratio / 100);
+		}
+	}
+
+	//--------------------------------
+	// YEサーバーなどエリア全体にかかるダメージ補正
+	//--------------------------------
+	for (let i = 0; i <= 6; i++) {
+		hiDam[i] = DamageModifierOfArea(mobData, hiDam[i]);
+	}
+
+	// 最小ダメージ保証
+	for(let i = 0; i <= 6; i++){
+		if(hiDam[i] < 1) hiDam[i] = 1;
+	}
+
+	// 「ゼファー」によるダメージ無効化
+	if(mobData[12] >= 4){
+		if(UsedSkillSearch(SKILL_ID_SERE_SUPPORT_SKILL) == 26){
+			for(let i = 0; i <= 6; i++) hiDam[i] = 0;
+		}
+	}
+
+	// 「ゴスペル」によるダメージ半減
+	{
+		if(n_A_PassSkill4[10]) for(let i=0;i<=6;i++) hiDam[i] = Math.floor(hiDam[i] / 2);
+		hiDam[0] = Math.floor(hiDam[0]);
+		hiDam[6] = Math.floor(hiDam[6]);
+	}
+
+	wBHD = 0;
+	for(let i = 0; i <= 6; i++) wBHD += hiDam[i];
+	wBHD = Math.round(wBHD / 7);
+
+	return Math.floor(wBHD);
+}
+
+/**
  * 魔法の被ダメージを計算する. 
  * @param {*} charaData 
  * @param {*} mobData 
@@ -12430,6 +12708,118 @@ export function calcReceivedMagicDamage(charaData, mobData, objCell){
 	// 被ダメ表示
 	HtmlRemoveAllChild(objCell);
 	HtmlCreateTextNode(__DIG3(Math.floor(damage)), objCell);
+}
+
+/**
+ * 指定した倍率・属性で受ける魔法ダメージを計算して返す（FORM 非依存）。
+ * 簡易戦闘結果の「平均被ダメージ（仮）」など、画面上の倍率/属性選択とは
+ * 独立した固定条件で値が欲しいときに使う。
+ * 本家 calcReceivedMagicDamage の改変（=rebase 時の conflict）を避けるため、
+ * 計算ロジックはあえて複製している。本家側の計算式が更新された場合は
+ * 当関数にも手で追従させること。
+ * @param {*} charaData
+ * @param {*} mobData
+ * @param {number} skillRatio スキル倍率(%)
+ * @param {number} attackElemental 攻撃属性ID(ELM_ID_*)
+ * @returns {number} 受ける魔法ダメージ
+ */
+export function calcReceivedMagicDamageByCondition(charaData, mobData, skillRatio, attackElemental){
+	let mobMinMATK = mobData[MONSTER_DATA_EXTRA_INDEX_MATK_MIN];
+	let mobMaxMATK = mobData[MONSTER_DATA_EXTRA_INDEX_MATK_MAX];
+	let damage = (mobMinMATK + mobMaxMATK) / 2;
+	let ratio = 0;
+
+	const skill_ratio = Math.min(60000, Math.max(100, Number(skillRatio) || 100));
+	const attack_elemental = Number(attackElemental);
+	damage = Math.floor(damage * skill_ratio / 100);
+
+	/** モンスター耐性 */
+	damage -= Math.floor(damage * getResistanceOfEnvironment(mobData[0]) / 100);
+
+	/** サイズ耐性 */
+	ratio = n_tok[ITEM_SP_RESIST_SIZE_SMALL + mobData[17]];
+	ratio = Math.min(95, ratio);
+	damage -= Math.floor(damage * ratio / 100);
+
+	/** ボス・一般耐性 */
+	ratio = (mobData[20] === MONSTER_BOSSTYPE_BOSS) ? n_tok[ITEM_SP_RESIST_BOSS] : n_tok[ITEM_SP_RESIST_NOTBOSS];
+	ratio = Math.min(95, ratio);
+	damage -= Math.floor(damage * ratio / 100);
+
+	/** 属性相性 */
+	ratio = zokusei[n_A_BodyZokusei * 10 + 1][attack_elemental] + 100;
+	damage = Math.floor(damage * ratio / 100);
+
+	/** 属性耐性 */
+	ratio = n_tok[ ITEM_SP_RESIST_ELM_VANITY + attack_elemental ];
+	ratio = Math.min(95, ratio);
+	damage -= Math.floor(damage * ratio / 100);
+
+	/** モンスター属性耐性 */
+	ratio = n_tok[ITEM_SP_RESIST_MONSTER_ELM_VANITY + Math.floor(mobData[18] / 10)];
+	ratio = Math.min(95, ratio);
+	damage -= Math.floor(damage * ratio / 100);
+
+	/** 種族耐性 */
+	ratio = n_tok[ITEM_SP_RESIST_RACE_SOLID + mobData[19]];
+	ratio += (mobData[19] === RACE_ID_HUMAN) ? n_tok[ITEM_SP_RESIST_RACE_HUMAN_NOT_PLAYER] : 0;
+	ratio = Math.min(95, ratio);
+	damage -= Math.floor(damage * ratio / 100);
+
+	// MRES によるダメージ減少
+	const mres = GetMres();
+	const decay = Math.floor(damage * (1 - (2000 + mres) / (2000 + 5 * mres)));
+	damage -= decay;
+
+	// 除算Mdefによるダメージ減少
+	damage = Math.floor(damage * (4000 + charaData[CHARA_DATA_INDEX_MDEF_DIV]) / (4000 + charaData[CHARA_DATA_INDEX_MDEF_DIV] * 10));
+
+	// 減算Mdefによるダメージ減少
+	damage -= charaData[CHARA_DATA_INDEX_MDEF_MINUS];
+
+	/** スキルによる減少 */
+	{
+		// エナジーコート
+		const energy_coat = Math.max(UsedSkillSearch(SKILL_ID_ENERGY_COAT), n_A_PassSkill7[50]);
+		ratio = Math.min(95, 6 * energy_coat);
+		damage -= Math.floor(damage * ratio / 100);
+	}
+	/** スキルによる減少（排他的な効果） */
+	{
+		const candidate = [0];
+		let prefetch = 0;
+		// 金剛のダメージ軽減効果
+		if (UsedSkillSearch(SKILL_ID_KONGO) > 0) {
+			candidate.push(90);
+		}
+		// うずくまる
+		if (UsedSkillSearch(SKILL_ID_UZUKUMARU) > 0) {
+			candidate.push(80);
+		}
+		prefetch = UsedSkillSearch(SKILL_ID_NATURE_PROTECTION);
+		if (prefetch > 0) {
+			// ネイチャープロテクション
+			candidate.push([0, 30, 45, 60, 80, 95][prefetch]);
+		}
+		prefetch = UsedSkillSearch(SKILL_ID_IRON_HOWLING);
+		if (prefetch > 0) {
+			// アイアンハウリング
+			candidate.push(15 + 5 * prefetch);
+		}
+		ratio = Math.min(95, Math.max(...candidate));
+		damage -= Math.floor(damage * ratio / 100);
+	}
+	/** 耐性ペナルティ */
+	{
+		// ストーンスキン Lv6
+		if (TimeItemNumSearch(TIME_ITEM_ID_WOLF_HEZIN)) {
+			damage += Math.floor(damage * 20 / 100);
+		}
+	}
+
+	/** 最小ダメージ保証 */
+	damage = Math.max(damage, 1);
+	return Math.floor(damage);
 }
 
 /**
