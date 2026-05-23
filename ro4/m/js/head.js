@@ -11885,6 +11885,9 @@ export function BuildBattleResultHtmlMIG(charaData, specData, mobData, attackMet
 	// 簡易戦闘結果: "被ダメ 135,640"
 	funcRenderResultTinyHtml(objGridTiny, "被ダメ", __DIG3(g_receiveDamageAverage));
 	Enoch.update_value("TAKEN_DMG", -1 * g_receiveDamageAverage);
+	// 簡易戦闘結果: "被テトラ" = 魔法10000%・無属性で受ける魔法ダメージ
+	NTokHint.add("非テトラ", "魔法10000%\n無属性で受ける魔法ダメージ");
+	funcRenderResultTinyHtml(objGridTiny, "被テトラ", __DIG3(calcReceivedMagicDamageByCondition(charaData, mobData, 10000, ELM_ID_VANITY)), "非テトラ");
 
 	const objMagicalDamageView = HtmlCreateElement("div", objGridDmg);
 	objMagicalDamageView.setAttribute("id", "OBJID_RECEIVED_DAMAGE_MAGICAL");
@@ -12430,6 +12433,118 @@ export function calcReceivedMagicDamage(charaData, mobData, objCell){
 	// 被ダメ表示
 	HtmlRemoveAllChild(objCell);
 	HtmlCreateTextNode(__DIG3(Math.floor(damage)), objCell);
+}
+
+/**
+ * 指定した倍率・属性で受ける魔法ダメージを計算して返す（FORM 非依存）。
+ * 簡易戦闘結果の「平均被ダメージ（仮）」など、画面上の倍率/属性選択とは
+ * 独立した固定条件で値が欲しいときに使う。
+ * 本家 calcReceivedMagicDamage の改変（=rebase 時の conflict）を避けるため、
+ * 計算ロジックはあえて複製している。本家側の計算式が更新された場合は
+ * 当関数にも手で追従させること。
+ * @param {*} charaData
+ * @param {*} mobData
+ * @param {number} skillRatio スキル倍率(%)
+ * @param {number} attackElemental 攻撃属性ID(ELM_ID_*)
+ * @returns {number} 受ける魔法ダメージ
+ */
+export function calcReceivedMagicDamageByCondition(charaData, mobData, skillRatio, attackElemental){
+	let mobMinMATK = mobData[MONSTER_DATA_EXTRA_INDEX_MATK_MIN];
+	let mobMaxMATK = mobData[MONSTER_DATA_EXTRA_INDEX_MATK_MAX];
+	let damage = (mobMinMATK + mobMaxMATK) / 2;
+	let ratio = 0;
+
+	const skill_ratio = Math.min(60000, Math.max(100, Number(skillRatio) || 100));
+	const attack_elemental = Number(attackElemental);
+	damage = Math.floor(damage * skill_ratio / 100);
+
+	/** モンスター耐性 */
+	damage -= Math.floor(damage * getResistanceOfEnvironment(mobData[0]) / 100);
+
+	/** サイズ耐性 */
+	ratio = n_tok[ITEM_SP_RESIST_SIZE_SMALL + mobData[17]];
+	ratio = Math.min(95, ratio);
+	damage -= Math.floor(damage * ratio / 100);
+
+	/** ボス・一般耐性 */
+	ratio = (mobData[20] === MONSTER_BOSSTYPE_BOSS) ? n_tok[ITEM_SP_RESIST_BOSS] : n_tok[ITEM_SP_RESIST_NOTBOSS];
+	ratio = Math.min(95, ratio);
+	damage -= Math.floor(damage * ratio / 100);
+
+	/** 属性相性 */
+	ratio = zokusei[n_A_BodyZokusei * 10 + 1][attack_elemental] + 100;
+	damage = Math.floor(damage * ratio / 100);
+
+	/** 属性耐性 */
+	ratio = n_tok[ ITEM_SP_RESIST_ELM_VANITY + attack_elemental ];
+	ratio = Math.min(95, ratio);
+	damage -= Math.floor(damage * ratio / 100);
+
+	/** モンスター属性耐性 */
+	ratio = n_tok[ITEM_SP_RESIST_MONSTER_ELM_VANITY + Math.floor(mobData[18] / 10)];
+	ratio = Math.min(95, ratio);
+	damage -= Math.floor(damage * ratio / 100);
+
+	/** 種族耐性 */
+	ratio = n_tok[ITEM_SP_RESIST_RACE_SOLID + mobData[19]];
+	ratio += (mobData[19] === RACE_ID_HUMAN) ? n_tok[ITEM_SP_RESIST_RACE_HUMAN_NOT_PLAYER] : 0;
+	ratio = Math.min(95, ratio);
+	damage -= Math.floor(damage * ratio / 100);
+
+	// MRES によるダメージ減少
+	const mres = GetMres();
+	const decay = Math.floor(damage * (1 - (2000 + mres) / (2000 + 5 * mres)));
+	damage -= decay;
+
+	// 除算Mdefによるダメージ減少
+	damage = Math.floor(damage * (4000 + charaData[CHARA_DATA_INDEX_MDEF_DIV]) / (4000 + charaData[CHARA_DATA_INDEX_MDEF_DIV] * 10));
+
+	// 減算Mdefによるダメージ減少
+	damage -= charaData[CHARA_DATA_INDEX_MDEF_MINUS];
+
+	/** スキルによる減少 */
+	{
+		// エナジーコート
+		const energy_coat = Math.max(UsedSkillSearch(SKILL_ID_ENERGY_COAT), n_A_PassSkill7[50]);
+		ratio = Math.min(95, 6 * energy_coat);
+		damage -= Math.floor(damage * ratio / 100);
+	}
+	/** スキルによる減少（排他的な効果） */
+	{
+		const candidate = [0];
+		let prefetch = 0;
+		// 金剛のダメージ軽減効果
+		if (UsedSkillSearch(SKILL_ID_KONGO) > 0) {
+			candidate.push(90);
+		}
+		// うずくまる
+		if (UsedSkillSearch(SKILL_ID_UZUKUMARU) > 0) {
+			candidate.push(80);
+		}
+		prefetch = UsedSkillSearch(SKILL_ID_NATURE_PROTECTION);
+		if (prefetch > 0) {
+			// ネイチャープロテクション
+			candidate.push([0, 30, 45, 60, 80, 95][prefetch]);
+		}
+		prefetch = UsedSkillSearch(SKILL_ID_IRON_HOWLING);
+		if (prefetch > 0) {
+			// アイアンハウリング
+			candidate.push(15 + 5 * prefetch);
+		}
+		ratio = Math.min(95, Math.max(...candidate));
+		damage -= Math.floor(damage * ratio / 100);
+	}
+	/** 耐性ペナルティ */
+	{
+		// ストーンスキン Lv6
+		if (TimeItemNumSearch(TIME_ITEM_ID_WOLF_HEZIN)) {
+			damage += Math.floor(damage * 20 / 100);
+		}
+	}
+
+	/** 最小ダメージ保証 */
+	damage = Math.max(damage, 1);
+	return Math.floor(damage);
 }
 
 /**
