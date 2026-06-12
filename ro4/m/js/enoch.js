@@ -62,6 +62,7 @@ $(document).ready(function() {
             this.selectResults = [];
             this.selectRunning = false;
             this.selectInterval = null;
+            this.selectRunId = 0;  // 実行世代。再入時に古いループを止めるためのトークン
             this.selectedTarget = null;
             this.selectedMetric = '#OBJID_ENOCH_DPS';
             this.comboSelectedMetric = '#OBJID_ENOCH_DPS';
@@ -136,8 +137,6 @@ $(document).ready(function() {
                                 <label>TopN: <input type="number" class="enoch-topn" value="10" min="1" max="100"></label>
                                 <label>最大: <input type="number" class="enoch-max-count" value="999" min="1"></label>
                                 <label>Slot≧: <input type="number" class="enoch-min-slot" value="0" min="0" max="4"></label>
-                                <label>間隔ms: <input type="number" class="enoch-step-delay" value="200" min="50"></label>
-                                <label>待ちms: <input type="number" class="enoch-render-delay" value="50" min="10"></label>
                             </div>
                             <div class="enoch-controls">
                                 <span class="enoch-selected-info"></span>
@@ -160,8 +159,6 @@ $(document).ready(function() {
                             <div class="enoch-combo-candidates"></div>
                             <div class="enoch-config">
                                 <label>TopN: <input type="number" class="enoch-combo-topn" value="10" min="1" max="100"></label>
-                                <label>間隔ms: <input type="number" class="enoch-combo-step-delay" value="200" min="50"></label>
-                                <label>待ちms: <input type="number" class="enoch-combo-render-delay" value="50" min="10"></label>
                             </div>
                             <div class="enoch-controls">
                                 <span class="enoch-combo-count"></span>
@@ -357,10 +354,11 @@ $(document).ready(function() {
             this.$modal.find('.enoch-start').prop('disabled', false);
         }
 
-        runSelect() {
+        async runSelect() {
             this.stopSelect();
             this.selectResults = [];
             this.selectRunning = true;
+            const runId = ++this.selectRunId;  // この実行の世代。再入したら古いループは即座に抜ける
             this.suppressAutoCalc();
             this.$modal.find('.enoch-start').prop('disabled', true);
             this.$modal.find('.enoch-stop').prop('disabled', false);
@@ -375,8 +373,6 @@ $(document).ready(function() {
             const topN = parseInt(this.$modal.find('.enoch-topn').val()) || 10;
             const maxCount = parseInt(this.$modal.find('.enoch-max-count').val()) || 999;
             const minSlot = parseInt(this.$modal.find('.enoch-min-slot').val()) || 0;
-            const stepDelay = parseInt(this.$modal.find('.enoch-step-delay').val()) || 200;
-            const renderDelay = parseInt(this.$modal.find('.enoch-render-delay').val()) || 50;
 
             const $select = $(targetId);
             const $options = $select.find('option');
@@ -389,16 +385,13 @@ $(document).ready(function() {
                 return;
             }
 
-            let index = 0;
             this.$highlightedEl = $metricEl.css('background-color', 'yellow');
 
-            const checkValue = () => {
-                if (!this.selectRunning || index >= stopIndex) {
-                    this.stopSelect();
-                    this.renderSelectResults(topN, true);
-                    return;
-                }
-
+            // 逐次ループ: 「セット → calc() → 描画反映を待つ → そのアイテムの値を読む」を直列化する。
+            // setInterval(set用) と setTimeout(読取用) を分離していた旧実装では、待ち≧間隔のときに
+            // 読取が次アイテムの set+calc を追い越し、item N の行に value N+1 が入る +1 ズレが発生していた。
+            // await で順序を保証することで、read[N] は必ず item N の calc 結果のみを見る。
+            for (let index = 0; index < stopIndex && this.selectRunning && this.selectRunId === runId; index++) {
                 const $option = $options.eq(index);
                 const itemId = $option.val();
                 const itemName = $option.text();
@@ -407,26 +400,29 @@ $(document).ready(function() {
 
                 $select.val(itemId).trigger('change');
                 calc();
+                // calc()はspanを同期更新するので待ち時間は不要。ただしyield自体は必須
+                // （消すと全件終わるまで再描画されず画面が固まり、停止も押せなくなる）。
+                await new Promise(r => setTimeout(r));
+                if (!this.selectRunning || this.selectRunId !== runId) return;
 
-                setTimeout(() => {
-                    if (!this.selectRunning) return;
-                    const rawText = $metricEl.text();
-                    const value = parseFloat(rawText.replace(/,/g, '')) || 0;
-                    if (slot >= minSlot) {
-                        this.selectResults.push({ itemId, name: itemName, value, text: rawText });
-                        this.selectResults.sort((a, b) => b.value - a.value);
-                    }
-                    const pct = Math.round(((index + 1) / stopIndex) * 100);
-                    this.$modal.find('.enoch-progress').html(`
-                        <div class="enoch-progress-bar"><div class="enoch-progress-fill" style="width: ${pct}%"></div></div>
-                        <div class="enoch-progress-text">${index + 1} / ${stopIndex} (${pct}%) - ${itemName}</div>
-                    `);
-                    this.renderSelectResults(topN, false);
-                    index++;
-                }, renderDelay);
-            };
+                const rawText = $metricEl.text();
+                const value = parseFloat(rawText.replace(/,/g, '')) || 0;
+                if (slot >= minSlot) {
+                    this.selectResults.push({ itemId, name: itemName, value, text: rawText });
+                    this.selectResults.sort((a, b) => b.value - a.value);
+                }
 
-            this.selectInterval = setInterval(checkValue, stepDelay);
+                const pct = Math.round(((index + 1) / stopIndex) * 100);
+                this.$modal.find('.enoch-progress').html(`
+                    <div class="enoch-progress-bar"><div class="enoch-progress-fill" style="width: ${pct}%"></div></div>
+                    <div class="enoch-progress-text">${index + 1} / ${stopIndex} (${pct}%) - ${itemName}</div>
+                `);
+                this.renderSelectResults(topN, false);
+            }
+
+            if (this.selectRunId !== runId) return;  // 別の実行に置き換わっていたら何もしない
+            this.stopSelect();
+            this.renderSelectResults(topN, true);
         }
 
         stopSelect() {
@@ -589,8 +585,6 @@ $(document).ready(function() {
 
             const metric = this.comboSelectedMetric;
             const topN = parseInt(this.$modal.find('.enoch-combo-topn').val()) || 10;
-            const stepDelay = parseInt(this.$modal.find('.enoch-combo-step-delay').val()) || 150;
-            const renderDelay = parseInt(this.$modal.find('.enoch-combo-render-delay').val()) || 50;
 
             const newCombinations = this.generateCombinations();
             const isResume = this.comboCombinations &&
@@ -632,7 +626,8 @@ $(document).ready(function() {
 
                 this.comboPrevCombo = combo;
                 calc();
-                await new Promise(r => setTimeout(r, renderDelay));
+                // calc()はspanを同期更新するので待ち時間は不要。ただしyield自体は必須（UI再描画/停止のため）。
+                await new Promise(r => setTimeout(r));
 
                 const rawText = $(metric).text();
                 const value = parseFloat(rawText.replace(/,/g, '')) || 0;
@@ -652,8 +647,6 @@ $(document).ready(function() {
                     <div class="enoch-progress-current">${comboStr}</div>
                 `);
                 this.renderComboResults(topN, false);
-
-                if (i < totalCount - 1) await new Promise(r => setTimeout(r, stepDelay));
             }
 
             this.comboRunning = false;

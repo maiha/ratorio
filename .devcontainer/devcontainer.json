@@ -1,0 +1,39 @@
+{
+  "name": "ubuntu22-cli-dev",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-22.04",
+
+  "features": {
+    "ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {},
+    "ghcr.io/Caesarovich/devcontainer-feature-crystal/crystal:1": {
+      "channel": "stable",
+      "version": "1.20"
+    },
+    "ghcr.io/itsmechlark/features/redis-server:1": {
+      "version": "7.0.5"
+    }
+  },
+
+  "remoteUser": "vscode",
+  "updateRemoteUserUID": true,
+
+  "mounts": [
+    "source=${localEnv:HOME}/.claude,target=/home/vscode/.claude,type=bind",
+    "source=${localEnv:HOME}/.claude.json,target=/home/vscode/.claude.json,type=bind"
+  ],
+
+  "postStartCommand": "mkdir -p /home/vscode/.local/bin && rm -f /home/vscode/.local/bin/claude && ln -s /usr/bin/claude /home/vscode/.local/bin/claude",
+
+  "containerEnv": {
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+    "DISABLE_AUTOUPDATER": "1",
+    "TZ": "UTC"
+  },
+
+  "runArgs": [
+    "--security-opt", "no-new-privileges",
+    "--cap-drop", "ALL"
+  ],
+
+  "init": true,
+  "overrideCommand": true
+}
