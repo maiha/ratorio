@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# dev — devcontainer 操作ヘルパー (host 側で実行する)。
+# devcontainer CLI を薄くラップし、container の起動/停止/シェル/コマンド実行をまとめる。
+
+usage() {
+  cat <<'EOF'
+dev — devcontainer 操作ヘルパー (host 側で実行)
+
+使い方:
+  ./dev <command> [args...]
+
+コマンド:
+  up                  devcontainer を (再)作成して起動する (既存 container は破棄して作り直す)
+  down                この workspace の devcontainer を停止・削除する (container を消す)
+  sh                  devcontainer 内で対話 bash shell を開く
+  help, -h, --help    このヘルプを表示する
+EOF
+}
+
+case "${1:-}" in
+  "" | help | -h | --help)
+    # 引数なし / help はヘルプを表示 (exit 0)
+    usage
+    ;;
+
+  up)
+    # devcontainer を作り直して起動 (既存は破棄)
+    devcontainer up --workspace-folder . --remove-existing-container
+    ;;
+
+  down)
+    # この workspace の devcontainer を削除
+    docker ps -aq --filter "label=devcontainer.local_folder=$(realpath $(pwd))" | xargs -r docker rm -f
+    ;;
+
+  sh)
+    # container 内で対話 shell
+    devcontainer exec --workspace-folder . bash
+    ;;
+
+  *)
+    # 未知のコマンドはエラー (typo 検出)
+    echo "dev: unknown command: $1" >&2
+    echo >&2
+    usage >&2
+    exit 2
+    ;;
+esac
