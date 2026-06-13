@@ -10,7 +10,7 @@ import {
          GetHigherJobSeriesID, GetJobLevelMax, GetLowerJobSeriesID, IsDoramJob,
          IsSameJobClass
 } from './data/mig.job.h.js';
-import { __DIG3, g_constDataManager, g_skillManager } from './global.js';
+import { __DIG3, g_constDataManager, g_skillManager, g_timeItemConf } from './global.js';
 import {
          ApplyCRateAmplify, ApplyMresResist, ApplyPAtkAmplify, ApplyPAtkLeftHandPenalty,
          ApplyResResist, ApplySMatkAmplify, GetHPlus, GetMres, GetPAtk, GetRes,
@@ -29,7 +29,10 @@ import { CCharaConfDebuff } from '../../../roro/m/js/CCharaConfDebuff.js';
 import { CCharaConfIchizi } from '../../../roro/m/js/CCharaConfIchizi.js';
 import { CCharaConfNizi } from '../../../roro/m/js/CCharaConfNizi.js';
 import { CCharaConfSanzi } from '../../../roro/m/js/CCharaConfSanzi.js';
+import { CExtraInfoAreaComponentManager } from '../../../roro/m/js/CExtraInfoAreaComponentManager.js';
+import { CItemInfoManager } from '../../../roro/m/js/CItemInfoManager.js';
 import { CSkillData } from '../../../roro/m/js/CSkillManager.js';
+import { ITEM_SP_TIME_OBJ } from '../../../roro/m/js/timeitem.dat.js';
 import {
          ARROW_ID_GANSEKINO_YA, ARROW_ID_HONOONO_YA, ARROW_ID_KAZENO_YA,
          ARROW_ID_SUISHONO_YA
