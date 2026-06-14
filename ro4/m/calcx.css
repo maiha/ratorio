@@ -489,3 +489,46 @@ input[type="number"]:invalid::after {
 .ench-search-shortcut-parent:hover .ench-search-shortcut-btn {
     opacity: 1;
 }
+
+/* カード解除ショートカットボタン（独自機能）
+   レイアウト・不透明度はエンチャント検索ボタン（虫眼鏡）と同じにし、
+   ラベルだけ Stash の削除ボタン風の赤い「✕」にする */
+.card-clear-shortcut-btn {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 5px 2px;
+    opacity: 0.2;
+    color: #c00; /* Stash 削除ボタンと同じ赤 */
+    font-weight: bold;
+    line-height: 1;
+    /* Tom Select の .ts-control は position:relative; z-index:1; の不透明な被せ物。
+       横幅いっぱいの option だとラッパーが TD 幅まで広がりボタンを覆うので、
+       z-index で前面に出す（.ts-control の 1 より上、.ts-dropdown の 10 より下）。 */
+    z-index: 2;
+}
+.card-clear-shortcut-btn::before {
+    content: '✕';
+}
+/* カードを外した直後は「元に戻す（undo）」ボタンに変わる（表示有無は JS が制御） */
+.card-clear-shortcut-btn.is-undo {
+    color: #06c; /* 赤（削除）と区別する青系 */
+}
+.card-clear-shortcut-btn.is-undo::before {
+    content: '↶';
+}
+.card-clear-shortcut-parent:hover .card-clear-shortcut-btn,
+.card-clear-shortcut-btn:focus-visible {
+    /* :focus ではなく :focus-visible。マウスクリックではフォーカス表示を出さない
+       （クリック後に opacity:1 が残る不具合を回避）。キーボード操作時のみ可視化する。 */
+    opacity: 1;
+}
+/* カード未選択（CARD_ID_NONE = value="0"）のときは隠す。
+   ただし「外した直後（undo モード = .is-undo）」は戻すボタンとして表示し続ける。 */
+.card-clear-shortcut-parent:has(> select option[value="0"]:checked) .card-clear-shortcut-btn:not(.is-undo) {
+    display: none;
+}
