@@ -29,6 +29,9 @@
  *   スキル名(XX)の定義域は SKILL_INFO のキー(テトラボルテックス /
  *   デモニックヘルジャッジメント / Mレイオブジェネシス / アースクエイク)。
  */
+import { __DIG3 } from './global.js';
+import { HtmlCreateElement, HtmlCreateTextNode } from '../../../roro/common/js/util.js';
+
 class TinyMobSkill {
 
 	// ============================================================

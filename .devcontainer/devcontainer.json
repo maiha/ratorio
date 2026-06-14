@@ -3,6 +3,11 @@
   "image": "mcr.microsoft.com/devcontainers/base:ubuntu-22.04",
 
   "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "22",
+      "pnpmVersion": "latest"
+    },
+    "ghcr.io/guiyomh/features/just:0": {},
     "ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {},
     "ghcr.io/Caesarovich/devcontainer-feature-crystal/crystal:1": {
       "channel": "stable",

@@ -1,6 +1,80 @@
-var g_bSuperNoviceFullWeapon;
+// === AUTO-GENERATED IMPORTS ===
+import './arrow.h.js';
+import './card.h.js';
+import './skill.h.js';
+import {
+         GetHigherJobSeriesID, GetLowerJobSeriesID, IsMatchJobRestrict, IsSameJobClass,
+         IsUsableBSPJob, IsUsableHSPJob
+} from '../../../ro4/m/js/data/mig.job.h.js';
+import { g_constDataManager } from '../../../ro4/m/js/global.js';
+import {
+         HtmlCreateElement, HtmlCreateElementOption, HtmlCreateTextNode,
+         HtmlGetElementById, HtmlGetObjectValueById, HtmlGetObjectValueByIdAsInteger,
+         HtmlRemoveAllChild, HtmlRemoveFromParent, HtmlRemoveOptionAll,
+         HtmlSetObjectValueById, SetStatefullData, myInnerHtml
+} from '../../common/js/util.js';
+import { ARROW_ID_NONE, ArrowOBJNew } from './arrow.dat.js';
+import { CARD_ID_NONE, CardObjNew } from './card.dat.js';
+import {
+         CARD_REGION_ID_ACCESSORY_1, CARD_REGION_ID_ACCESSORY_2,
+         CARD_REGION_ID_ARMS_LEFT_1, CARD_REGION_ID_ARMS_LEFT_2,
+         CARD_REGION_ID_ARMS_LEFT_3, CARD_REGION_ID_ARMS_LEFT_4,
+         CARD_REGION_ID_ARMS_RIGHT_1, CARD_REGION_ID_ARMS_RIGHT_2,
+         CARD_REGION_ID_ARMS_RIGHT_3, CARD_REGION_ID_ARMS_RIGHT_4, CARD_REGION_ID_BODY,
+         CARD_REGION_ID_ENCHANT_ACCESSORY_1_1, CARD_REGION_ID_ENCHANT_ACCESSORY_1_2,
+         CARD_REGION_ID_ENCHANT_ACCESSORY_1_3, CARD_REGION_ID_ENCHANT_ACCESSORY_2_1,
+         CARD_REGION_ID_ENCHANT_ACCESSORY_2_2, CARD_REGION_ID_ENCHANT_ACCESSORY_2_3,
+         CARD_REGION_ID_ENCHANT_BODY_1, CARD_REGION_ID_ENCHANT_BODY_2,
+         CARD_REGION_ID_ENCHANT_BODY_3, CARD_REGION_ID_ENCHANT_HEAD_MID_1,
+         CARD_REGION_ID_ENCHANT_HEAD_MID_2, CARD_REGION_ID_ENCHANT_HEAD_MID_3,
+         CARD_REGION_ID_ENCHANT_HEAD_TOP_1, CARD_REGION_ID_ENCHANT_HEAD_TOP_2,
+         CARD_REGION_ID_ENCHANT_HEAD_TOP_3, CARD_REGION_ID_ENCHANT_HEAD_UNDER_1,
+         CARD_REGION_ID_ENCHANT_HEAD_UNDER_2, CARD_REGION_ID_ENCHANT_HEAD_UNDER_3,
+         CARD_REGION_ID_ENCHANT_SHIELD_1, CARD_REGION_ID_ENCHANT_SHIELD_2,
+         CARD_REGION_ID_ENCHANT_SHIELD_3, CARD_REGION_ID_ENCHANT_SHOES_1,
+         CARD_REGION_ID_ENCHANT_SHOES_2, CARD_REGION_ID_ENCHANT_SHOES_3,
+         CARD_REGION_ID_ENCHANT_SHOULDER_1, CARD_REGION_ID_ENCHANT_SHOULDER_2,
+         CARD_REGION_ID_ENCHANT_SHOULDER_3, CARD_REGION_ID_HEAD_MID,
+         CARD_REGION_ID_HEAD_TOP, CARD_REGION_ID_SHIELD, CARD_REGION_ID_SHOES,
+         CARD_REGION_ID_SHOULDER
+} from './common.js';
+import {
+         ITEM_ID_NOEQUIP_ACCESSORY, ITEM_ID_NOEQUIP_BODY, ITEM_ID_NOEQUIP_HEAD_MID,
+         ITEM_ID_NOEQUIP_HEAD_TOP, ITEM_ID_NOEQUIP_HEAD_UNDER, ITEM_ID_NOEQUIP_SHIELD,
+         ITEM_ID_NOEQUIP_SHOES, ITEM_ID_NOEQUIP_SHOULDER, ITEM_ID_SUDE, ItemObjNew
+} from './item.dat.js';
+import { GetItemKindNameText, GetItemSP } from './item.h.js';
+import { GetEquipRndOptTableKind, GetEquipRndOptTableValue, SetEquipRndOptTable } from './rndopttype.h.js';
+import { SkillObjNew } from './skill.dat.js';
+import {
+         GetSlotMode, OnClickSlotModeButton, SaveSlotStateCard, SaveSlotStateCardAll,
+         SaveSlotStateCostumeAll, SaveSlotStateRndEnch, SaveSlotStateRndEnchAll,
+         SLOTPAGER_MODE_CARD, SLOTPAGER_MODE_RNDENCH
+} from './slotpager.js';
+import { ClearCardSlot, RebuildCardSelect, SetCardSlotEnability } from './hmcard.js';
+import { LEARNED_SKILL_MAX_COUNT, n_A_LearnedSkill, OnClickSkillSWLearned, UpdateLearnedSkillSettingColoring } from './learnedskill.js';
+import { GetObjectIdRndOptKind, GetObjectIdRndOptValue, RebuildRndOptSelect, SetRndOptEnablity, SetRndOptEnablityAll, SetUpRndOptValue } from './hmrndopt.js';
+import { CItemInfoManager } from './CItemInfoManager.js';
+import { g_extraInfoDataBridge } from './CExtraInfoDataBridge.js';
+// === END AUTO-GENERATED IMPORTS ===
+// スパノビの魂による装備制限解除フラグ。本モジュールが所有者。
+// 書き手は foot.js の RefreshSuperNoviceFullWeapon（SetSuperNoviceFullWeapon 経由）と
+// 当モジュールの changeJobSettings（職変更時に undefined へリセット）。
+// ESM 移行(#1394)で foot.js 側にも別個の宣言ができてしまい状態が分断していたため、
+// 単一の所有者へ統一して live binding で共有する。
+export var g_bSuperNoviceFullWeapon;
 var n_A_WeaponType;
 var n_A_Weapon2Type;
+
+/**
+ * スパノビの魂による装備制限解除フラグを設定する。
+ * foot.js など他モジュールは import したライブバインディングを直接代入できないため、
+ * このセッター経由で更新する。
+ * @param {boolean|undefined} bFull
+ */
+export function SetSuperNoviceFullWeapon(bFull) {
+	g_bSuperNoviceFullWeapon = bFull;
+}
 
 /**
  * ステータスや装備などを初期化して職業変更する
@@ -123,11 +197,10 @@ export function changeJobSettings(jobId) {
 	// 攻撃手段欄の初期化
 	CAttackMethodAreaComponentManager.RebuildControls();
 	// 拡張表示の選択値記憶のリセット
-	CExtraInfoAreaComponentManager.ClearStoredValueAll(true);
+	g_extraInfoDataBridge.clearStoredValueAll?.(true);
 	// 拡張表示の再構築
-	CExtraInfoAreaComponentManager.RebuildDispAreaAll();
+	g_extraInfoDataBridge.rebuildDispAreaAll?.();
 }
-
 
 
 /************************************************************************************************
@@ -157,7 +230,6 @@ export function OnChangeArmsTypeRight(itemKind){
 	HtmlSetObjectValueById("OBJID_ARMS_TYPE_RIGHT", itemKind);
 	n_A_WeaponType = itemKind;
 	window.n_A_WeaponType = n_A_WeaponType;
-
 
 
 	// 矢リストを再構築する
@@ -203,7 +275,6 @@ export function OnChangeArmsTypeRight(itemKind){
 	);
 
 
-
 	// 矢セレクトボックスを調整する
 	objSelectArrow = document.getElementById("OBJID_SELECT_ARROW");
 
@@ -240,7 +311,6 @@ export function OnChangeArmsTypeRight(itemKind){
 		// セレクトボックスを削除する
 		HtmlRemoveFromParent(objSelectArrow);
 	}
-
 
 
 	// 右手装備情報のクリア
@@ -317,7 +387,6 @@ export function OnChangeArmsTypeRight(itemKind){
 		CItemInfoManager.OnChangeEquip(CONST_DATA_KIND_ITEM, n_A_Equip[EQUIP_REGION_ID_ARMS]);
 	}
 }
-
 
 
 /************************************************************************************************
@@ -461,8 +530,6 @@ export function IsLearnedEffectEquipable(dataKind, targetId) {
 }
 
 
-
-
 /************************************************************************************************
  *
  * 左手武器の武器種別変更イベントハンドラ
@@ -491,7 +558,6 @@ export function OnChangeArmsTypeLeft(itemKind){
 	var objInput = null;
 
 
-
 	// 武器種別の設定
 	HtmlSetObjectValueById("OBJID_ARMS_TYPE_LEFT", itemKind);
 	n_A_Weapon2Type = itemKind;
@@ -512,7 +578,6 @@ export function OnChangeArmsTypeLeft(itemKind){
 	// 左手装備、および、盾装備の、情報クリア
 	ClearEquip(EQUIP_REGION_ID_ARMS_LEFT);
 	ClearEquip(EQUIP_REGION_ID_SHIELD);
-
 
 
 	// 装備欄の調整
@@ -577,7 +642,6 @@ export function OnChangeArmsTypeLeft(itemKind){
 	}
 
 
-
 	// 左右武器入れ替えボタンを削除
 	objSpan = document.getElementById("OBJID_SPAN_SWAP_ARMS");
 	HtmlRemoveAllChild(objSpan);
@@ -587,7 +651,7 @@ export function OnChangeArmsTypeLeft(itemKind){
 		objInput = HtmlCreateElement("input", objSpan);
 		objInput.setAttribute("type", "button");
 		objInput.setAttribute("value", "左右武器入れ替え");
-		objInput.setAttribute("onclick", "OnClickSwapArms()");
+		objInput.addEventListener('click', OnClickSwapArms);
 	}
 
 	// 左手武器選択欄の再構築
@@ -611,7 +675,6 @@ export function OnChangeArmsTypeLeft(itemKind){
 		// SetEnchSlotsEnablity();
 	}
 }
-
 
 
 /************************************************************************************************
@@ -703,7 +766,6 @@ export function RebuildArmsLeftSelect() {
 }
 
 
-
 /************************************************************************************************
  *
  * 精錬値変更イベントハンドラ.
@@ -720,7 +782,6 @@ export function OnChangeRefined() {
 	CAttackMethodAreaComponentManager.RebuildControls();
 
 }
-
 
 
 /************************************************************************************************
@@ -915,13 +976,13 @@ export function ClearEnchantOnChangeEquip(eqpRgnId, itemId) {
 			cardRgnId = cardRegionIdArrayToClear[slotidx];
 
 			// 設定状況をクリア
-			if (CardObjNew[n_A_card[cardRgnId]][CARD_DATA_INDEX_KIND] == CARD_KIND_ENCHANT) {
+			const _cardEntry = CardObjNew[n_A_card[cardRgnId]];
+			if (_cardEntry && _cardEntry[CARD_DATA_INDEX_KIND] == CARD_KIND_ENCHANT) {
 				n_A_card[cardRgnId] = CARD_ID_NONE;
 			}
 		}
 	}
 }
-
 
 
 export function UpdateStatefullDataOnChangeEquip(eqpRgnId) {
@@ -1082,7 +1143,6 @@ export function UpdateLearnedSkillNotice () {
 }
 
 
-
 /**
  * 左右武器入れ替えイベントハンドラ.
  */
@@ -1216,9 +1276,8 @@ export function OnClickSwapArms() {
 	calc();
 
 	// 検索可能リスト更新
-	LoadSelect2();
+	LoadTomSelect();
 }
-
 
 
 /**
@@ -1245,9 +1304,6 @@ export function OnChangeCard(cardId) {
 }
 
 
-
-
-
 /**
  * 衣装変更イベントハンドラ.
  */
@@ -1258,9 +1314,6 @@ export function OnChangeCostume(costumeId) {
  }
 
 
-
-
-
 /**
  * ランダムエンチャント変更イベントハンドラ.
  */
@@ -1268,11 +1321,6 @@ export function OnChangeRandomEnchant() {
 	SaveSlotStateRndEnchAll();
 	StAllCalc();
 }
-
-
-
-
-
 
 
 export function sort(work) {
@@ -1287,9 +1335,6 @@ export function sort(work) {
 	}
 	return work;
 }
-
-
-
 
 
 /************************************************************************************************
@@ -1313,7 +1358,6 @@ export function RebuildArmorsSelect() {
 	var itemIdArrayEquipable = new Array();
 
 	var objSelectArray = new Array();
-
 
 
 	// アイテム ID 抽出用配列を初期化
@@ -1453,8 +1497,6 @@ export function RebuildArmorsSelect() {
 		}
 	}
 }
-
-
 
 
 /**
@@ -1613,9 +1655,6 @@ export function WeaponSet2(){
 }
 
 
-
-
-
 /************************************************************************************************
  *
  * 装備欄をデフォルトセットアップする（すべて）.
@@ -1719,9 +1758,6 @@ export function __InitEquipDefault(objidPrifix, itemId) {
 	HtmlCreateElementOption(itemId, ItemObjNew[itemId][ITEM_DATA_INDEX_NAME], objSelect);
 	HtmlSetObjectValueById(itemId);
 }
-
-
-
 
 
 /************************************************************************************************
@@ -1851,9 +1887,6 @@ export function __ClearEquip(eqpRgnId, objidPrifix, itemId) {
 }
 
 
-
-
-
 /************************************************************************************************
  *
  * 指定の装備が遠距離攻撃かを判定する.
@@ -1895,6 +1928,36 @@ export function IsLongRange(itemId) {
 	return false;
 }
 
+/**
+ * select の値を設定し、表示と change を同期させる。
+ *
+ * Tom Select 化された select は元 <select> への直接代入（jQuery .val() 含む）では
+ * UI が更新されないため、インスタンスがあれば setValue() を使う。
+ * setValue() は非 silent で native 'change' を発火するので、
+ * eventsetup.js の native listener / inline onchange / 再初期化リスナーがすべて駆動する。
+ * （select2 は jQuery の合成 change を購読していたため旧実装でも動いていたが、
+ *   Tom Select は native しか見ない＝Phase 3d リグレッション対策）
+ *
+ * 必ず「値」で指定すること。アクセサリ1と2ではカード候補リストの並び・件数が
+ * 一致しないため、selectedIndex でのコピーは index がズレて空選択になる。
+ */
+function setSelectValueSynced(selector, value) {
+	const el = document.querySelector(selector);
+	if (!el) return;
+	if (el.tomselect) {
+		el.tomselect.setValue(value);
+	} else {
+		el.value = value;
+		el.dispatchEvent(new Event('change', { bubbles: true }));
+	}
+}
+
+/** select の「装備なし／カードなし」値（先頭オプション）を返す。 */
+function getNoneValue(selector) {
+	const el = document.querySelector(selector);
+	return (el && el.options.length) ? el.options[0].value : '0';
+}
+
 export function copyAccs(from, to){
 	// ランダムオプション入力中はelementがないので処理できない
 	// 中途半端になるので何もしないようにする
@@ -1907,45 +1970,28 @@ export function copyAccs(from, to){
 	const accs_from = $(id_from).val();
 
 	if ($(`${id_to} option[value=${accs_from}]`).length>0) {
-		$(id_to).val(accs_from).change().trigger("select2:select");
+		// アクセサリ本体をコピー（OnChangeEquip がカード欄を再構築する）
+		setSelectValueSynced(id_to, accs_from);
+		// カードは「値」でコピーする（index 不可・上記コメント参照）
 		[1,2,3,4].forEach((i)=>{
-			$(`${id_to}_CARD_${i}`).prop("selectedIndex", $(`${id_from}_CARD_${i}`).prop("selectedIndex")).change();
+			const fromEl = document.querySelector(`${id_from}_CARD_${i}`);
+			setSelectValueSynced(`${id_to}_CARD_${i}`, fromEl ? fromEl.value : getNoneValue(`${id_to}_CARD_${i}`));
 		})
 	} else {
-		$(id_to).prop("selectedIndex", 0).change().trigger("select2:select");
+		// ソースのアクセサリが対象に無い → 「装備なし」へリセット
+		setSelectValueSynced(id_to, getNoneValue(id_to));
 		[1,2,3,4].forEach((i)=>{
-			$(`${id_to}_CARD_${i}`).prop("selectedIndex", 0).change();
+			setSelectValueSynced(`${id_to}_CARD_${i}`, getNoneValue(`${id_to}_CARD_${i}`));
 		})
 	}
 }
 
+/* window compat — dewindow フェーズで除去予定 */
 if (typeof window !== 'undefined') {
-	window.changeJobSettings = changeJobSettings;
-	window.OnChangeArmsTypeRight = OnChangeArmsTypeRight;
-	window.RebuildArmsRightSelect = RebuildArmsRightSelect;
-	window.GetFlagAppendedItemName = GetFlagAppendedItemName;
-	window.GetFlagAppendedCardName = GetFlagAppendedCardName;
-	window.IsLearnedEffectEquipable = IsLearnedEffectEquipable;
-	window.OnChangeArmsTypeLeft = OnChangeArmsTypeLeft;
-	window.RebuildArmsLeftSelect = RebuildArmsLeftSelect;
-	window.OnChangeRefined = OnChangeRefined;
-	window.OnChangeEquip = OnChangeEquip;
-	window.ClearEnchantOnChangeEquip = ClearEnchantOnChangeEquip;
-	window.UpdateStatefullDataOnChangeEquip = UpdateStatefullDataOnChangeEquip;
-	window.UpdateLearnedSkillNotice = UpdateLearnedSkillNotice;
-	window.OnClickSwapArms = OnClickSwapArms;
-	window.OnChangeCard = OnChangeCard;
-	window.OnChangeCostume = OnChangeCostume;
-	window.OnChangeRandomEnchant = OnChangeRandomEnchant;
-	window.sort = sort;
-	window.RebuildArmorsSelect = RebuildArmorsSelect;
-	window.WeaponSet2 = WeaponSet2;
-	window.InitEquipDefaultAll = InitEquipDefaultAll;
-	window.InitEquipDefault = InitEquipDefault;
-	window.__InitEquipDefault = __InitEquipDefault;
-	window.ClearEquipAll = ClearEquipAll;
-	window.ClearEquip = ClearEquip;
-	window.__ClearEquip = __ClearEquip;
-	window.IsLongRange = IsLongRange;
-	window.copyAccs = copyAccs;
+    Object.assign(window, {
+        OnChangeCard,
+        OnChangeCostume,
+        OnChangeArmsTypeLeft,
+        OnChangeRandomEnchant,
+    });
 }

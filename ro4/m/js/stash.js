@@ -1,3 +1,17 @@
+// stash.js は本来 classic script で各種定数をグローバル変数として参照する。
+// しかし本家の ES module 移行が過渡期で、グローバル公開（CGlobalConstManager.DefineEnum）
+// から漏れている定数がある:
+//   - MIG_JOB_ID_* の4次職（DRAGON_KNIGHT=66 以降） … mig.job.dat.js にのみ存在
+//   - CARD_REGION_ID_* … common.js の export const のみでグローバル未公開
+//     （EQUIP_REGION_ID_* / ITEM_DATA_INDEX_* / CARD_DATA_INDEX_* は DefineEnum 済みで在る）
+// ES module を単一ソースとして window へ公開し、以下のグローバル参照を解決する。
+// 既存グローバルと同名のものは同値で上書きされるだけなので無害。
+import * as Common from '../../../roro/m/js/common.js';
+import * as MigJob from './data/mig.job.dat.js';
+import * as Util from '../../../roro/common/js/util.js';
+import { OnChangeEquip } from '../../../roro/m/js/equip.js';
+Object.assign(window, Common, MigJob, Util);
+
 $(document).ready(function () {
     class StashItem {
 		constructor(itemId, itemRefined, cardIds) {

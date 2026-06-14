@@ -1,4 +1,7 @@
 import { MonsterToughness } from '../../../roro/m/js/monster.toughness.dat.js';
+import { MOB_CONF_BUF_DATA_INDEX_ID, MOB_CONF_BUF_ID_DAMAGE_DIVIDE, MobConfBufOBJ, n_B_KYOUKA } from '../../../roro/m/js/mobconfbuf.js';
+import { MONSTER_MAP_ID_CATEGORY_ALL, MONSTER_MAP_ID_CATEGORY_MEMORIAL_DUNGEON, MONSTER_MAP_ID_MAP_ALL, g_MonsterMapCategoryDataArray, g_MonsterMapDataArray } from '../../../roro/m/js/monstermap.dat.js';
+import { MonsterObjNew } from '../../../roro/m/js/monster.dat.js';
 
 /**
  * マップモンスター簡易情報
@@ -328,7 +331,13 @@ class TinyMapMonster {
 		setDamageDivideByDivisor(divisor) {
 			const idx = TinyMapMonster.DAMAGE_DIVISOR_OPTIONS.indexOf(divisor);
 			const value = (idx >= 0) ? idx : 0;
-			this.getMobConfBufDamageDivideSelect().val(value).trigger("change");
+			const el = this.getMobConfBufDamageDivideSelect().val(value)[0];
+			// 本家の select は addEventListener('change', ...) でハンドラ登録するように
+			// なった（ESモジュール移行2 / commit 2a070ec4）。jQuery の .trigger("change")
+			// は native addEventListener ハンドラを呼ばないため、native イベントを
+			// dispatchEvent する。これなら addEventListener / onchange / jQuery .on()
+			// のいずれのハンドラにも届く。
+			el?.dispatchEvent(new Event("change", { bubbles: true }));
 		},
 
 		prettyDiv(div) {

@@ -1,3 +1,15 @@
+// === AUTO-GENERATED IMPORTS ===
+import './card.h.js';
+import './common.js';
+import './item.h.js';
+import './skill.h.js';
+import { g_constDataManager } from '../../../ro4/m/js/global.js';
+import { CardObjNew } from './card.dat.js';
+import { UpdateLearnedSkillNotice } from './equip.js';
+import { ItemObjNew } from './item.dat.js';
+import { SkillObjNew } from './skill.dat.js';
+import { HtmlCreateElement, HtmlCreateTextNode } from '../../common/js/util.js';
+// === END AUTO-GENERATED IMPORTS ===
 /**
  * 習得スキル欄の生成・更新・サーチなどの関数群
  */
@@ -84,7 +96,7 @@ export function OnClickSkillSWLearned(){
 	objInput = document.createElement("input");
 	objInput.setAttribute("type", "checkbox");
 	objInput.setAttribute("id", "OBJID_SKILL_COLUMN_EXTRACT_CHECKBOX");
-	objInput.setAttribute("onClick", "OnClickSkillSWLearned()");
+	objInput.addEventListener('click', OnClickSkillSWLearned);
 	if (n_SkillSWLearned) {
 		// 部品を再構築しているので、チェック状態の再設定が必要
 		objInput.setAttribute("checked", "checked");
@@ -136,9 +148,10 @@ export function OnClickSkillSWLearned(){
 		try{
 			url = new URL($("#ID_SKILL_LEARNED_URL").val()||location.href);
 			showLoadingIndicator();
-			// 自動再計算を ON にしていると項目変更のたびに計算されて待ち時間がかさむ事があります
-			// 待機中を示すスピナーもあるため深刻な問題ではないと認識していますが
-			// 問題が表面化した場合には自動再計算の例外処理などを検討してください
+			// 各 select に値を反映したあと AutoCalc をまとめて 1 回だけ呼ぶ。
+			// 注意: jQuery の .change() はネイティブ addEventListener('change') ハンドラを
+			// 発火させないため、状態更新（n_A_LearnedSkill）と着色は
+			// RefreshSkillColumnHeaderLearned を直接呼んで行う（第4引数で AutoCalc を抑止）。
 			setTimeout(() => {
 				$("#ID_SKILL_LEARNED select").each(function(idx,elm) {
 					const id_skill_name = $(elm).attr("id").replace("SELECT","TD").replace("LEVEL","NAME");
@@ -148,8 +161,14 @@ export function OnClickSkillSWLearned(){
 					if (skill) {
 						skill_level = url.searchParams.get(skill[SKILL_DATA_INDEX_REFID])||0;
 					}
-					$(this).val(skill_level).change();
+					$(this).val(skill_level);
+					// id 末尾の数値が n_A_LearnedSkill のインデックス
+					const learnedIdx = parseInt($(elm).attr("id").replace("OBJID_SELECT_LEARNED_SKILL_LEVEL_", ""), 10);
+					// 状態更新・着色のみ（AutoCalc はループ後に1回だけ）
+					RefreshSkillColumnHeaderLearned(this, learnedIdx, this.value, true);
 				});
+				// まとめて1回だけ再計算
+				AutoCalc("OnClickSkillLearnedLoad");
 				hideLoadingIndicator();
 			},0); // ローディングインジケータ表示のために 0 ms後の非同期処理に送る
 		} catch(e) {}
@@ -186,7 +205,7 @@ export function OnClickSkillSWLearned(){
 		}
 		objSelect = document.createElement("select");
 		objSelect.setAttribute("id", "OBJID_SELECT_LEARNED_SKILL_LEVEL_" + idx);
-		objSelect.setAttribute("onChange", "RefreshSkillColumnHeaderLearned(this, " + idx + ", this.value)");
+		objSelect.addEventListener('change', (e) => RefreshSkillColumnHeaderLearned(e.target, idx, e.target.value));
 
 		// RTX API用の属性追加
 		const skillData = SkillMap.getByMigIdNum(skillId);
@@ -295,14 +314,18 @@ export function UpdateLearnedSkillSettingColoring() {
 
 /**
  * 習得スキルの変更を反映する
- * @param {*} objSelect 
- * @param {*} changedIdx 
- * @param {*} newValue 
+ * @param {*} objSelect
+ * @param {*} changedIdx
+ * @param {*} newValue
+ * @param {boolean} [bSuppressAutoCalc=false] true のとき状態更新・着色のみ行い AutoCalc を呼ばない
+ *        （URL一括ロードのように複数 select をまとめて反映してから AutoCalc を1回だけ呼びたい場合に使う）
  */
-export function RefreshSkillColumnHeaderLearned(objSelect, changedIdx, newValue) {
+export function RefreshSkillColumnHeaderLearned(objSelect, changedIdx, newValue, bSuppressAutoCalc = false) {
 	if (0 <= changedIdx) {
 		n_A_LearnedSkill[changedIdx] = parseInt(newValue);
-		AutoCalc("RefreshSkillColumnHeaderLearned");
+		if (!bSuppressAutoCalc) {
+			AutoCalc("RefreshSkillColumnHeaderLearned");
+		}
 	}
 	// 背景設定
 	if (objSelect) {
@@ -335,12 +358,5 @@ export function RefreshSkillColumnHeaderLearned(objSelect, changedIdx, newValue)
 }
 
 if (typeof window !== 'undefined') {
-    window.n_SkillSWLearned = n_SkillSWLearned;
-    window.LEARNED_SKILL_MAX_COUNT = LEARNED_SKILL_MAX_COUNT;
-    window.n_A_LearnedSkill = n_A_LearnedSkill;
     window.LearnedSkillSearch = LearnedSkillSearch;
-    window.OnClickSkillSWLearned = OnClickSkillSWLearned;
-    window.IsLearnedSkillTarget = IsLearnedSkillTarget;
-    window.UpdateLearnedSkillSettingColoring = UpdateLearnedSkillSettingColoring;
-    window.RefreshSkillColumnHeaderLearned = RefreshSkillColumnHeaderLearned;
 }

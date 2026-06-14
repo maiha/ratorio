@@ -1,4 +1,20 @@
 import { CGlobalConstManager } from './CGlobalConstManager.js';
+// === AUTO-GENERATED IMPORTS ===
+import './card.h.js';
+import './monster.h.js';
+import './skill.h.js';
+import './usableskill.h.js';
+import { toSafeBigInt } from '../../common/js/util.js';
+import { AutoSpellSkill } from './autospell.dat.js';
+import { GetAutoSpellTriggerText } from './autospell.h.js';
+import { CardObjNew } from './card.dat.js';
+import { GetElementText, GetRaceText, GetSizeText, GetStateText } from './common.js';
+import { ItemObjNew } from './item.dat.js';
+import { MonsterObjNew } from './monster.dat.js';
+import { SkillObjNew } from './skill.dat.js';
+import { InsertSkill } from './usableskill.dat.js';
+import { GetJobName } from '../../../ro4/m/js/data/mig.job.h.js';
+// === END AUTO-GENERATED IMPORTS ===
 
 //----------------------------------------------------------------
 // EnumItemDataIndex データの要素番号
@@ -1035,6 +1051,12 @@ CGlobalConstManager.DefinePseudoEnum(
 		"ITEM_SP_PURE_CON_50_OFFSET",	// 59
 		"ITEM_SP_PURE_CRT_50_OFFSET",	// 60
 
+		"ITEM_SP_PURE_POW_110_OFFSET",	// 61 * 10^9
+		"ITEM_SP_PURE_STA_110_OFFSET",	// 62
+		"ITEM_SP_PURE_WIS_110_OFFSET",	// 63
+		"ITEM_SP_PURE_SPL_110_OFFSET",	// 64
+		"ITEM_SP_PURE_CON_110_OFFSET",	// 65
+		"ITEM_SP_PURE_CRT_110_OFFSET",	// 66
 	],
 	1000000000,
 	1000000000
@@ -2044,6 +2066,9 @@ export function GetItemExplainText(spId, spValue) {
 	}
 	else if (55 <= pureStatus && pureStatus <= 60) {
 		condTextPureStatus += "純粋な" + spStatusName[pureStatus - 55] +  "が50以上の時、";
+	}
+	else if (61 <= pureStatus && pureStatus <= 66) {
+		condTextPureStatus += "純粋な" + spStatusName[pureStatus - 61] +  "が110以上の時、";
 	}
 	spId = pureStatusEffect;
 
@@ -3148,21 +3173,7 @@ export function GetItemExplainText(spId, spValue) {
 	}
 
 
-
 	return textInfoArray;
 }
 
-if (typeof window !== 'undefined') {
-	window.GetItemKindNameText = GetItemKindNameText;
-	window.IsDexBasedArms = IsDexBasedArms;
-	window.IsEffectiveExceededRefinedAtkArms = IsEffectiveExceededRefinedAtkArms;
-	window.IsGunSeriesArms = IsGunSeriesArms;
-	window.GetJobRestrictText = GetJobRestrictText;
-	window.GetStrPenaltyAvoidStr = GetStrPenaltyAvoidStr;
-	window.GetEnchantTypeId = GetEnchantTypeId;
-	window.GetRndOptTypeId = GetRndOptTypeId;
-	window.GetSlotText = GetSlotText;
-	window.GetMaxSlot = GetMaxSlot;
-	window.GetItemSP = GetItemSP;
-	window.GetItemExplainText = GetItemExplainText;
-}
+

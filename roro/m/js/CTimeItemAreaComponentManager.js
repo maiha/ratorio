@@ -1,10 +1,16 @@
+// === AUTO-GENERATED IMPORTS ===
+import './timeitem.h.js';
+import { ITEM_SP_TIME_OBJ, ITEM_SP_TIME_OBJ_SORT } from './timeitem.dat.js';
+import { g_timeItemConf, g_timeItemConfEffective } from '../../../ro4/m/js/global.js';
+import { HtmlCreateElement, HtmlCreateTextNode, HtmlCreateElementOption, HtmlRemoveAllChild, HtmlGetObjectValueByIdAsInteger, HtmlSetObjectValueById } from '../../common/js/util.js';
+// === END AUTO-GENERATED IMPORTS ===
+import { CBattleQuickControlAreaComponentManager } from './CBattleQuickControlAreaComponentManager.js';
 /**
  * 時限アイテムエリアコンポーネントマネージャクラス.
  */
 export function CTimeItemAreaComponentManager () {
 
 }
-
 
 
 /**
@@ -38,7 +44,6 @@ CTimeItemAreaComponentManager.RebuildControls = function () {
 	var objLabel = null;
 
 
-
 	// チェックボックスのチェック状態を取得
 	objSwitch = document.getElementById("OBJID_TIME_ITEM_AREA_EXTRACT_CHECKBOX");
 	if (objSwitch) {
@@ -46,9 +51,12 @@ CTimeItemAreaComponentManager.RebuildControls = function () {
 	}
 
 
-
 	// 設定欄を初期化
 	objRoot = document.getElementById("ID_TIME_ITEM_AREA");
+	// この設定欄を持たないページ（roro/other/ 等）では構築をスキップする
+	if (!objRoot) {
+		return;
+	}
 	HtmlRemoveAllChild(objRoot);
 
 	// 設定欄テーブルを再構築
@@ -59,7 +67,6 @@ CTimeItemAreaComponentManager.RebuildControls = function () {
 
 	objTbody = document.createElement("tbody");
 	objTable.appendChild(objTbody);
-
 
 
 	// ヘッダ部分を構築
@@ -75,7 +82,7 @@ CTimeItemAreaComponentManager.RebuildControls = function () {
 	objInput = document.createElement("input");
 	objInput.setAttribute("type", "checkbox");
 	objInput.setAttribute("id", "OBJID_TIME_ITEM_AREA_EXTRACT_CHECKBOX");
-	objInput.setAttribute("onclick", "CTimeItemAreaComponentManager.OnClickExtractSwitch()");
+	objInput.addEventListener('click', () => CTimeItemAreaComponentManager.OnClickExtractSwitch());
 	if (switchChecked) {
 		// 部品を再構築しているので、チェック状態の再設定が必要
 		objInput.setAttribute("checked", "checked");
@@ -92,7 +99,6 @@ CTimeItemAreaComponentManager.RebuildControls = function () {
 	objLabel.setAttribute("class", "CSSCLS_CONF_USING_MESSAGE_USING");
 
 
-
 	// 設定欄のヘッダ部分をリフレッシュ（着色処理等）
 	CTimeItemAreaComponentManager.RefreshTimeItemAreaHeader();
 
@@ -100,7 +106,6 @@ CTimeItemAreaComponentManager.RebuildControls = function () {
 	if (!switchChecked) {
 		return;
 	}
-
 
 
 	//----------------------------------------------------------------
@@ -112,7 +117,8 @@ CTimeItemAreaComponentManager.RebuildControls = function () {
 		objTd = HtmlCreateElement("td", objTr);
 		objSelect = HtmlCreateElement("select", objTd);
 		objSelect.setAttribute("id", "OBJID_SELECT_TIME_ITEM_" + idxRow);
-		objSelect.setAttribute("onchange", "CTimeItemAreaComponentManager.OnChangeConf(" + idxRow + ", parseInt(this.value))");
+		const _ctRow = idxRow;
+		objSelect.addEventListener('change', (e) => CTimeItemAreaComponentManager.OnChangeConf(_ctRow, parseInt(e.target.value)));
 
 		for (idx = 0; idx < ITEM_SP_TIME_OBJ_SORT.length; idx++) {
 			timeData = ITEM_SP_TIME_OBJ[ITEM_SP_TIME_OBJ_SORT[idx]];
@@ -122,15 +128,12 @@ CTimeItemAreaComponentManager.RebuildControls = function () {
 
 		objSelect.value = g_timeItemConf[idxRow];
 
-		// select2 対応
-		//console.log(`${'#OBJID_SELECT_TIME_ITEM_' + idxRow}.select2-hidden-accessible=${$('#OBJID_SELECT_TIME_ITEM_' + idxRow).hasClass('select2-hidden-accessible')}`);
-		if ($('#OBJID_SELECT_TIME_ITEM_' + idxRow).hasClass('select2-hidden-accessible')) {
-			// 親要素が削除→再生成されるためselect2も作り直す
-			$('#OBJID_SELECT_TIME_ITEM_' + idxRow).select2('destroy');
+		// TomSelect 対応: 親要素が削除→再生成されるため既存インスタンスを破棄して作り直す
+		const timeItemEl = document.getElementById('OBJID_SELECT_TIME_ITEM_' + idxRow);
+		if (timeItemEl.tomselect) {
+			timeItemEl.tomselect.destroy();
 		}
-		$('#OBJID_SELECT_TIME_ITEM_' + idxRow).select2();
-		// キーボード操作のイベントハンドラ設定
-		CustomizeSelect2Specify('#OBJID_SELECT_TIME_ITEM_' + idxRow);
+		new TomSelect(timeItemEl, { maxOptions: null });
 	}
 
 	// CSS 更新
@@ -147,7 +150,6 @@ CTimeItemAreaComponentManager.RebuildControls = function () {
 	HtmlCreateTextNode("発動率と効果時間は計算に入れていません。設定すれば常時発動状態です。", objSpan);
 
 };
-
 
 
 /**
@@ -212,7 +214,6 @@ CTimeItemAreaComponentManager.OnChangeConf = function (idxConf, dataId) {
 };
 
 
-
 /**
  * ヘッダ部品を再設定する.
  */
@@ -247,7 +248,6 @@ CTimeItemAreaComponentManager.RefreshTimeItemAreaHeader = function () {
 };
 
 
-
 /**
  * コントロール部品の CSS を再設定する.
  */
@@ -275,7 +275,6 @@ CTimeItemAreaComponentManager.RefreshControlCSS = function () {
 };
 
 
-
 /**
  * 設定欄を開く.
  */
@@ -294,7 +293,6 @@ CTimeItemAreaComponentManager.OpenArea = function () {
 };
 
 
-
 /**
  * 設定欄を閉じる.
  */
@@ -311,7 +309,6 @@ CTimeItemAreaComponentManager.CloseArea = function () {
 	// 再構築する
 	CTimeItemAreaComponentManager.RebuildControls();
 };
-
 
 
 /**
@@ -345,11 +342,7 @@ CTimeItemAreaComponentManager.FocusArea = function (idxConf, bForceOpen) {
 };
 
 
-
 // 初期構築処理
 CTimeItemAreaComponentManager.RebuildControls();
 
-if (typeof window !== 'undefined') {
-	window.CTimeItemAreaComponentManager = CTimeItemAreaComponentManager;
-}
 
