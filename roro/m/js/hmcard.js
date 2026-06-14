@@ -655,6 +655,142 @@ export function RebuildCardSelect(eqpRgnId, itemId) {
 	// 選択肢の構築
 	BuildUpCardSlotsMIG(eqpRgnId, itemId, enchInfoArrayAllSlotsResult, objArySlots);
 
+	// 【独自機能】カード解除（✕）ボタンの再構築（本家関数は無改変、末尾1行コールのみ）
+	RefreshCardClearButtonsMIG(objArySlots);
+
+}
+
+/**
+ * 【独自機能】カードスロットに「カード解除（✕）」ショートカットボタンを再構築する。
+ *
+ * - カードスロット（武器＆防具/カード テーブルの4列目）の select 右端に、
+ *   カードを CARD_ID_NONE に戻すボタンを配置する。
+ * - レイアウト・不透明度はエンチャント検索ボタン（.ench-search-shortcut-btn = 虫眼鏡）と
+ *   揃え、ラベルだけ Stash 削除ボタン風の赤い「✕」にする（CSS: .card-clear-shortcut-btn）。
+ * - 表示/非表示（カード未選択時は隠す）は CSS 側（:has(option[value="0"]:checked)）に任せる。
+ * - エンチャントスロット（.ench-search-shortcut-btn を持つ）には付けない。
+ *
+ * 本家 RebuildCardSelect から末尾で1行コールするだけの独自追加であり、
+ * 本家関数の内部ロジックには手を入れていない（rebase conflict 回避のため）。
+ *
+ * @param {Array<HTMLSelectElement>} objArySlots カードスロット select の配列
+ */
+function RefreshCardClearButtonsMIG(objArySlots) {
+
+	var idx = 0;
+	var objSelect = null;
+	var parent = null;
+	var existingBtn = null;
+
+	for (idx = 0; idx < objArySlots.length; idx++) {
+
+		objSelect = objArySlots[idx];
+		if (objSelect == null) {
+			continue;
+		}
+
+		parent = objSelect.parentNode;
+		if (parent == null) {
+			continue;
+		}
+
+		existingBtn = parent.querySelector('.card-clear-shortcut-btn');
+
+		// エンチャントスロット（虫眼鏡ボタンを持つ）には付けない。
+		// カード→エンチャントに変化した場合は、残った✕ボタンを除去する。
+		if (parent.querySelector('.ench-search-shortcut-btn')) {
+			if (existingBtn) {
+				existingBtn.remove();
+			}
+			continue;
+		}
+
+		// 既にボタンがあるなら作り直さない（select 要素は再構築で使い回されるため重複防止）。
+		// 再構築で値（line 1402 の直接代入＝change 非発火）が変わっている場合があるので、
+		// 保持した更新関数でボタンの見た目（✕ / ↶ / 非表示）だけ現在値に同期する。
+		if (existingBtn) {
+			if (typeof existingBtn._updateCardClearButton === 'function') {
+				existingBtn._updateCardClearButton();
+			}
+			continue;
+		}
+
+		parent.style.position = 'relative';
+		parent.classList.add('card-clear-shortcut-parent');
+
+		(function(selectEl) {
+
+			// ✕ で外したカードID（undo 用）。CARD_ID_NONE のときは「戻す対象なし」
+			var removedCardId = CARD_ID_NONE;
+
+			var btn = document.createElement('button');
+			btn.type = 'button';
+			btn.className = 'card-clear-shortcut-btn';
+
+			// セレクトに値をセットする共通処理。
+			// カードスロットは Tom Select 化されている（lib/tom-select の SEARCHABLE_SELECT_LIST
+			// に OBJID_*_CARD_* が含まれる）。元 <select> への直接代入では Tom Select の UI・内部値が
+			// 同期されず表示が戻る／再計算が走らないため、本家 equip.js の setSelectValueSynced と
+			// 同じく、インスタンスがあれば setValue()（非 silent ＝ native change を発火）を使う。
+			function setCardValue(cardId) {
+				if (selectEl.tomselect) {
+					selectEl.tomselect.setValue(String(cardId));
+				}
+				else {
+					// 素の select 用フォールバック（jQuery .trigger ではなく native dispatch）。
+					selectEl.value = cardId;
+					selectEl.dispatchEvent(new Event('change', { bubbles: true }));
+				}
+			}
+
+			// 現在値と undo 状態から、ボタンのモード（✕ / ↶）を更新する。
+			// 表示有無そのものは CSS（:has(option[value="0"]:checked) と :not(.is-undo)）が
+			// セレクトの実値に対してリアクティブに制御するので、ここでは style.display を触らない
+			// （JS の呼び出しタイミングに表示が依存してカードあり時に✕が出ない不具合を避けるため）。
+			function updateButton() {
+				var hasCard = (String(selectEl.value) !== String(CARD_ID_NONE)) && (selectEl.value !== '');
+				if (hasCard) {
+					// カードあり → 「外す（✕）」モード。過去の undo 情報は破棄する。
+					removedCardId = CARD_ID_NONE;
+					btn.classList.remove('is-undo');
+					btn.title = 'カードを外す';
+				}
+				else if (String(removedCardId) !== String(CARD_ID_NONE)) {
+					// カードなし＋直前に外したカードあり → 「元に戻す（↶）」モード。
+					btn.classList.add('is-undo');
+					btn.title = 'カードを戻す';
+				}
+				else {
+					// カードなし＋戻す対象なし → ✕モード（CSS が非表示にする）。
+					btn.classList.remove('is-undo');
+					btn.title = 'カードを外す';
+				}
+			}
+
+			btn.addEventListener('click', function() {
+				if (btn.classList.contains('is-undo')) {
+					// 元に戻す
+					setCardValue(removedCardId);
+				}
+				else {
+					// 外す（外す前のカードIDを undo 用に記憶してから外す）
+					removedCardId = selectEl.value;
+					setCardValue(CARD_ID_NONE);
+				}
+				// setCardValue の change で updateButton も走るが、念のため即時反映する。
+				updateButton();
+			});
+
+			// 手動選択 / setValue / 再構築（change 発火経路）に追随して見た目を更新。
+			selectEl.addEventListener('change', updateButton);
+
+			// 再構築時に外（RefreshCardClearButtonsMIG の existingBtn 分岐）から呼べるよう保持。
+			btn._updateCardClearButton = updateButton;
+
+			selectEl.parentNode.appendChild(btn);
+			updateButton();
+		})(objSelect);
+	}
 }
 
 /**
