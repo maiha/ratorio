@@ -756,7 +756,7 @@ $(document).ready(function() {
             }
             StAllCalc();
             AutoCalc();
-            LoadSelect2();
+            LoadTomSelect();
             this.stopCombo();
             this.$overlay.hide();
             this.$modal.hide();
