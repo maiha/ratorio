@@ -13,6 +13,16 @@ import { OnChangeEquip } from '../../../roro/m/js/equip.js';
 Object.assign(window, Common, MigJob, Util);
 
 $(document).ready(function () {
+    function setSelectValue(id, value) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (el.tomselect) {
+            el.tomselect.setValue(String(value));
+        } else {
+            el.value = value;
+        }
+    }
+
     class StashItem {
 		constructor(itemId, itemRefined, cardIds) {
 			const itemData = ItemObjNew[itemId];
@@ -308,14 +318,14 @@ $(document).ready(function () {
 		}
 
 		apply(item) {
-			HtmlSetObjectValueById(this.def.itemSelectId, item.itemId);
+			setSelectValue(this.def.itemSelectId, item.itemId);
 			OnChangeEquip(this.regionId, item.itemId);
 			if (this.def.refineSelectId) {
-				HtmlSetObjectValueById(this.def.refineSelectId, item.itemRefined);
+				setSelectValue(this.def.refineSelectId, item.itemRefined);
 			}
 			item.cardIds.forEach((cardId, i) => {
 				if (cardId > 0) {
-					HtmlSetObjectValueById(`${this.def.itemSelectId}_CARD_${i + 1}`, cardId);
+					setSelectValue(`${this.def.itemSelectId}_CARD_${i + 1}`, cardId);
 					OnChangeCard(cardId);
 				}
 			});
@@ -570,7 +580,7 @@ $(document).ready(function () {
     
             if (!skipPostProcess) {
                     StAllCalc();
-                    LoadSelect2();
+                    LoadTomSelect();
 		    calc();
             }
         }
@@ -595,7 +605,7 @@ $(document).ready(function () {
             }
             StAllCalc();
             AutoCalc();
-            LoadSelect2();
+            LoadTomSelect();
         }
 
         static HTML_DIV_STASH_EDIT_MODAL = `
