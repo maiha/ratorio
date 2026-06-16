@@ -190,7 +190,15 @@ $(document).ready(function() {
             this.$modal.on('click', '.enoch-result-link', (e) => {
                 e.preventDefault();
                 if (this.selectedTarget) {
-                    $(this.selectedTarget).val($(e.target).data('item-id')).trigger('change');
+                    const el = document.querySelector(this.selectedTarget);
+                    if (!el) return;
+                    const itemId = String($(e.target).data('item-id'));
+                    if (el.tomselect) {
+                        el.tomselect.setValue(itemId);
+                    } else {
+                        el.value = itemId;
+                        el.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
                     calc();
                 }
             });
@@ -375,6 +383,7 @@ $(document).ready(function() {
             const minSlot = parseInt(this.$modal.find('.enoch-min-slot').val()) || 0;
 
             const $select = $(targetId);
+            const selectEl = $select[0];
             const $options = $select.find('option');
             const stopIndex = Math.min(maxCount, $options.length);
             const $metricEl = $(this.selectedMetric);
@@ -398,7 +407,12 @@ $(document).ready(function() {
                 const slot = (typeof ItemObjNew !== 'undefined' && ItemObjNew[itemId])
                     ? (ItemObjNew[itemId][ITEM_DATA_INDEX_SLOT] ?? 0) : 0;
 
-                $select.val(itemId).trigger('change');
+                if (selectEl.tomselect) {
+                    selectEl.tomselect.setValue(itemId);
+                } else {
+                    selectEl.value = itemId;
+                    selectEl.dispatchEvent(new Event('change', { bubbles: true }));
+                }
                 calc();
                 // calc()はspanを同期更新するので待ち時間は不要。ただしyield自体は必須
                 // （消すと全件終わるまで再描画されず画面が固まり、停止も押せなくなる）。
