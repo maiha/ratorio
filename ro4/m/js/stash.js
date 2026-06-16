@@ -472,7 +472,8 @@ $(document).ready(function () {
                 const $elem = $('#' + def.itemSelectId);
                 if ($elem.length === 0 || $elem.css('visibility') === 'hidden') continue;
 
-                const $container = $('<div style="position: relative;"></div>');
+                const $parent = $elem.parent();
+                $parent.css('position', 'relative');
 
                 // 履歴ボタン
                 const $historyBtn = $('<span class="CSSCLS_STASH_HISTORY_BUTTON" title="履歴から選択">履歴</span>');
@@ -498,8 +499,7 @@ $(document).ready(function () {
                     }
                 });
 
-                $elem.wrap($container);
-                $elem.parent().append($historyBtn, $btn);
+                $parent.append($historyBtn, $btn);
             }
 
             const $toggle = $('#OBJID_STASH_CURRENT_SLOT').off('click').empty().on('click', e => this.toggle());
