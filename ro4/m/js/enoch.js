@@ -79,6 +79,7 @@ $(document).ready(function() {
 
             // 自動計算設定の退避用
             this._savedAutoCalcValue = null;
+            this._savedLoadTomSelect = null;
         }
 
         // 自動計算を抑制（実行開始時）
@@ -93,6 +94,21 @@ $(document).ready(function() {
             if (this._savedAutoCalcValue !== null) {
                 $('#OBJID_INPUT_ATTACK_METHOD_AUTO_CALC').val(this._savedAutoCalcValue);
                 this._savedAutoCalcValue = null;
+            }
+        }
+
+        suppressLoadTomSelect() {
+            if (!this._savedLoadTomSelect) {
+                this._savedLoadTomSelect = window.LoadTomSelect;
+                window.LoadTomSelect = function() {};
+            }
+        }
+
+        restoreLoadTomSelect() {
+            if (this._savedLoadTomSelect) {
+                window.LoadTomSelect = this._savedLoadTomSelect;
+                this._savedLoadTomSelect = null;
+                window.LoadTomSelect();
             }
         }
 
@@ -368,6 +384,7 @@ $(document).ready(function() {
             this.selectRunning = true;
             const runId = ++this.selectRunId;  // この実行の世代。再入したら古いループは即座に抜ける
             this.suppressAutoCalc();
+            this.suppressLoadTomSelect();
             this.$modal.find('.enoch-start').prop('disabled', true);
             this.$modal.find('.enoch-stop').prop('disabled', false);
 
@@ -396,10 +413,6 @@ $(document).ready(function() {
 
             this.$highlightedEl = $metricEl.css('background-color', 'yellow');
 
-            // 逐次ループ: 「セット → calc() → 描画反映を待つ → そのアイテムの値を読む」を直列化する。
-            // setInterval(set用) と setTimeout(読取用) を分離していた旧実装では、待ち≧間隔のときに
-            // 読取が次アイテムの set+calc を追い越し、item N の行に value N+1 が入る +1 ズレが発生していた。
-            // await で順序を保証することで、read[N] は必ず item N の calc 結果のみを見る。
             for (let index = 0; index < stopIndex && this.selectRunning && this.selectRunId === runId; index++) {
                 const $option = $options.eq(index);
                 const itemId = $option.val();
@@ -407,12 +420,8 @@ $(document).ready(function() {
                 const slot = (typeof ItemObjNew !== 'undefined' && ItemObjNew[itemId])
                     ? (ItemObjNew[itemId][ITEM_DATA_INDEX_SLOT] ?? 0) : 0;
 
-                if (selectEl.tomselect) {
-                    selectEl.tomselect.setValue(itemId);
-                } else {
-                    selectEl.value = itemId;
-                    selectEl.dispatchEvent(new Event('change', { bubbles: true }));
-                }
+                selectEl.value = itemId;
+                selectEl.dispatchEvent(new Event('change', { bubbles: true }));
                 calc();
                 // calc()はspanを同期更新するので待ち時間は不要。ただしyield自体は必須
                 // （消すと全件終わるまで再描画されず画面が固まり、停止も押せなくなる）。
@@ -452,6 +461,7 @@ $(document).ready(function() {
                 this.$highlightedEl = null;
             }
             this.restoreAutoCalc();
+            this.restoreLoadTomSelect();
         }
 
         renderSelectResults(topN, isFinal = false) {
@@ -593,6 +603,7 @@ $(document).ready(function() {
         async runCombo() {
             this.comboRunning = true;
             this.suppressAutoCalc();
+            this.suppressLoadTomSelect();
             this.$modal.find('.enoch-combo-start').prop('disabled', true);
             this.$modal.find('.enoch-combo-stop').prop('disabled', false);
             this.$modal.find('.enoch-combo-tsv').prop('disabled', true);
@@ -667,6 +678,7 @@ $(document).ready(function() {
             this.$modal.find('.enoch-combo-start').prop('disabled', false);
             this.$modal.find('.enoch-combo-stop').prop('disabled', true);
             this.restoreAutoCalc();
+            this.restoreLoadTomSelect();
             this.renderComboResults(topN, true);
             this.showBestHighlightsOnly();
         }
@@ -722,6 +734,7 @@ $(document).ready(function() {
             this.$modal.find('.enoch-combo-start').prop('disabled', false);
             this.$modal.find('.enoch-combo-stop').prop('disabled', true);
             this.restoreAutoCalc();
+            this.restoreLoadTomSelect();
             this.showBestHighlightsOnly();
         }
 
